@@ -151,6 +151,17 @@ public partial class PlanktonMesh<TFaceTraits, THalfedgeTraits, TVertexTraits>
 		return default;
 	}
 
+	public byte[] Serialize()
+	{
+		using var ms = new MemoryStream();
+		using ( var bw = new BinaryWriter( ms ) )
+		{
+			Serialize( bw );
+		}
+
+		return ms.ToArray();
+	}
+
 	public void Serialize( BinaryWriter writer )
 	{
 		writer.Write( Vertices.Count );

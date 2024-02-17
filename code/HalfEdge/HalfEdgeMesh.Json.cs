@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -12,24 +13,31 @@ class HalfEdgeMeshJsonConverter : JsonConverter<HalfEdgeMesh>
 			throw new JsonException();
 		}
 
-		var base64Data = reader.GetString();
-		var byteArray = Convert.FromBase64String( base64Data );
-
-		using var ms = new MemoryStream( byteArray );
-		using var br = new BinaryReader( ms );
-
-		var mesh = new HalfEdgeMesh();
-		mesh.Deserialize( br );
-
-		return mesh;
+		try
+		{
+			using var ms = new MemoryStream( Convert.FromBase64String( reader.GetString() ) );
+			using var zs = new GZipStream( ms, CompressionMode.Decompress );
+			using var outStream = new MemoryStream();
+			zs.CopyTo( outStream );
+			outStream.Position = 0;
+			using var br = new BinaryReader( outStream );
+			var mesh = new HalfEdgeMesh();
+			mesh.Deserialize( br );
+			return mesh;
+		}
+		catch
+		{
+			return null;
+		}
 	}
 
 	public override void Write( Utf8JsonWriter writer, HalfEdgeMesh value, JsonSerializerOptions options )
 	{
 		using var ms = new MemoryStream();
-		using ( var bw = new BinaryWriter( ms ) )
+		using ( var zs = new GZipStream( ms, CompressionMode.Compress ) )
 		{
-			value.Serialize( bw );
+			var data = value.Serialize();
+			zs.Write( data, 0, data.Length );
 		}
 
 		writer.WriteBase64StringValue( ms.ToArray() );
