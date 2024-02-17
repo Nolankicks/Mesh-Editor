@@ -59,6 +59,12 @@ public class MeshEditorTool : EditorTool
 
 	public override void OnUpdate()
 	{
+		var selectionToRemove = MeshSelection.OfType<MeshElement>().Where( x => !x.Component.IsValid() ).ToArray();
+		foreach ( var s in selectionToRemove )
+		{
+			MeshSelection.Remove( s );
+		}
+
 		foreach ( var s in MeshSelection.OfType<MeshElement>() )
 		{
 			if ( s.ElementType != MeshElementType.Face )
