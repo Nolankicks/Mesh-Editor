@@ -16,13 +16,13 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 			Mesh = new();
 
 			Mesh.Vertices.Add( new Vector3( 0, 0, 0 ) );
-			Mesh.Vertices.Add( new Vector3( 100, 0, 0 ) );
-			Mesh.Vertices.Add( new Vector3( 100, 100, 0 ) );
-			Mesh.Vertices.Add( new Vector3( 0, 100, 0 ) );
+			Mesh.Vertices.Add( new Vector3( 512, 0, 0 ) );
+			Mesh.Vertices.Add( new Vector3( 512, 512, 0 ) );
+			Mesh.Vertices.Add( new Vector3( 0, 512, 0 ) );
 
 			var faceData = new FaceData
 			{
-				TextureScale = 1,
+				TextureScale = 0.25f,
 				TextureUAxis = Vector3.Forward,
 				TextureVAxis = Vector3.Right,
 			};
@@ -155,7 +155,7 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 		}
 
 		var bounds = BBox.FromPoints( vertices.Select( x => x.position ) );
-		var material = Material.Load( "dev/helper/testgrid.vmat" );
+		var material = Material.Load( "materials/dev/reflectivity_30.vmat" );
 		var mesh = new Mesh( material );
 		mesh.CreateVertexBuffer( vertices.Count, SimpleVertex.Layout, vertices );
 		mesh.CreateIndexBuffer( indices.Count, indices );
@@ -186,16 +186,23 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 	private static Vector2 PlanarUV( Vector3 vertexPosition, FaceData faceData )
 	{
 		var uv = Vector2.Zero;
+		float scale = 1.0f / 512.0f;
+
 		uv.x = Vector3.Dot( faceData.TextureUAxis, faceData.TextureOrigin + vertexPosition );
 		uv.y = Vector3.Dot( faceData.TextureVAxis, faceData.TextureOrigin + vertexPosition );
-		uv *= 0.01f;
-		uv *= faceData.TextureScale;
+
+		uv *= scale;
+
+		var xScale = faceData.TextureScale.x;
+		var yScale = faceData.TextureScale.y;
+		uv.x /= xScale.AlmostEqual( 0.0f ) ? 0.25f : xScale;
+		uv.y /= yScale.AlmostEqual( 0.0f ) ? 0.25f : yScale;
 
 		var cosAngle = MathF.Cos( faceData.TextureAngle.DegreeToRadian() );
 		var sinAngle = MathF.Sin( faceData.TextureAngle.DegreeToRadian() );
 		uv = new Vector2( uv.x * cosAngle - uv.y * sinAngle, uv.y * cosAngle + uv.x * sinAngle );
 
-		uv += faceData.TextureOffset * 0.01f;
+		uv += faceData.TextureOffset * scale;
 
 		return uv;
 	}

@@ -26,7 +26,7 @@
       "Components": [
         {
           "__type": "EditorMeshComponent",
-          "Mesh": "H4sIAAAAAAAACmNhYGDgAGJGIEYG7GDyhBOMD5EH8SFizHCVED4rkl4mqPr/QAAyB2Y2C1QOJA4SA7FBgA1qHkgcRCPMhgCQOLL5CNBgj8bfjxBHlQMAokjp2\u002BgAAAA="
+          "Mesh": "H4sIAAAAAAAACrWTa1LCUAyFL\u002BVhRUQEEQUV3/gAcQX6AxfGEmRFLk3zwWEapfX6x8ycycltTpL2po0QwrNh2\u002BBtuHJv67iTxcuzXpa6jAdOu0jC7N49I647PXHD6YmbTv\u002BezGcjpyd\u002BdHriidMTT418/rNVrEfV8CBfMrTEa4axfGLoim8ZnuTLhmPx1MA3oiY4ladmWy9GvCfO\u002BYE8swzFS7q7qvoe6gx\u002BJE9\u002BRxzsaDbm6esMfiJPfk8c7Gpm5jnTGXxfs5E/0Dthl26mO3Hs2lBXb\u002B5TOxFuNRM9JuLYuWoC7jdVzVT98SOdgQv1qrk\u002B4Eox9dk7PLhRL\u002Bo01e\u002B7zV9/xB/yLytk1opq1/pNLbsS/tR7U8s\u002B5c8Y17Jz\u002BblxLff6\u002B7zFWv3LEX2\u002B1v33BfMWa9mh/Ny49gs1YqLwKAUAAA=="
         }
       ]
     }
@@ -54,6 +54,6 @@
   },
   "Title": "minimal",
   "Description": "",
-  "LastSaved": "2024-02-18T02:30:52.5549124\u002B00:00",
+  "LastSaved": "2024-02-18T04:05:10.1652334\u002B00:00",
   "__references": []
 }
