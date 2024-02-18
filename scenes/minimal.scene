@@ -22,7 +22,7 @@
     {
       "Id": "b0cae985-7f12-41ea-b324-10f566961377",
       "Name": "Object",
-      "Position": "0,256,0",
+      "Position": "0,1200,0",
       "Enabled": true,
       "Components": [
         {
@@ -34,7 +34,9 @@
     {
       "Id": "0c367e55-37b2-462e-8b89-c3d757dc5b5e",
       "Name": "Object",
-      "Position": "16,-160,128",
+      "Position": "0,-224,128",
+      "Rotation": "-0.1305262,0,0,0.9914449",
+      "Scale": "8.257045,1.268021,-0.7662158",
       "Enabled": true,
       "Components": [
         {
@@ -42,7 +44,29 @@
           "BoxSize": "32,512,256",
           "Center": "0,0,0",
           "IsTrigger": false,
-          "Material": "materials/dev/simple/wall_simple_128.vmat",
+          "Material": "materials/dev/dev_measuregeneric01.vmat",
+          "PlaneSize": "256,256",
+          "Static": true,
+          "Surface": null,
+          "TextureAngle": 0,
+          "TextureScale": 0.25000003,
+          "Type": "Box"
+        }
+      ]
+    },
+    {
+      "Id": "9c9c2877-be92-4a22-a7c6-5eb30a9d65cb",
+      "Name": "Object (1)",
+      "Position": "-256,-432,128",
+      "Rotation": "0,0,0.7071068,0.7071068",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "MeshComponent",
+          "BoxSize": "32,512,256",
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Material": null,
           "PlaneSize": "256,256",
           "Static": true,
           "Surface": null,
@@ -53,9 +77,9 @@
       ]
     },
     {
-      "Id": "9c9c2877-be92-4a22-a7c6-5eb30a9d65cb",
-      "Name": "Object (1)",
-      "Position": "-256,-432,128",
+      "Id": "52699ce9-ef56-42b6-9c83-f7c5415cfd6e",
+      "Name": "Object (2)",
+      "Position": "176,15.99999,128",
       "Rotation": "0,0,0.7071068,0.7071068",
       "Enabled": true,
       "Components": [
@@ -98,7 +122,7 @@
     {
       "Id": "f9c545e6-6006-475f-8507-4275d9aa2ad1",
       "Name": "Camera",
-      "Position": "-772.6,331.9001,453.0331",
+      "Position": "-772.7003,243.2002,453.0331",
       "Rotation": "0.07697627,0.2086534,-0.3374487,0.9146949",
       "Tags": "maincamera",
       "Enabled": true,
@@ -107,7 +131,7 @@
           "__type": "CameraComponent",
           "BackgroundColor": "0.33333,0.46275,0.52157,1",
           "ClearFlags": "All",
-          "FieldOfView": 59.28,
+          "FieldOfView": 65,
           "IsMainCamera": true,
           "Orthographic": false,
           "OrthographicHeight": 1204,
@@ -124,7 +148,7 @@
     {
       "Id": "a53ddca5-1c3c-4716-9307-391542c64a37",
       "Name": "Cube",
-      "Position": "-32,-256,0",
+      "Position": "-208,-336,0",
       "Rotation": "0,0,0.938191,0.3461179",
       "Enabled": true,
       "Components": [
@@ -173,6 +197,41 @@
           "StartAsleep": false
         }
       ]
+    },
+    {
+      "Id": "c19c5335-9b9a-48c6-8009-ebd32ab74a3a",
+      "Name": "Cube (1)",
+      "Position": "-64,-320,208",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "ModelRenderer",
+          "BodyGroups": 18446744073709551615,
+          "MaterialGroup": null,
+          "MaterialOverride": null,
+          "Model": "models/dev/sphere.vmdl",
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        },
+        {
+          "__type": "Rigidbody",
+          "AngularDamping": 0,
+          "Gravity": true,
+          "LinearDamping": 0,
+          "Locking": {},
+          "MassOverride": 0,
+          "RigidbodyFlags": 0,
+          "StartAsleep": false
+        },
+        {
+          "__type": "SphereCollider",
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Radius": 32,
+          "Static": false,
+          "Surface": null
+        }
+      ]
     }
   ],
   "SceneProperties": {
@@ -198,6 +257,6 @@
   },
   "Title": "minimal",
   "Description": "",
-  "LastSaved": "2024-02-18T19:16:35.3710275\u002B00:00",
+  "LastSaved": "2024-02-18T19:49:13.8185149\u002B00:00",
   "__references": []
 }

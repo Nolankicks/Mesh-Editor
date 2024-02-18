@@ -198,7 +198,7 @@ public sealed class MeshComponent : Collider, Component.ExecuteInEditor
 				new( box.Maxs.x, box.Maxs.y, box.Mins.z ),
 				new( box.Mins.x, box.Maxs.y, box.Mins.z )
 			},
-			4 => new Vector3[] 
+			4 => new Vector3[]
 			{
 				new( box.Mins.x, box.Mins.y, box.Mins.z ),
 				new( box.Mins.x, box.Mins.y, box.Maxs.z ),
@@ -254,12 +254,13 @@ public sealed class MeshComponent : Collider, Component.ExecuteInEditor
 		{
 			var box = BBox.FromPositionAndSize( Center, BoxSize );
 			var verticesList = new List<Vector3>( 24 );
+			var inside = Transform.Scale.x < 0 || Transform.Scale.y < 0 || Transform.Scale.z < 0;
 
 			for ( int face = 0; face < 6; face++ )
 			{
-				Vector3[] corners = CalculateFaceCorners( box, face );
+				var corners = CalculateFaceCorners( box, face );
 
-				var normal = FaceNormals[face];
+				var normal = FaceNormals[face] * (inside ? -1.0f : 1.0f);
 				var tangent = FaceRightVectors[face];
 				ComputeTextureAxes( normal, out var uAxis, out var vAxis );
 
@@ -314,7 +315,41 @@ public sealed class MeshComponent : Collider, Component.ExecuteInEditor
 			box.Maxs *= Transform.Scale;
 			box.Mins += tx.Position;
 			box.Maxs += tx.Position;
-			shape = targetBody.AddBoxShape( box, tx.Rotation );
+			var inside = Transform.Scale.x < 0 || Transform.Scale.y < 0 || Transform.Scale.z < 0;
+
+			if ( inside )
+			{
+				var vertices = new Vector3[8]
+				{
+					new( box.Mins.x, box.Mins.y, box.Mins.z ),
+					new( box.Maxs.x, box.Mins.y, box.Mins.z ),
+					new( box.Maxs.x, box.Maxs.y, box.Mins.z ),
+					new( box.Mins.x, box.Maxs.y, box.Mins.z ),
+					new( box.Mins.x, box.Mins.y, box.Maxs.z ),
+					new( box.Maxs.x, box.Mins.y, box.Maxs.z ),
+					new( box.Maxs.x, box.Maxs.y, box.Maxs.z ),
+					new( box.Mins.x, box.Maxs.y, box.Maxs.z )
+				};
+
+				for ( int i = 0; i < vertices.Length; i++ )
+				{
+					vertices[i] *= tx.Rotation;
+				}
+
+				shape = targetBody.AddMeshShape( vertices, new int[]
+				{
+					0, 2, 1, 0, 3, 2,
+					4, 5, 6, 4, 6, 7,
+					0, 1, 5, 0, 5, 4,
+					3, 7, 6, 3, 6, 2,
+					0, 7, 3, 0, 4, 7,
+					1, 2, 6, 1, 6, 5
+				} );
+			}
+			else
+			{
+				shape = targetBody.AddBoxShape( box, tx.Rotation );
+			}
 		}
 		else if ( Type == PrimitiveType.Plane )
 		{
