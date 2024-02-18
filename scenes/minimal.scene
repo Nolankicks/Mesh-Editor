@@ -27,7 +27,7 @@
       "Components": [
         {
           "__type": "EditorMeshComponent",
-          "Mesh": "H4sIAAAAAAAACrWW2VITURCGB0IgKpKYRMAqLXFDXHBXUETRoKKIiDvirg/ipbe\u002BgRe\u002Bh1U\u002BhW\u002Bj54vfVI4yyVhJeaq6epnz/91zpvsk40mSfAiyM0i8Vn6rxdSvtfxmbKy1tem/jrCf\u002B5NGOXqGvzXC429EePztEX6iuNC4GOHx90d4/IMRHn8ywv8ofGrMRHj8uQiPPx/h8a8GY2/xy/e0nluRz6bllt9cq5HP/jW5viaVJn498jFeikv9t5HP/vfB/vmf10DIUQxyVN0XpKI9GOS4ut9\u002BwB4KckJdD7KhXQpyJMiAHLe14az6bvTAfe0\u002B8WhqWdFGtlgDeUeNYY\u002Br2V/TRrZZ244gLzqcWyE8A/fOmumxOx32l6zlUlTTlDb9e1lN7mPa1HJFTY5p7eEg9DCcyEk1nCXPCn3YGLLPXINRHuSA/pC8aOSQueAZ8RnrjO8K16w265z74JrTZl3wW8HFXDi7ySk5EeZjWM4Jc\u002BLPGENOmwt\u002B5hWNnDUX/MwtGjlvLngm7SPO5brfFq4lbeKL9taI81g1ftPvXHYua8YX5ESYz4qcezw/fOa8YPyaueC/axz7nudBj6T3HPGGNZSjGrFvWENFvy7XI\u002BeKvc\u002B1iT\u002Bx76veE6PGn3nP1rwvxow/kBPh3qjLuct\u002BwV93Vog/NBf8r4xjv5GP90q5iT\u002B2BvLu9qywn1pD3fOiP/5cH2mT2P\u002BmDiOCtFYlF5viN2P//q1qn3szlrPLrjEfSz9l783HTuXW2x7LXdPt\u002B07n1tsey52VvTcfO5tbb3usv9U5\u002BGzsfG697bEZBWbgs7FLPeRd7mGOVnOx7fOu9ZCX\u002Bysjzz99o/S/UDd50/9N2fs75\u002BWu7DbvLw7ntpEoCwAA"
+          "Mesh": "H4sIAAAAAAAACrWWWVMTQRSFhwRC1EgiCSYoVuGGuOCuoIiiiYoiIu5b3HBHRER99tFH/Q/\u002BDx/8E/4bvWf8xmmLmYyVlF116HNv\u002Bpx7Z9LdpM/zvA\u002BGXoM7pvy/2VoQF8PYzy2GS/34vqP9kvKqeUeveN7RK17l6BWvdvT9HePVI4634k1hXFO8xdErHnD0P9KfqsOOXvGoo1c85ugVnzDyOeV9D/o568RaNBnG/ph2Yq2fweurl/P1t5xYpI4uiB86sdbP\u002Brz2533NObHGQhj7uSUn1vr3Rn7\u002B59FuNToMO5jbDAV4xrCLuWKYh3cadjOXDHfgWcN2Qzse5\u002BDy7OaZtYcuwdvQa1YvU3BhBT30GF43eA8p\u002B6xseEdvawx3G6xPs\u002B8f0bP26PkG67P0ctTpaRC\u002B0nCMWbV3wnUOjjOrxhA8Z9AZkKewh1meWd6V5m3khI3Uyjh1hM3EnfhqFrZSSz5dfKaxn2eV1whc4yDr5DUK1zjMdyUvnavfZ9/z9uIp6Hzl8OynpuJhcsI\u002Baslf512zcIBa8te51ywcopZ8BthHei\u002Bn\u002BG7lNQFXvsbe6uI8d5M/w/ec51wXyY/jKeh8F/DcwPtTrHsiTf4kteR/gbz4Rd6H9khwTypfpYe806P4aXooEJfwusoe19rbcOWvG9biVYcrf5P9XuS\u002BKZO/jKege6eEZy/7RbHurxT5K9SS/z3y4g/w03MtwpW/Rg\u002Bq28e7Er9BDyXeVwWvp9RWjVdw5Z8b1uG1AFf\u002BpWE9Xktw5R/jKeg\u002BrODZw/lQPMedodwTasn/DXnxt/jpuYpw5Z/RQxmvDPwFPVTYl9r3f4\u002BP2v5u/I3Zjr4QjkKiNtAv1\u002Br5vX\u002BqvVyrPRHdY7JW5yR6bbJ2MLHfeK3u0Gafdyix33it7uLotcnakcR\u002B47X8hknQR2vHEvuN10Y0GKGP1k60UHeyhXM0naiNrzvTQl3dy81\u002BR/UW6ga/J6PXN64720Jd3deNtfF1dac3W1f3fvTa5Lr639Bs3V/D2WK\u002BMA0AAA=="
         }
       ]
     },
@@ -87,11 +87,90 @@
           "IsTrigger": false,
           "Material": "materials/dev/simple/floor_simple_128.vmat",
           "PlaneSize": "512,512",
-          "Static": false,
+          "Static": true,
           "Surface": null,
           "TextureAngle": 0,
           "TextureScale": 0.25,
           "Type": "Plane"
+        }
+      ]
+    },
+    {
+      "Id": "f9c545e6-6006-475f-8507-4275d9aa2ad1",
+      "Name": "Camera",
+      "Position": "-772.6,331.9001,453.0331",
+      "Rotation": "0.07697627,0.2086534,-0.3374487,0.9146949",
+      "Tags": "maincamera",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "CameraComponent",
+          "BackgroundColor": "0.33333,0.46275,0.52157,1",
+          "ClearFlags": "All",
+          "FieldOfView": 59.28,
+          "IsMainCamera": true,
+          "Orthographic": false,
+          "OrthographicHeight": 1204,
+          "Priority": 1,
+          "RenderExcludeTags": "",
+          "RenderTags": "",
+          "TargetEye": "None",
+          "Viewport": "0,0,1,1",
+          "ZFar": 10000,
+          "ZNear": 10
+        }
+      ]
+    },
+    {
+      "Id": "a53ddca5-1c3c-4716-9307-391542c64a37",
+      "Name": "Cube",
+      "Position": "-32,-256,0",
+      "Rotation": "0,0,0.938191,0.3461179",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "ModelRenderer",
+          "BodyGroups": 341,
+          "MaterialGroup": null,
+          "MaterialOverride": null,
+          "Model": "models/citizen/citizen.vmdl",
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        }
+      ]
+    },
+    {
+      "Id": "c71d8bbc-3130-4501-bc5b-8a82b7e2a233",
+      "Name": "Cube",
+      "Position": "-272,-400,336",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "ModelRenderer",
+          "BodyGroups": 18446744073709551615,
+          "MaterialGroup": null,
+          "MaterialOverride": null,
+          "Model": "models/dev/box.vmdl",
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        },
+        {
+          "__type": "BoxCollider",
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Scale": "50,50,50",
+          "Static": false,
+          "Surface": null
+        },
+        {
+          "__type": "Rigidbody",
+          "AngularDamping": 0,
+          "Gravity": true,
+          "LinearDamping": 0,
+          "Locking": {},
+          "MassOverride": 0,
+          "RigidbodyFlags": 0,
+          "StartAsleep": false
         }
       ]
     }
@@ -119,6 +198,6 @@
   },
   "Title": "minimal",
   "Description": "",
-  "LastSaved": "2024-02-18T19:01:25.1712848\u002B00:00",
+  "LastSaved": "2024-02-18T19:16:35.3710275\u002B00:00",
   "__references": []
 }
