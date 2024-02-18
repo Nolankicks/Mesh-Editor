@@ -22,11 +22,76 @@
     {
       "Id": "b0cae985-7f12-41ea-b324-10f566961377",
       "Name": "Object",
+      "Position": "0,256,0",
       "Enabled": true,
       "Components": [
         {
           "__type": "EditorMeshComponent",
-          "Mesh": "H4sIAAAAAAAACrWTa1LCUAyFL\u002BVhRUQEEQUV3/gAcQX6AxfGEmRFLk3zwWEapfX6x8ycycltTpL2po0QwrNh2\u002BBtuHJv67iTxcuzXpa6jAdOu0jC7N49I647PXHD6YmbTv\u002BezGcjpyd\u002BdHriidMTT418/rNVrEfV8CBfMrTEa4axfGLoim8ZnuTLhmPx1MA3oiY4ladmWy9GvCfO\u002BYE8swzFS7q7qvoe6gx\u002BJE9\u002BRxzsaDbm6esMfiJPfk8c7Gpm5jnTGXxfs5E/0Dthl26mO3Hs2lBXb\u002B5TOxFuNRM9JuLYuWoC7jdVzVT98SOdgQv1qrk\u002B4Eox9dk7PLhRL\u002Bo01e\u002B7zV9/xB/yLytk1opq1/pNLbsS/tR7U8s\u002B5c8Y17Jz\u002BblxLff6\u002B7zFWv3LEX2\u002B1v33BfMWa9mh/Ny49gs1YqLwKAUAAA=="
+          "Mesh": "H4sIAAAAAAAACrWW2VITURCGB0IgKpKYRMAqLXFDXHBXUETRoKKIiDvirg/ipbe\u002BgRe\u002Bh1U\u002BhW\u002Bj54vfVI4yyVhJeaq6epnz/91zpvsk40mSfAiyM0i8Vn6rxdSvtfxmbKy1tem/jrCf\u002B5NGOXqGvzXC429EePztEX6iuNC4GOHx90d4/IMRHn8ywv8ofGrMRHj8uQiPPx/h8a8GY2/xy/e0nluRz6bllt9cq5HP/jW5viaVJn498jFeikv9t5HP/vfB/vmf10DIUQxyVN0XpKI9GOS4ut9\u002BwB4KckJdD7KhXQpyJMiAHLe14az6bvTAfe0\u002B8WhqWdFGtlgDeUeNYY\u002Br2V/TRrZZ244gLzqcWyE8A/fOmumxOx32l6zlUlTTlDb9e1lN7mPa1HJFTY5p7eEg9DCcyEk1nCXPCn3YGLLPXINRHuSA/pC8aOSQueAZ8RnrjO8K16w265z74JrTZl3wW8HFXDi7ySk5EeZjWM4Jc\u002BLPGENOmwt\u002B5hWNnDUX/MwtGjlvLngm7SPO5brfFq4lbeKL9taI81g1ftPvXHYua8YX5ESYz4qcezw/fOa8YPyaueC/axz7nudBj6T3HPGGNZSjGrFvWENFvy7XI\u002BeKvc\u002B1iT\u002Bx76veE6PGn3nP1rwvxow/kBPh3qjLuct\u002BwV93Vog/NBf8r4xjv5GP90q5iT\u002B2BvLu9qywn1pD3fOiP/5cH2mT2P\u002BmDiOCtFYlF5viN2P//q1qn3szlrPLrjEfSz9l783HTuXW2x7LXdPt\u002B07n1tsey52VvTcfO5tbb3usv9U5\u002BGzsfG697bEZBWbgs7FLPeRd7mGOVnOx7fOu9ZCX\u002Bysjzz99o/S/UDd50/9N2fs75\u002BWu7DbvLw7ntpEoCwAA"
+        }
+      ]
+    },
+    {
+      "Id": "0c367e55-37b2-462e-8b89-c3d757dc5b5e",
+      "Name": "Object",
+      "Position": "16,-160,128",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "MeshComponent",
+          "BoxSize": "32,512,256",
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Material": "materials/dev/simple/wall_simple_128.vmat",
+          "PlaneSize": "256,256",
+          "Static": true,
+          "Surface": null,
+          "TextureAngle": 0,
+          "TextureScale": 0.25,
+          "Type": "Box"
+        }
+      ]
+    },
+    {
+      "Id": "9c9c2877-be92-4a22-a7c6-5eb30a9d65cb",
+      "Name": "Object (1)",
+      "Position": "-256,-432,128",
+      "Rotation": "0,0,0.7071068,0.7071068",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "MeshComponent",
+          "BoxSize": "32,512,256",
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Material": null,
+          "PlaneSize": "256,256",
+          "Static": true,
+          "Surface": null,
+          "TextureAngle": 0,
+          "TextureScale": 0.25,
+          "Type": "Box"
+        }
+      ]
+    },
+    {
+      "Id": "ae848c13-e8fd-4a9a-8b58-b5287bd409b3",
+      "Name": "Object",
+      "Position": "-256,-160,0",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "MeshComponent",
+          "BoxSize": "64,64,64",
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Material": "materials/dev/simple/floor_simple_128.vmat",
+          "PlaneSize": "512,512",
+          "Static": false,
+          "Surface": null,
+          "TextureAngle": 0,
+          "TextureScale": 0.25,
+          "Type": "Plane"
         }
       ]
     }
@@ -54,6 +119,6 @@
   },
   "Title": "minimal",
   "Description": "",
-  "LastSaved": "2024-02-18T04:05:10.1652334\u002B00:00",
+  "LastSaved": "2024-02-18T19:01:25.1712848\u002B00:00",
   "__references": []
 }
