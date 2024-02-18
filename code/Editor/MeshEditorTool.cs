@@ -165,12 +165,6 @@ public class MeshEditorTool : EditorTool
 					if ( Gizmo.WasClicked )
 					{
 						Select( MeshElement.Face( c, f ) );
-
-						if ( Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Alt ) )
-						{
-							c.ExtrudeFace( f, c.GetAverageFaceNormal( f ) * 50 );
-							c.EditLog( "Extrude Face", c );
-						}
 					}
 
 					Gizmo.Draw.Color = Gizmo.Colors.Active.WithAlpha( MathF.Sin( RealTime.Now * 20.0f ).Remap( -1, 1, 0.3f, 0.8f ) );
