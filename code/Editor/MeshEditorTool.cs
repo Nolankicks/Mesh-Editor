@@ -56,18 +56,19 @@ public class MeshEditorTool : EditorTool
 	Dictionary<MeshElement, Vector3> startPoints = new();
 	Vector3 moveDelta;
 
-	struct StartPoints
-	{
-
-	}
-
 	private void StartDrag()
 	{
 		if ( startPoints.Any() ) return;
 
 		if ( Gizmo.IsShiftPressed )
 		{
+			foreach ( var s in MeshSelection.OfType<MeshElement>() )
+			{
+				if ( s.ElementType != MeshElementType.Face )
+					continue;
 
+				s.Component.ExtrudeFace( s.Index, s.Component.GetAverageFaceNormal( s.Index ) * 0.01f );
+			}
 		}
 
 		foreach ( var entry in MeshSelection.OfType<MeshElement>()
@@ -100,7 +101,6 @@ public class MeshEditorTool : EditorTool
 			Gizmo.Draw.Color = Color.Green;
 			var p = s.Component.Transform.World.PointToWorld( s.Component.GetFaceCenter( s.Index ) );
 			Gizmo.Draw.SolidSphere( p, 4 );
-			//Gizmo.Draw.Arrow( p, p + s.Component.GetAverageFaceNormal( s.Index ) * 50 );
 
 			points.Add( p );
 		}

@@ -65,7 +65,7 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 
 		using ( Gizmo.ObjectScope( GameObject, GameObject.Transform.World ) )
 		{
-			if ( !Gizmo.IsHovered )
+			if ( !Gizmo.IsHovered && !Gizmo.IsSelected )
 				return;
 		}
 
@@ -303,7 +303,7 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 			Mesh.Faces.AddFace( v1, v2, v3, v4, sideFaceData );
 		}
 
-		CreateSceneObject();
+		Dirty = true;
 	}
 
 	private static readonly Vector3[] FaceNormals =
