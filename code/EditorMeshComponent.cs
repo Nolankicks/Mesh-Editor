@@ -114,6 +114,14 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 		}
 	}
 
+	public bool Dirty { get; set; }
+
+	public void SetVertexPosition( int v, Vector3 position )
+	{
+		Mesh.Vertices[v].Position = position;
+		Dirty = true;
+	}
+
 	public Vector3 GetAverageFaceNormal( int f )
 	{
 		return Mesh.Faces.GetAverageFaceNormal( f ).Normal;
@@ -122,6 +130,16 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 	public Vector3 GetFaceCenter( int f )
 	{
 		return Mesh.Faces.GetFaceCenter( f );
+	}
+
+	public Vector3 GetVertexPosition( int f )
+	{
+		return Mesh.Vertices[f].Position;
+	}
+
+	public int[] GetFaceVertices( int f )
+	{
+		return Mesh.Faces.GetFaceVertices( f );
 	}
 
 	public void CreateSceneObject()
