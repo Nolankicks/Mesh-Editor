@@ -163,8 +163,8 @@ public class MeshEditorTool : EditorTool
 						Select( MeshElement.Face( c, f ) );
 					}
 
-					Gizmo.Draw.Color = Gizmo.Colors.Active.WithAlpha( MathF.Sin( RealTime.Now * 20.0f ).Remap( -1, 1, 0.3f, 0.8f ) );
-					Gizmo.Draw.LineBBox( c.Model.Bounds );
+					//Gizmo.Draw.Color = Gizmo.Colors.Active.WithAlpha( MathF.Sin( RealTime.Now * 20.0f ).Remap( -1, 1, 0.3f, 0.8f ) );
+					//Gizmo.Draw.LineBBox( c.Model.Bounds );
 				}
 			}
 		}
