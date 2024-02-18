@@ -144,6 +144,7 @@ public class MeshEditorTool : EditorTool
 			.Where( x => x.Dirty ) )
 		{
 			c.CreateSceneObject();
+			c.Dirty = false;
 		}
 
 
