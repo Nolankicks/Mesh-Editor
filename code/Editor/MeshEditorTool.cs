@@ -77,7 +77,7 @@ public class MeshEditorTool : EditorTool
 			.Select( i => MeshElement.Vertex( x.Component, i ) )
 			.Distinct() ) )
 		{
-			startFaceOrigins[entry] = entry.Component.GetVertexPosition( entry.Index );
+			startFaceOrigins[entry] = entry.Component.Transform.World.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
 		}
 	}
 
@@ -130,7 +130,7 @@ public class MeshEditorTool : EditorTool
 
 				foreach ( var entry in startFaceOrigins )
 				{
-					entry.Key.Component.SetVertexPosition( entry.Key.Index, entry.Value + entry.Key.Component.Transform.World.PointToLocal( targetPosition ) );
+					entry.Key.Component.SetVertexPosition( entry.Key.Index, entry.Key.Component.Transform.World.PointToLocal( entry.Value + targetPosition ) );
 				}
 
 				EditLog( "Moved", MeshSelection.OfType<MeshElement>()
