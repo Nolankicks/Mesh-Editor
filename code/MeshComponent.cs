@@ -216,6 +216,10 @@ public sealed class MeshComponent : Collider, Component.ExecuteInEditor
 		};
 	}
 
+	private bool IsInsideOut => ((Transform.Scale.x < 0 ? 1 : 0) +
+						 (Transform.Scale.y < 0 ? 1 : 0) +
+						 (Transform.Scale.z < 0 ? 1 : 0)) % 2 != 0;
+
 	private void CreateSceneObject()
 	{
 		if ( _sceneObject.IsValid() )
@@ -254,19 +258,19 @@ public sealed class MeshComponent : Collider, Component.ExecuteInEditor
 		{
 			var box = BBox.FromPositionAndSize( Center, BoxSize );
 			var verticesList = new List<Vector3>( 24 );
-			var inside = Transform.Scale.x < 0 || Transform.Scale.y < 0 || Transform.Scale.z < 0;
+			var inside = IsInsideOut;
 
 			for ( int face = 0; face < 6; face++ )
 			{
 				var corners = CalculateFaceCorners( box, face );
-
+				var sign = inside ? -1.0f : 1.0f;
 				var normal = FaceNormals[face] * (inside ? -1.0f : 1.0f);
-				var tangent = FaceRightVectors[face];
-				ComputeTextureAxes( normal, out var uAxis, out var vAxis );
+				var tangent = FaceRightVectors[face] * sign;
+				ComputeTextureAxes( FaceNormals[face], out var uAxis, out var vAxis );
 
 				foreach ( var corner in corners )
 				{
-					var uv = PlanarUV( corner * Transform.Scale, uAxis, vAxis );
+					var uv = PlanarUV( corner * Transform.Scale.Abs(), uAxis, vAxis );
 					vertices.Add( new SimpleVertex( corner, normal, tangent, uv ) );
 				}
 			}
@@ -315,9 +319,8 @@ public sealed class MeshComponent : Collider, Component.ExecuteInEditor
 			box.Maxs *= Transform.Scale;
 			box.Mins += tx.Position;
 			box.Maxs += tx.Position;
-			var inside = Transform.Scale.x < 0 || Transform.Scale.y < 0 || Transform.Scale.z < 0;
 
-			if ( inside )
+			if ( IsInsideOut )
 			{
 				var vertices = new Vector3[8]
 				{
