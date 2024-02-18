@@ -72,12 +72,12 @@ public class MeshEditorTool : EditorTool
 			}
 		}
 
-		foreach ( var s in MeshSelection.OfType<MeshElement>() )
+		foreach ( var entry in MeshSelection.OfType<MeshElement>()
+			.SelectMany( x => x.Component.GetFaceVertices( x.Index )
+			.Select( i => MeshElement.Vertex( x.Component, i ) )
+			.Distinct() ) )
 		{
-			if ( s.ElementType != MeshElementType.Face )
-				continue;
-
-			startFaceOrigins[s] = s.Component.Transform.World.PointToWorld( s.Component.GetFaceCenter( s.Index ) );
+			startFaceOrigins[entry] = entry.Component.GetVertexPosition( entry.Index );
 		}
 	}
 
@@ -126,19 +126,11 @@ public class MeshEditorTool : EditorTool
 
 				StartDrag();
 
+				var targetPosition = Gizmo.Snap( moveDelta, moveDelta );
+
 				foreach ( var entry in startFaceOrigins )
 				{
-					var targetPosition = entry.Value + Gizmo.Snap( moveDelta, moveDelta );
-					targetPosition = entry.Key.Component.Transform.World.PointToLocal( targetPosition );
-					var facePosition = entry.Key.Component.GetFaceCenter( entry.Key.Index );
-					var vertices = entry.Key.Component.GetFaceVertices( entry.Key.Index );
-
-					foreach ( var vertex in vertices )
-					{
-						var v = entry.Key.Component.GetVertexPosition( vertex ) - facePosition;
-						v += targetPosition;
-						entry.Key.Component.SetVertexPosition( vertex, v );
-					}
+					entry.Key.Component.SetVertexPosition( entry.Key.Index, entry.Value + entry.Key.Component.Transform.World.PointToLocal( targetPosition ) );
 				}
 
 				EditLog( "Moved", MeshSelection.OfType<MeshElement>()
