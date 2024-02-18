@@ -216,10 +216,6 @@ public sealed class MeshComponent : Collider, Component.ExecuteInEditor
 		};
 	}
 
-	private bool IsInsideOut => ((Transform.Scale.x < 0 ? 1 : 0) +
-						 (Transform.Scale.y < 0 ? 1 : 0) +
-						 (Transform.Scale.z < 0 ? 1 : 0)) % 2 != 0;
-
 	private void CreateSceneObject()
 	{
 		if ( _sceneObject.IsValid() )
@@ -258,7 +254,9 @@ public sealed class MeshComponent : Collider, Component.ExecuteInEditor
 		{
 			var box = BBox.FromPositionAndSize( Center, BoxSize );
 			var verticesList = new List<Vector3>( 24 );
-			var inside = IsInsideOut;
+			var inside = ((Transform.Scale.x < 0 ? 1 : 0) +
+						 (Transform.Scale.y < 0 ? 1 : 0) +
+						 (Transform.Scale.z < 0 ? 1 : 0)) % 2 != 0;
 
 			for ( int face = 0; face < 6; face++ )
 			{
@@ -320,7 +318,11 @@ public sealed class MeshComponent : Collider, Component.ExecuteInEditor
 			box.Mins += tx.Position;
 			box.Maxs += tx.Position;
 
-			if ( IsInsideOut )
+			var inside = ((BoxSize.x * Transform.Scale.x < 0 ? 1 : 0) +
+						 (BoxSize.y * Transform.Scale.y < 0 ? 1 : 0) +
+						 (BoxSize.z * Transform.Scale.z < 0 ? 1 : 0)) % 2 != 0;
+
+			if ( inside )
 			{
 				var vertices = new Vector3[8]
 				{
