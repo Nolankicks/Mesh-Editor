@@ -136,39 +136,39 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 
 	private static readonly Vector3[] FaceNormals =
 	{
-		new( 0, 0, 1 ),
-		new( 0, 0, -1 ),
-		new( 0, -1, 0 ),
-		new( 0, 1, 0 ),
-		new( -1, 0, 0 ),
-		new( 1, 0, 0 ),
+		Vector3.Up,
+		Vector3.Down,
+		Vector3.Right,
+		Vector3.Left,
+		Vector3.Backward,
+		Vector3.Forward,
 	};
 
-	private static readonly Vector3[] FaceRightVectors =
+	private static readonly Vector3[] FaceUAxis =
 	{
-		new( 1, 0, 0 ),
-		new( 1, 0, 0 ),
-		new( 1, 0, 0 ),
-		new( -1, 0, 0 ),
-		new( 0, -1, 0 ),
-		new( 0, 1, 0 ),
+		Vector3.Forward,
+		Vector3.Forward,
+		Vector3.Forward,
+		Vector3.Backward,
+		Vector3.Right,
+		Vector3.Left,
 	};
 
-	private static readonly Vector3[] FaceDownVectors =
+	private static readonly Vector3[] FaceVAxis =
 	{
-		new( 0, -1, 0 ),
-		new( 0, -1, 0 ),
-		new( 0, 0, -1 ),
-		new( 0, 0, -1 ),
-		new( 0, 0, -1 ),
-		new( 0, 0, -1 ),
+		Vector3.Right,
+		Vector3.Right,
+		Vector3.Down,
+		Vector3.Down,
+		Vector3.Down,
+		Vector3.Down,
 	};
 
 	private static void ComputeTextureAxes( Vector3 normal, out Vector3 uAxis, out Vector3 vAxis )
 	{
 		var orientation = GetOrientationForPlane( normal );
-		uAxis = FaceRightVectors[orientation];
-		vAxis = FaceDownVectors[orientation];
+		uAxis = FaceUAxis[orientation];
+		vAxis = FaceVAxis[orientation];
 	}
 
 	private static int GetOrientationForPlane( Vector3 plane )
@@ -289,7 +289,7 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 				var corners = CalculateFaceCorners( box, face );
 				var sign = inside ? -1.0f : 1.0f;
 				var normal = FaceNormals[face] * (inside ? -1.0f : 1.0f);
-				var tangent = FaceRightVectors[face] * sign;
+				var tangent = FaceUAxis[face] * sign;
 				ComputeTextureAxes( FaceNormals[face], out var uAxis, out var vAxis );
 
 				foreach ( var corner in corners )
