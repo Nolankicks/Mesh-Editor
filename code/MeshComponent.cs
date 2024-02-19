@@ -1,6 +1,8 @@
 using System;
 
-public sealed class MeshComponent : Collider, Component.ExecuteInEditor
+using static Sandbox.Component;
+
+public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 {
 	public enum PrimitiveType
 	{
@@ -30,6 +32,9 @@ public sealed class MeshComponent : Collider, Component.ExecuteInEditor
 
 	[Property, Group( "Texture" ), Range( -180.0f, 180.0f ), MakeDirty]
 	public float TextureAngle { get; set; }
+
+	[Property, Title( "Tint" ), Group( "Texture" ), MakeDirty]
+	public Color Color { get; set; } = Color.White;
 
 	private SceneObject _sceneObject;
 	private Vector3 _buildScale;
@@ -302,6 +307,7 @@ public sealed class MeshComponent : Collider, Component.ExecuteInEditor
 		_sceneObject = new SceneObject( Scene.SceneWorld, model, Transform.World );
 		_sceneObject.SetComponentSource( this );
 		_sceneObject.Tags.SetFrom( GameObject.Tags );
+		_sceneObject.ColorTint = Color.WithAlpha( 1.0f );
 	}
 
 	protected override IEnumerable<PhysicsShape> CreatePhysicsShapes( PhysicsBody targetBody )
