@@ -91,6 +91,27 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 		CreateSceneObject();
 	}
 
+	protected override void DrawGizmos()
+	{
+		base.DrawGizmos();
+
+		if ( !_sceneObject.IsValid() )
+			return;
+
+		// Is this a bug? IsHovered doesn't work unless it's in this scope but it should be in this scope already!
+		using ( Gizmo.ObjectScope( GameObject, global::Transform.Zero ) )
+		{
+			if ( !Gizmo.IsHovered && !Gizmo.IsSelected )
+				return;
+
+			if ( _sceneObject.Model is not null )
+			{
+				Gizmo.Draw.Color = Gizmo.IsSelected ? Gizmo.Colors.Selected : Gizmo.Colors.Active.WithAlpha( MathF.Sin( RealTime.Now * 20.0f ).Remap( -1, 1, 0.3f, 0.8f ) );
+				Gizmo.Draw.LineBBox( _sceneObject.Model.Bounds );
+			}
+		}
+	}
+
 	private Vector2 PlanarUV( Vector3 vertexPosition, Vector3 uAxis, Vector3 vAxis )
 	{
 		var uv = Vector2.Zero;
