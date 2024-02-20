@@ -106,6 +106,7 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 
 			if ( _sceneObject.Model is not null )
 			{
+				Gizmo.Draw.IgnoreDepth = Gizmo.IsSelected;
 				Gizmo.Draw.Color = Gizmo.IsSelected ? Gizmo.Colors.Selected : Gizmo.Colors.Active.WithAlpha( MathF.Sin( RealTime.Now * 20.0f ).Remap( -1, 1, 0.3f, 0.8f ) );
 				Gizmo.Draw.LineBBox( _sceneObject.Model.Bounds );
 			}
@@ -244,12 +245,6 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 
 	private void CreateSceneObject()
 	{
-		if ( _sceneObject.IsValid() )
-		{
-			_sceneObject.Delete();
-			_sceneObject = null;
-		}
-
 		_buildScale = Transform.Scale;
 
 		var vertices = new List<SimpleVertex>();
@@ -325,7 +320,15 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 			.AddMesh( mesh )
 			.Create();
 
-		_sceneObject = new SceneObject( Scene.SceneWorld, model, Transform.World );
+		if ( !_sceneObject.IsValid() )
+		{
+			_sceneObject = new SceneObject( Scene.SceneWorld, model, Transform.World );
+		}
+		else
+		{
+			_sceneObject.Model = model;
+		}
+
 		_sceneObject.SetComponentSource( this );
 		_sceneObject.Tags.SetFrom( GameObject.Tags );
 		_sceneObject.ColorTint = Color.WithAlpha( 1.0f );
