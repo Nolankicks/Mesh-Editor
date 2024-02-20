@@ -104,40 +104,45 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 		if ( !_sceneObject.IsValid() )
 			return;
 
-		var box = BBox.FromPositionAndSize( Center, Size );
-
-		if ( Gizmo.IsSelected )
+		using ( Gizmo.Scope( "Tool" ) )
 		{
-			if ( !Gizmo.HasPressed )
-			{
-				_dragging = false;
-				_newBox = default;
-				_startBox = default;
-			}
+			Gizmo.Hitbox.DepthBias = 0.01f;
 
-			if ( Gizmo.Control.BoundingBox( "Resize", box, out var outBox ) )
+			if ( Gizmo.IsSelected )
 			{
-				if ( !_dragging )
+				if ( !Gizmo.HasPressed )
 				{
-					_startBox = box;
-					_dragging = true;
+					_dragging = false;
+					_newBox = default;
+					_startBox = default;
 				}
 
-				_newBox.Maxs += outBox.Maxs - box.Maxs;
-				_newBox.Mins += outBox.Mins - box.Mins;
+				var box = BBox.FromPositionAndSize( Center, Size );
 
-				outBox.Maxs = _startBox.Maxs + Gizmo.Snap( _newBox.Maxs, _newBox.Maxs );
-				outBox.Mins = _startBox.Mins + Gizmo.Snap( _newBox.Mins, _newBox.Mins );
-
-				Center = outBox.Center;
-
-				if ( Type == PrimitiveType.Plane )
+				if ( Gizmo.Control.BoundingBox( "Resize", box, out var outBox ) )
 				{
-					PlaneSize = outBox.Size;
-				}
-				else if ( Type == PrimitiveType.Box )
-				{
-					BoxSize = outBox.Size;
+					if ( !_dragging )
+					{
+						_startBox = box;
+						_dragging = true;
+					}
+
+					_newBox.Maxs += outBox.Maxs - box.Maxs;
+					_newBox.Mins += outBox.Mins - box.Mins;
+
+					outBox.Maxs = _startBox.Maxs + Gizmo.Snap( _newBox.Maxs, _newBox.Maxs );
+					outBox.Mins = _startBox.Mins + Gizmo.Snap( _newBox.Mins, _newBox.Mins );
+
+					Center = outBox.Center;
+
+					if ( Type == PrimitiveType.Plane )
+					{
+						PlaneSize = outBox.Size;
+					}
+					else if ( Type == PrimitiveType.Box )
+					{
+						BoxSize = outBox.Size;
+					}
 				}
 			}
 		}
