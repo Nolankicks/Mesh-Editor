@@ -56,6 +56,10 @@ public class MeshEditorTool : EditorTool
 	Dictionary<MeshElement, Vector3> startFaceOrigins = new();
 	Vector3 moveDelta;
 
+	bool dragging = false;
+	Vector3 dragStartPos;
+	Vector3 dragStartNormal;
+
 	private void StartDrag()
 	{
 		if ( startFaceOrigins.Any() )
@@ -147,6 +151,61 @@ public class MeshEditorTool : EditorTool
 		}
 
 		var tr = MeshTrace.Run();
+		if ( !tr.Hit || dragging )
+		{
+			var plane = dragging ? new Plane( dragStartPos, dragStartNormal ) : new Plane( Vector3.Up, 0.0f );
+			if ( plane.TryTrace( new Ray( tr.StartPosition, tr.Direction ), out tr.EndPosition, true ) )
+			{
+				tr.Hit = true;
+				tr.Normal = plane.Normal;
+			}
+		}
+
+		if ( tr.Hit )
+		{
+			var r = Rotation.LookAt( dragging ? dragStartNormal : tr.Normal );
+			var localPosition = tr.EndPosition * r.Inverse;
+
+			if ( Gizmo.Settings.SnapToGrid )
+				localPosition = localPosition.SnapToGrid( Gizmo.Settings.GridSpacing, false, true, true );
+
+			tr.EndPosition = localPosition * r;
+
+			Gizmo.Draw.Color = Color.Green;
+			Gizmo.Draw.LineSphere( tr.EndPosition, 6 );
+
+			if ( Gizmo.WasLeftMousePressed )
+			{
+				dragging = true;
+				dragStartPos = tr.EndPosition;
+				dragStartNormal = tr.Normal;
+			}
+			else if ( Gizmo.WasLeftMouseReleased && dragging )
+			{
+				var go = new GameObject( true, "Box" );
+				var mc = go.Components.Create<MeshComponent>();
+				mc.Type = MeshComponent.PrimitiveType.Box;
+
+				var box = new BBox( dragStartPos, tr.EndPosition );
+				mc.BoxSize = box.Size.WithZ( 128 );
+				mc.Transform.Position = box.Center.WithZ( box.Center.z + 64 );
+
+				dragging = false;
+				dragStartPos = default;
+			}
+
+			using ( Gizmo.Scope( "box", 0, r ) )
+			{
+				if ( dragging )
+				{
+					var localPos2 = dragStartPos * r.Inverse;
+					Gizmo.Draw.LineThickness = 2;
+					Gizmo.Draw.Color = Gizmo.Colors.Hovered;
+					Gizmo.Draw.LineBBox( new BBox( localPos2, localPosition ) );
+				}
+			}
+		}
+
 		if ( tr.Hit && tr.Component is not null )
 		{
 			using ( Gizmo.ObjectScope( tr.GameObject, tr.GameObject.Transform.World ) )
@@ -162,9 +221,6 @@ public class MeshEditorTool : EditorTool
 					{
 						Select( MeshElement.Face( c, f ) );
 					}
-
-					//Gizmo.Draw.Color = Gizmo.Colors.Active.WithAlpha( MathF.Sin( RealTime.Now * 20.0f ).Remap( -1, 1, 0.3f, 0.8f ) );
-					//Gizmo.Draw.LineBBox( c.Model.Bounds );
 				}
 			}
 		}

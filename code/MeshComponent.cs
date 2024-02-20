@@ -39,6 +39,12 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 	private SceneObject _sceneObject;
 	private Vector3 _buildScale;
 
+	private Vector3 Size => Type == PrimitiveType.Plane ? PlaneSize : BoxSize;
+
+	private BBox _startBox;
+	private BBox _newBox;
+	private bool _dragging;
+
 	protected override void OnValidate()
 	{
 		Static = true;
@@ -97,6 +103,44 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 
 		if ( !_sceneObject.IsValid() )
 			return;
+
+		var box = BBox.FromPositionAndSize( Center, Size );
+
+		if ( Gizmo.IsSelected )
+		{
+			if ( !Gizmo.HasPressed )
+			{
+				_dragging = false;
+				_newBox = default;
+				_startBox = default;
+			}
+
+			if ( Gizmo.Control.BoundingBox( "Resize", box, out var outBox ) )
+			{
+				if ( !_dragging )
+				{
+					_startBox = box;
+					_dragging = true;
+				}
+
+				_newBox.Maxs += outBox.Maxs - box.Maxs;
+				_newBox.Mins += outBox.Mins - box.Mins;
+
+				outBox.Maxs = _startBox.Maxs + Gizmo.Snap( _newBox.Maxs, _newBox.Maxs );
+				outBox.Mins = _startBox.Mins + Gizmo.Snap( _newBox.Mins, _newBox.Mins );
+
+				Center = outBox.Center;
+
+				if ( Type == PrimitiveType.Plane )
+				{
+					PlaneSize = outBox.Size;
+				}
+				else if ( Type == PrimitiveType.Box )
+				{
+					BoxSize = outBox.Size;
+				}
+			}
+		}
 
 		// Is this a bug? IsHovered doesn't work unless it's in this scope but it should be in this scope already!
 		using ( Gizmo.ObjectScope( GameObject, global::Transform.Zero ) )
