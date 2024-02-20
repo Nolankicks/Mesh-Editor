@@ -33,6 +33,9 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 	[Property, Group( "Texture" ), Range( -180.0f, 180.0f ), MakeDirty]
 	public float TextureAngle { get; set; }
 
+	[Property, MakeDirty, Hide]
+	public Vector3 TextureOrigin { get; set; }
+
 	[Property, Title( "Tint" ), Group( "Texture" ), MakeDirty]
 	public Color Color { get; set; } = Color.White;
 
@@ -44,6 +47,8 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 	private BBox _startBox;
 	private BBox _newBox;
 	private bool _dragging;
+	private Transform _startTransform;
+	private Vector3 _startTextureOrigin;
 
 	protected override void OnValidate()
 	{
@@ -104,49 +109,6 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 		if ( !_sceneObject.IsValid() )
 			return;
 
-		using ( Gizmo.Scope( "Tool" ) )
-		{
-			Gizmo.Hitbox.DepthBias = 0.01f;
-
-			if ( Gizmo.IsSelected )
-			{
-				if ( !Gizmo.HasPressed )
-				{
-					_dragging = false;
-					_newBox = default;
-					_startBox = default;
-				}
-
-				var box = BBox.FromPositionAndSize( Center, Size );
-
-				if ( Gizmo.Control.BoundingBox( "Resize", box, out var outBox ) )
-				{
-					if ( !_dragging )
-					{
-						_startBox = box;
-						_dragging = true;
-					}
-
-					_newBox.Maxs += outBox.Maxs - box.Maxs;
-					_newBox.Mins += outBox.Mins - box.Mins;
-
-					outBox.Maxs = _startBox.Maxs + Gizmo.Snap( _newBox.Maxs, _newBox.Maxs );
-					outBox.Mins = _startBox.Mins + Gizmo.Snap( _newBox.Mins, _newBox.Mins );
-
-					Center = outBox.Center;
-
-					if ( Type == PrimitiveType.Plane )
-					{
-						PlaneSize = outBox.Size;
-					}
-					else if ( Type == PrimitiveType.Box )
-					{
-						BoxSize = outBox.Size;
-					}
-				}
-			}
-		}
-
 		// Is this a bug? IsHovered doesn't work unless it's in this scope but it should be in this scope already!
 		using ( Gizmo.ObjectScope( GameObject, global::Transform.Zero ) )
 		{
@@ -160,6 +122,59 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 				Gizmo.Draw.LineBBox( _sceneObject.Model.Bounds );
 			}
 		}
+
+		using ( Gizmo.Scope( "Tool" ) )
+		{
+			Gizmo.Hitbox.DepthBias = 0.01f;
+
+			if ( Gizmo.IsSelected )
+			{
+				if ( !Gizmo.HasPressed )
+				{
+					_dragging = false;
+					_newBox = default;
+					_startBox = default;
+					_startTransform = default;
+				}
+
+				var box = BBox.FromPositionAndSize( Center, Size );
+
+				if ( Gizmo.Control.BoundingBox( "Resize", box, out var outBox ) )
+				{
+					if ( !_dragging )
+					{
+						_startBox = box;
+						_dragging = true;
+						_startTransform = Transform.World;
+						_startTextureOrigin = TextureOrigin;
+					}
+
+					_newBox.Maxs += outBox.Maxs - box.Maxs;
+					_newBox.Mins += outBox.Mins - box.Mins;
+
+					outBox.Maxs = _startBox.Maxs + Gizmo.Snap( _newBox.Maxs, _newBox.Maxs );
+					outBox.Mins = _startBox.Mins + Gizmo.Snap( _newBox.Mins, _newBox.Mins );
+
+					if ( Type == PrimitiveType.Plane )
+					{
+						PlaneSize = outBox.Size;
+					}
+					else if ( Type == PrimitiveType.Box )
+					{
+						BoxSize = outBox.Size;
+					}
+
+					var origin = outBox.Center - Center;
+					TextureOrigin = _startTextureOrigin + origin;
+					Transform.World = _startTransform.ToWorld( new Transform( origin ) );
+
+					if ( _sceneObject.IsValid() )
+					{
+						_sceneObject.Transform = Transform.World;
+					}
+				}
+			}
+		}
 	}
 
 	private Vector2 PlanarUV( Vector3 vertexPosition, Vector3 uAxis, Vector3 vAxis )
@@ -167,8 +182,8 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 		var uv = Vector2.Zero;
 		float scale = 1.0f / 512.0f;
 
-		uv.x = Vector3.Dot( uAxis, vertexPosition );
-		uv.y = Vector3.Dot( vAxis, vertexPosition );
+		uv.x = Vector3.Dot( uAxis, TextureOrigin + vertexPosition );
+		uv.y = Vector3.Dot( vAxis, TextureOrigin + vertexPosition );
 
 		uv *= scale;
 
@@ -376,6 +391,7 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 		else
 		{
 			_sceneObject.Model = model;
+			_sceneObject.Transform = Transform.World;
 		}
 
 		_sceneObject.SetComponentSource( this );
