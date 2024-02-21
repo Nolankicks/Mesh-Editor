@@ -42,13 +42,7 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 	private SceneObject _sceneObject;
 	private Vector3 _buildScale;
 
-	private Vector3 Size => Type == PrimitiveType.Plane ? PlaneSize : BoxSize;
-
-	private BBox _startBox;
-	private BBox _newBox;
-	private bool _dragging;
-	private Transform _startTransform;
-	private Vector3 _startTextureOrigin;
+	public Vector3 Size => Type == PrimitiveType.Plane ? PlaneSize : BoxSize;
 
 	protected override void OnValidate()
 	{
@@ -79,6 +73,11 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 
 	private void TransformChanged()
 	{
+		if ( _sceneObject.IsValid() )
+		{
+			_sceneObject.Transform = Transform.World;
+		}
+
 		if ( Transform.Scale != _buildScale )
 		{
 			CreateSceneObject();
@@ -118,61 +117,8 @@ public sealed class MeshComponent : Collider, ExecuteInEditor, ITintable
 			if ( _sceneObject.Model is not null )
 			{
 				Gizmo.Draw.IgnoreDepth = Gizmo.IsSelected;
-				Gizmo.Draw.Color = Gizmo.IsSelected ? Gizmo.Colors.Selected : Gizmo.Colors.Active.WithAlpha( MathF.Sin( RealTime.Now * 20.0f ).Remap( -1, 1, 0.3f, 0.8f ) );
+				Gizmo.Draw.Color = Gizmo.IsSelected ? Gizmo.Colors.Active : Gizmo.Colors.Active.WithAlpha( MathF.Sin( RealTime.Now * 20.0f ).Remap( -1, 1, 0.3f, 0.8f ) );
 				Gizmo.Draw.LineBBox( _sceneObject.Model.Bounds );
-			}
-		}
-
-		using ( Gizmo.Scope( "Tool" ) )
-		{
-			Gizmo.Hitbox.DepthBias = 0.01f;
-
-			if ( Gizmo.IsSelected )
-			{
-				if ( !Gizmo.HasPressed )
-				{
-					_dragging = false;
-					_newBox = default;
-					_startBox = default;
-					_startTransform = default;
-				}
-
-				var box = BBox.FromPositionAndSize( Center, Size );
-
-				if ( Gizmo.Control.BoundingBox( "Resize", box, out var outBox ) )
-				{
-					if ( !_dragging )
-					{
-						_startBox = box;
-						_dragging = true;
-						_startTransform = Transform.World;
-						_startTextureOrigin = TextureOrigin;
-					}
-
-					_newBox.Maxs += outBox.Maxs - box.Maxs;
-					_newBox.Mins += outBox.Mins - box.Mins;
-
-					outBox.Maxs = _startBox.Maxs + Gizmo.Snap( _newBox.Maxs, _newBox.Maxs );
-					outBox.Mins = _startBox.Mins + Gizmo.Snap( _newBox.Mins, _newBox.Mins );
-
-					if ( Type == PrimitiveType.Plane )
-					{
-						PlaneSize = outBox.Size;
-					}
-					else if ( Type == PrimitiveType.Box )
-					{
-						BoxSize = outBox.Size;
-					}
-
-					var origin = outBox.Center - Center;
-					TextureOrigin = _startTextureOrigin + origin;
-					Transform.World = _startTransform.ToWorld( new Transform( origin ) );
-
-					if ( _sceneObject.IsValid() )
-					{
-						_sceneObject.Transform = Transform.World;
-					}
-				}
 			}
 		}
 	}

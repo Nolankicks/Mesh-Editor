@@ -58,7 +58,6 @@ public class MeshEditorTool : EditorTool
 
 	bool dragging = false;
 	Vector3 dragStartPos;
-	Vector3 dragStartNormal;
 
 	private void StartDrag()
 	{
@@ -87,73 +86,76 @@ public class MeshEditorTool : EditorTool
 
 	public override void OnUpdate()
 	{
-		var selectionToRemove = MeshSelection.OfType<MeshElement>()
-			.Where( x => !x.Component.IsValid() )
-			.ToArray();
+		//var selectionToRemove = MeshSelection.OfType<MeshElement>()
+		//	.Where( x => !x.Component.IsValid() )
+		//	.ToArray();
 
-		foreach ( var s in selectionToRemove )
-		{
-			MeshSelection.Remove( s );
-		}
+		//foreach ( var s in selectionToRemove )
+		//{
+		//	MeshSelection.Remove( s );
+		//}
 
-		var points = new List<Vector3>();
+		//var points = new List<Vector3>();
 
-		foreach ( var s in MeshSelection.OfType<MeshElement>() )
-		{
-			if ( s.ElementType != MeshElementType.Face )
-				continue;
+		//foreach ( var s in MeshSelection.OfType<MeshElement>() )
+		//{
+		//	if ( s.ElementType != MeshElementType.Face )
+		//		continue;
 
-			Gizmo.Draw.Color = Color.Green;
-			var p = s.Component.Transform.World.PointToWorld( s.Component.GetFaceCenter( s.Index ) );
-			Gizmo.Draw.SolidSphere( p, 4 );
+		//	Gizmo.Draw.Color = Color.Green;
+		//	var p = s.Component.Transform.World.PointToWorld( s.Component.GetFaceCenter( s.Index ) );
+		//	Gizmo.Draw.SolidSphere( p, 4 );
 
-			points.Add( p );
-		}
+		//	points.Add( p );
+		//}
 
-		if ( !Gizmo.HasPressed )
-		{
-			startFaceOrigins.Clear();
-			moveDelta = default;
-		}
+		//if ( !Gizmo.HasPressed )
+		//{
+		//	startFaceOrigins.Clear();
+		//	moveDelta = default;
+		//}
 
-		var bbox = BBox.FromPoints( points );
-		var handlePosition = bbox.Center;
-		var handleRotation = Rotation.Identity;
+		//var bbox = BBox.FromPoints( points );
+		//var handlePosition = bbox.Center;
+		//var handleRotation = Rotation.Identity;
 
-		using ( Gizmo.Scope( "Tool", new Transform( handlePosition ) ) )
-		{
-			Gizmo.Hitbox.DepthBias = 0.01f;
+		//using ( Gizmo.Scope( "Tool", new Transform( handlePosition ) ) )
+		//{
+		//	Gizmo.Hitbox.DepthBias = 0.01f;
 
-			if ( Gizmo.Control.Position( "position", Vector3.Zero, out var delta, handleRotation ) )
-			{
-				moveDelta += delta;
+		//	if ( Gizmo.Control.Position( "position", Vector3.Zero, out var delta, handleRotation ) )
+		//	{
+		//		moveDelta += delta;
 
-				StartDrag();
+		//		StartDrag();
 
-				var targetPosition = Gizmo.Snap( moveDelta, moveDelta );
+		//		var targetPosition = Gizmo.Snap( moveDelta, moveDelta );
 
-				foreach ( var entry in startFaceOrigins )
-				{
-					entry.Key.Component.SetVertexPosition( entry.Key.Index, entry.Key.Component.Transform.World.PointToLocal( entry.Value + targetPosition ) );
-				}
+		//		foreach ( var entry in startFaceOrigins )
+		//		{
+		//			entry.Key.Component.SetVertexPosition( entry.Key.Index, entry.Key.Component.Transform.World.PointToLocal( entry.Value + targetPosition ) );
+		//		}
 
-				EditLog( "Moved", MeshSelection.OfType<MeshElement>()
-					.Select( x => x.Component )
-					.Distinct() );
-			}
-		}
+		//		EditLog( "Moved", MeshSelection.OfType<MeshElement>()
+		//			.Select( x => x.Component )
+		//			.Distinct() );
+		//	}
+		//}
 
-		foreach ( var c in Scene.GetAllComponents<EditorMeshComponent>()
-			.Where( x => x.Dirty ) )
-		{
-			c.CreateSceneObject();
-			c.Dirty = false;
-		}
+		//foreach ( var c in Scene.GetAllComponents<EditorMeshComponent>()
+		//	.Where( x => x.Dirty ) )
+		//{
+		//	c.CreateSceneObject();
+		//	c.Dirty = false;
+		//}
+
+		if ( Gizmo.HasHovered )
+			return;
 
 		var tr = MeshTrace.Run();
 		if ( !tr.Hit || dragging )
 		{
-			var plane = dragging ? new Plane( dragStartPos, dragStartNormal ) : new Plane( Vector3.Up, 0.0f );
+			var plane = dragging ? new Plane( dragStartPos, Vector3.Up ) : new Plane( Vector3.Up, 0.0f );
 			if ( plane.TryTrace( new Ray( tr.StartPosition, tr.Direction ), out tr.EndPosition, true ) )
 			{
 				tr.Hit = true;
@@ -163,7 +165,7 @@ public class MeshEditorTool : EditorTool
 
 		if ( tr.Hit )
 		{
-			var r = Rotation.LookAt( dragging ? dragStartNormal : tr.Normal );
+			var r = Rotation.LookAt( tr.Normal );
 			var localPosition = tr.EndPosition * r.Inverse;
 
 			if ( Gizmo.Settings.SnapToGrid )
@@ -178,7 +180,6 @@ public class MeshEditorTool : EditorTool
 			{
 				dragging = true;
 				dragStartPos = tr.EndPosition;
-				dragStartNormal = tr.Normal;
 			}
 			else if ( Gizmo.WasLeftMouseReleased && dragging )
 			{
@@ -189,6 +190,7 @@ public class MeshEditorTool : EditorTool
 				var box = new BBox( dragStartPos, tr.EndPosition );
 				mc.BoxSize = box.Size.WithZ( 128 );
 				mc.Transform.Position = box.Center.WithZ( box.Center.z + 64 );
+				Selection.Set( go );
 
 				dragging = false;
 				dragStartPos = default;
@@ -198,32 +200,31 @@ public class MeshEditorTool : EditorTool
 			{
 				if ( dragging )
 				{
-					var localPos2 = dragStartPos * r.Inverse;
 					Gizmo.Draw.LineThickness = 2;
-					Gizmo.Draw.Color = Gizmo.Colors.Hovered;
-					Gizmo.Draw.LineBBox( new BBox( localPos2, localPosition ) );
+					Gizmo.Draw.Color = Gizmo.Colors.Active;
+					Gizmo.Draw.LineBBox( new BBox( dragStartPos * r.Inverse, localPosition ) );
 				}
 			}
 		}
 
-		if ( tr.Hit && tr.Component is not null )
-		{
-			using ( Gizmo.ObjectScope( tr.GameObject, tr.GameObject.Transform.World ) )
-			{
-				Gizmo.Hitbox.DepthBias = 1;
-				Gizmo.Hitbox.TrySetHovered( tr.Distance );
+		//if ( tr.Hit && tr.Component is not null )
+		//{
+		//	using ( Gizmo.ObjectScope( tr.GameObject, tr.GameObject.Transform.World ) )
+		//	{
+		//		Gizmo.Hitbox.DepthBias = 1;
+		//		Gizmo.Hitbox.TrySetHovered( tr.Distance );
 
-				if ( tr.Component is EditorMeshComponent c && c.Model is not null )
-				{
-					var f = c.TriangleToFace( tr.Triangle );
+		//		if ( tr.Component is EditorMeshComponent c && c.Model is not null )
+		//		{
+		//			var f = c.TriangleToFace( tr.Triangle );
 
-					if ( Gizmo.WasClicked )
-					{
-						Select( MeshElement.Face( c, f ) );
-					}
-				}
-			}
-		}
+		//			if ( Gizmo.WasClicked )
+		//			{
+		//				Select( MeshElement.Face( c, f ) );
+		//			}
+		//		}
+		//	}
+		//}
 	}
 
 	private void Select( MeshElement element )
