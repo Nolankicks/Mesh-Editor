@@ -188,6 +188,14 @@ public class MeshEditorTool : EditorTool
 				mc.Type = MeshComponent.PrimitiveType.Box;
 
 				var box = new BBox( dragStartPos, tr.EndPosition );
+
+				if ( Gizmo.Settings.SnapToGrid )
+				{
+					var spacing = Gizmo.Settings.GridSpacing;
+					if ( box.Size.x < spacing ) box.Maxs.x += spacing;
+					if ( box.Size.y < spacing ) box.Maxs.y += spacing;
+				}
+
 				mc.BoxSize = box.Size.WithZ( 128 );
 				mc.Transform.Position = box.Center.WithZ( box.Center.z + 64 );
 				Selection.Set( go );
