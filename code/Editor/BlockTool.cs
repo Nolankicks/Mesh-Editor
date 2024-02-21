@@ -228,14 +228,20 @@ public class BlockTool : EditorTool
 				dragStartPos = default;
 			}
 
-			using ( Gizmo.Scope( "box", 0, r ) )
+			using ( Gizmo.Scope( "box", 0 ) )
 			{
 				if ( dragging )
 				{
 					Gizmo.Draw.IgnoreDepth = true;
 					Gizmo.Draw.LineThickness = 2;
 					Gizmo.Draw.Color = Gizmo.Colors.Active;
-					Gizmo.Draw.LineBBox( new BBox( dragStartPos * r.Inverse, localPosition ) );
+
+					var box = new BBox( dragStartPos, tr.EndPosition );
+					Gizmo.Draw.LineBBox( box );
+
+					Gizmo.Draw.Color = Color.White;
+					Gizmo.Draw.ScreenText( $"W: {box.Size.x:0.#}", Gizmo.Camera.ToScreen( box.Mins.WithY( box.Center.y ) ) + Vector2.Down * 32, size: 14 );
+					Gizmo.Draw.ScreenText( $"L: {box.Size.y:0.#}", Gizmo.Camera.ToScreen( box.Mins.WithX( box.Center.x ) ) + Vector2.Down * 32, size: 14 );
 				}
 			}
 		}
