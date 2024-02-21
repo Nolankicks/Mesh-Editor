@@ -192,6 +192,8 @@ public class MeshEditorTool : EditorTool
 			{
 				dragging = true;
 				dragStartPos = tr.EndPosition;
+
+				Selection.Clear();
 			}
 			else if ( Gizmo.WasLeftMouseReleased && dragging )
 			{
