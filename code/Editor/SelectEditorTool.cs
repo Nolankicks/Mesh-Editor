@@ -6,7 +6,7 @@ namespace Editor;
 [Icon( "north_west" )]
 [Alias( "select" )]
 [Group( "-1" )]
-[Shortcut( "editortool.select", "t" )]
+[Shortcut( "editortool.select", "q" )]
 public class SelectEditorTool : EditorTool
 {
 
