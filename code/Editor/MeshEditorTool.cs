@@ -195,24 +195,27 @@ public class MeshEditorTool : EditorTool
 			}
 			else if ( Gizmo.WasLeftMouseReleased && dragging )
 			{
-				var go = new GameObject( true, "Box" );
-				var mc = go.Components.Create<MeshComponent>();
-				mc.Type = MeshComponent.PrimitiveType.Box;
-
+				var spacing = Gizmo.Settings.SnapToGrid ? Gizmo.Settings.GridSpacing : 1.0f;
 				var box = new BBox( dragStartPos, tr.EndPosition );
 
-				if ( Gizmo.Settings.SnapToGrid )
+				if ( box.Size.x >= spacing || box.Size.y >= spacing )
 				{
-					var spacing = Gizmo.Settings.GridSpacing;
-					if ( box.Size.x < spacing ) box.Maxs.x += spacing;
-					if ( box.Size.y < spacing ) box.Maxs.y += spacing;
+					var go = new GameObject( true, "Box" );
+					var mc = go.Components.Create<MeshComponent>();
+					mc.Type = MeshComponent.PrimitiveType.Box;
+
+					if ( Gizmo.Settings.SnapToGrid )
+					{
+						if ( box.Size.x < spacing ) box.Maxs.x += spacing;
+						if ( box.Size.y < spacing ) box.Maxs.y += spacing;
+					}
+
+					mc.BoxSize = box.Size.WithZ( 128 );
+					mc.Transform.Position = box.Center.WithZ( box.Center.z + 64 );
+					mc.TextureOrigin = mc.Transform.Position;
+
+					Selection.Set( go );
 				}
-
-				mc.BoxSize = box.Size.WithZ( 128 );
-				mc.Transform.Position = box.Center.WithZ( box.Center.z + 64 );
-				mc.TextureOrigin = mc.Transform.Position;
-
-				Selection.Set( go );
 
 				dragging = false;
 				dragStartPos = default;
