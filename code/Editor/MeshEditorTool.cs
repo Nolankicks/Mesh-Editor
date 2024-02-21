@@ -210,6 +210,8 @@ public class MeshEditorTool : EditorTool
 
 				mc.BoxSize = box.Size.WithZ( 128 );
 				mc.Transform.Position = box.Center.WithZ( box.Center.z + 64 );
+				mc.TextureOrigin = mc.Transform.Position;
+
 				Selection.Set( go );
 
 				dragging = false;
