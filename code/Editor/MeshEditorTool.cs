@@ -11,7 +11,7 @@ namespace Editor;
 [EditorTool]
 [Title( "Mesh Editor" )]
 [Icon( "hardware" )]
-[Shortcut( "editortool.mesh", "u" )]
+[Shortcut( "editortool.mesh", "b" )]
 public class MeshEditorTool : EditorTool
 {
 	private SelectionSystem MeshSelection { get; init; } = new();
@@ -173,8 +173,20 @@ public class MeshEditorTool : EditorTool
 
 			tr.EndPosition = localPosition * r;
 
-			Gizmo.Draw.Color = Color.Green;
-			Gizmo.Draw.LineSphere( tr.EndPosition, 6 );
+			if ( !dragging )
+			{
+				using ( Gizmo.Scope( "Aim Handle", new Transform( tr.EndPosition, Rotation.LookAt( tr.Normal ) ) ) )
+				{
+					Gizmo.Draw.Color = Color.White;
+					Gizmo.Draw.LineCircle( 0, 2 );
+					Gizmo.Draw.Color = Color.White.WithAlpha( 0.5f );
+					Gizmo.Draw.LineCircle( 0, 3 );
+					Gizmo.Draw.Color = Color.White.WithAlpha( 0.3f );
+					Gizmo.Draw.LineCircle( 0, 6 );
+					Gizmo.Draw.Color = Color.White.WithAlpha( 0.1f );
+					Gizmo.Draw.LineCircle( 0, 12 );
+				}
+			}
 
 			if ( Gizmo.WasLeftMousePressed )
 			{
