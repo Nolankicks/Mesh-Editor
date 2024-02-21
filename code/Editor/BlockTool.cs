@@ -6,13 +6,13 @@ using System.Linq;
 namespace Editor;
 
 /// <summary>
-/// Half Edge Mesh Editor
+/// Create new shapes by dragging out a block
 /// </summary>
 [EditorTool]
-[Title( "Mesh Editor" )]
+[Title( "Block Tool" )]
 [Icon( "hardware" )]
-[Shortcut( "editortool.mesh", "b" )]
-public class MeshEditorTool : EditorTool
+[Shortcut( "editortool.block", "b" )]
+public class BlockTool : EditorTool
 {
 	private SelectionSystem MeshSelection { get; init; } = new();
 
