@@ -48,13 +48,18 @@ public class MeshEditorTool : EditorTool
 		public static MeshElement Face( EditorMeshComponent component, int index ) => new( component, MeshElementType.Face, index );
 	}
 
+	public override IEnumerable<EditorTool> GetSubtools()
+	{
+		return default;
+	}
+
 	public override void OnEnabled()
 	{
 		AllowGameObjectSelection = false;
 	}
 
 	Dictionary<MeshElement, Vector3> startFaceOrigins = new();
-	Vector3 moveDelta;
+	//Vector3 moveDelta;
 
 	bool dragging = false;
 	Vector3 dragStartPos;

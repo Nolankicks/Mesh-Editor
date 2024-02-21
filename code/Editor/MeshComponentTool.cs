@@ -23,8 +23,7 @@ public class MeshComponentTool : EditorTool<MeshComponent>
 		if ( !_component.IsValid() )
 			return;
 
-		if ( EditorToolManager.CurrentModeName != "SelectEditorTool" &&
-			 EditorToolManager.CurrentModeName != "MeshEditorTool" )
+		if ( Manager.CurrentSubTool is not null )
 			return;
 
 		using ( Gizmo.Scope( "Tool", _component.Transform.World ) )
