@@ -240,8 +240,8 @@ public class BlockTool : EditorTool
 					Gizmo.Draw.LineBBox( box );
 
 					Gizmo.Draw.Color = Color.White;
-					Gizmo.Draw.ScreenText( $"W: {box.Size.x:0.#}", Gizmo.Camera.ToScreen( box.Mins.WithY( box.Center.y ) ) + Vector2.Down * 32, size: 14 );
-					Gizmo.Draw.ScreenText( $"L: {box.Size.y:0.#}", Gizmo.Camera.ToScreen( box.Mins.WithX( box.Center.x ) ) + Vector2.Down * 32, size: 14 );
+					Gizmo.Draw.ScreenText( $"L: {box.Size.y:0.#}", Gizmo.Camera.ToScreen( box.Mins.WithY( box.Center.y ) ) + Vector2.Down * 32, size: 14 );
+					Gizmo.Draw.ScreenText( $"W: {box.Size.x:0.#}", Gizmo.Camera.ToScreen( box.Mins.WithX( box.Center.x ) ) + Vector2.Down * 32, size: 14 );
 				}
 			}
 		}
