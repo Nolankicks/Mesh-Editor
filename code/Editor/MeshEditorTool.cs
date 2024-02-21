@@ -222,6 +222,7 @@ public class MeshEditorTool : EditorTool
 			{
 				if ( dragging )
 				{
+					Gizmo.Draw.IgnoreDepth = true;
 					Gizmo.Draw.LineThickness = 2;
 					Gizmo.Draw.Color = Gizmo.Colors.Active;
 					Gizmo.Draw.LineBBox( new BBox( dragStartPos * r.Inverse, localPosition ) );
