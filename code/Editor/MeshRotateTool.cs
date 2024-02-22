@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using System.Linq;
 using System.Collections.Generic;
+using Editor.MapDoc;
 
 namespace Editor;
 
@@ -18,8 +19,8 @@ public class MeshRotateTool : EditorTool
 	private readonly BaseMeshTool _meshTool;
 	private readonly Dictionary<BaseMeshTool.MeshElement, Vector3> _startVertices = new();
 	private Angles _moveDelta;
-	private Vector3 _startOrigin;
-	private bool _dragging;
+	private Vector3 _origin;
+	private Rotation _basis;
 
 	public MeshRotateTool( BaseMeshTool meshTool )
 	{
@@ -30,39 +31,49 @@ public class MeshRotateTool : EditorTool
 	{
 		base.OnUpdate();
 
+		if ( !_meshTool.MeshSelection.Any() )
+			return;
+
 		if ( !Gizmo.HasPressed )
 		{
 			_startVertices.Clear();
 			_moveDelta = default;
-			_dragging = false;
+			_origin = _meshTool.CalculateSelectionBounds().Center;
+
+			_basis = Rotation.Identity;
+
+			if ( !Gizmo.Settings.GlobalSpace )
+			{
+				var faceElement = _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
+					.FirstOrDefault( x => x.ElementType == BaseMeshTool.MeshElementType.Face );
+
+				var normal = faceElement.Component.GetAverageFaceNormal( faceElement.Index );
+				var vAxis = EditorMeshComponent.ComputeTextureVAxis( normal );
+				_basis = Rotation.LookAt( normal, vAxis * -1.0f );
+				_basis = faceElement.Component.Transform.World.RotationToWorld( _basis );
+			}
 		}
 
-		if ( !_meshTool.MeshSelection.Any() )
-			return;
-
-		var bbox = _meshTool.CalculateSelectionBounds();
-		var handlePosition = _dragging ? _startOrigin : bbox.Center;
-		var handleRotation = Rotation.Identity;
-
-		using ( Gizmo.Scope( "Tool", new Transform( handlePosition ) ) )
+		using ( Gizmo.Scope( "Tool", new Transform( _origin, _basis ) ) )
 		{
 			Gizmo.Hitbox.DepthBias = 0.01f;
 
 			if ( Gizmo.Control.Rotate( "rotation", out var angleDelta ) )
 			{
 				StartDrag();
-				handlePosition = _dragging ? _startOrigin : bbox.Center;
 
 				_moveDelta += angleDelta;
 				var snapped = Gizmo.Snap( _moveDelta, _moveDelta );
 
 				foreach ( var entry in _startVertices )
 				{
-					var transform = entry.Key.Component.Transform.World.WithPosition( -handlePosition );
-					var w = transform.PointToWorld( entry.Value );
-					w *= snapped;
+					var rot = _basis * snapped * _basis.Inverse;
+					var p = entry.Value - _origin;
+					p *= rot;
+					p += _origin;
 
-					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( w ) );
+					var transform = entry.Key.Component.Transform.World;
+					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( p ) );
 				}
 
 				EditLog( "Rotated", _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
@@ -92,8 +103,5 @@ public class MeshRotateTool : EditorTool
 		{
 			_startVertices[entry] = entry.Component.Transform.World.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
 		}
-
-		_startOrigin = _meshTool.CalculateSelectionBounds().Center;
-		_dragging = true;
 	}
 }

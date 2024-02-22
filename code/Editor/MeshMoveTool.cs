@@ -48,16 +48,15 @@ public class MeshMoveTool : EditorTool
 
 			if ( Gizmo.Control.Position( "position", Vector3.Zero, out var delta, handleRotation ) )
 			{
-				_moveDelta += delta;
-
 				StartDrag();
 
-				var targetPosition = Gizmo.Snap( _moveDelta, _moveDelta );
+				_moveDelta += delta;
+				var snapped = Gizmo.Snap( _moveDelta, _moveDelta );
 
 				foreach ( var entry in _startVertices )
 				{
 					var transform = entry.Key.Component.Transform.World;
-					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( entry.Value + targetPosition ) );
+					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( entry.Value + snapped ) );
 				}
 
 				EditLog( "Moved", _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()

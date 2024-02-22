@@ -166,7 +166,7 @@ public abstract class BaseMeshTool : EditorTool
 
 	public BBox CalculateSelectionBounds()
 	{
-		return BBox.FromPoints( VertexSelection.Select( x => x.Component.GetVertexPosition( x.Index ) ) );
+		return BBox.FromPoints( VertexSelection.Select( x => x.Component.Transform.World.PointToWorld( x.Component.GetVertexPosition( x.Index ) ) ) );
 	}
 
 	public void CalculateSelectionVertices()
