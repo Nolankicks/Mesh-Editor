@@ -4,7 +4,8 @@ using static Sandbox.Component;
 
 public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 {
-	[Property, Hide] private HalfEdgeMesh Mesh { get; set; }
+	[Property, Hide] 
+	private HalfEdgeMesh Mesh { get; set; }
 
 	[Property, Title( "Tint" )]
 	public Color Color
@@ -105,7 +106,6 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 
 			using ( Gizmo.Scope( $"Vertex{i}" ) )
 			{
-				//Gizmo.Hitbox.Sphere( new Sphere( v.Position, 3 ) );
 				Gizmo.Draw.Color = Gizmo.IsHovered ? Color.Green : Color.White;
 				Gizmo.Draw.SolidSphere( v.Position, 3, 8, 8 );
 			}
@@ -124,7 +124,6 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 
 			using ( Gizmo.ObjectScope( i, global::Transform.Zero ) )
 			{
-				//using var hitScope = Gizmo.Hitbox.LineScope();
 				Gizmo.Draw.Color = Gizmo.IsHovered ? Color.Green : Color.White;
 
 				var edgeVertices = Mesh.Halfedges.GetVertices( i );

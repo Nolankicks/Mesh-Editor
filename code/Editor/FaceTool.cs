@@ -98,6 +98,7 @@ public class FaceTool : EditorTool
 		base.OnUpdate();
 
 		var tr = MeshTrace.Run();
+
 		if ( tr.Hit && tr.Component is not null )
 		{
 			using ( Gizmo.ObjectScope( tr.GameObject, tr.GameObject.Transform.World ) )
@@ -115,6 +116,10 @@ public class FaceTool : EditorTool
 					}
 				}
 			}
+		}
+		else if ( !Gizmo.HasPressed && Gizmo.HasClicked )
+		{
+			MeshSelection.Clear();
 		}
 
 		var selectionToRemove = MeshSelection.OfType<MeshElement>()
