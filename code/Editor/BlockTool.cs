@@ -48,11 +48,6 @@ public class BlockTool : EditorTool
 		public static MeshElement Face( EditorMeshComponent component, int index ) => new( component, MeshElementType.Face, index );
 	}
 
-	public override IEnumerable<EditorTool> GetSubtools()
-	{
-		return default;
-	}
-
 	public override void OnEnabled()
 	{
 		AllowGameObjectSelection = false;

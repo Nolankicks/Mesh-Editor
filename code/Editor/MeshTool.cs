@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Editor;
 
-public class MeshComponentTool : EditorTool<MeshComponent>
+public class MeshTool : EditorTool<MeshComponent>
 {
 	private MeshComponent _component;
 	private BBox _startBox;
