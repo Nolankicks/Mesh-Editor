@@ -5,7 +5,7 @@ using static Sandbox.Component;
 
 public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 {
-	[Property, Hide] 
+	[Property, Hide]
 	private HalfEdgeMesh Mesh { get; set; }
 
 	[Property, Title( "Tint" )]
@@ -87,45 +87,39 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 	{
 		base.DrawGizmos();
 
-		using ( Gizmo.ObjectScope( GameObject, GameObject.Transform.World ) )
-		{
-			//if ( !Gizmo.IsHovered && !Gizmo.IsSelected )
-				//return;
-		}
+		if ( !Gizmo.Settings.GizmosEnabled )
+			return;
 
 		if ( Mesh is null )
 			return;
 
-		Gizmo.Draw.Color = Color.White;
-		Gizmo.Draw.LineThickness = 2;
-
-		for ( int i = 0; i < Mesh.Vertices.Count; i++ )
+		using ( Gizmo.Scope( "Vertices" ) )
 		{
-			var v = Mesh.Vertices[i];
-			if ( v.IsUnused )
-				continue;
+			Gizmo.Draw.Color = Color.Cyan;
 
-			using ( Gizmo.Scope( $"Vertex{i}" ) )
+			for ( int i = 0; i < Mesh.Vertices.Count; i++ )
 			{
-				Gizmo.Draw.Color = Gizmo.IsHovered ? Color.Green : Color.White;
-				Gizmo.Draw.SolidSphere( v.Position, 3, 8, 8 );
+				var v = Mesh.Vertices[i];
+				if ( v.IsUnused )
+					continue;
+
+				Gizmo.Draw.SolidSphere( v.Position, 4 );
 			}
 		}
 
-		Gizmo.Draw.Color = Color.White;
-
-		for ( int i = 0; i < Mesh.Halfedges.Count; i++ )
+		using ( Gizmo.Scope( "Edges" ) )
 		{
-			if ( Mesh.Halfedges[i].IsUnused )
-				continue;
+			Gizmo.Draw.Color = Color.Cyan;
+			Gizmo.Draw.LineThickness = 2;
 
-			int pairIndex = Mesh.Halfedges.GetPairHalfedge( i );
-			if ( i > pairIndex )
-				continue;
-
-			using ( Gizmo.ObjectScope( i, global::Transform.Zero ) )
+			for ( int i = 0; i < Mesh.Halfedges.Count; i++ )
 			{
-				Gizmo.Draw.Color = Gizmo.IsHovered ? Color.Green : Color.White;
+				if ( Mesh.Halfedges[i].IsUnused )
+					continue;
+
+				int pairIndex = Mesh.Halfedges.GetPairHalfedge( i );
+				if ( i > pairIndex )
+					continue;
 
 				var edgeVertices = Mesh.Halfedges.GetVertices( i );
 				var a = Mesh.Vertices[edgeVertices[0]].Position;

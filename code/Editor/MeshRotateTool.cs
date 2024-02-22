@@ -1,7 +1,6 @@
 ﻿using Sandbox;
 using System.Linq;
 using System.Collections.Generic;
-using Editor.MapDoc;
 
 namespace Editor;
 
