@@ -182,21 +182,21 @@ public class FaceTool : EditorTool
 			{
 				if ( !nudge )
 				{
-					foreach ( var s in MeshSelection.OfType<MeshElement>() )
+					var offset = handlePosition.SnapToGrid( Gizmo.Settings.GridSpacing ) - handlePosition;
+					offset += Gizmo.Settings.GridSpacing;
+					offset *= delta;
+
+					foreach ( var entry in MeshSelection.OfType<MeshElement>()
+						.SelectMany( x => x.Component.GetFaceVertices( x.Index )
+						.Select( i => MeshElement.Vertex( x.Component, i ) )
+						.Distinct() ) )
 					{
-						if ( s.ElementType != MeshElementType.Face )
-							continue;
-
-						var up = handlePosition.SnapToGrid( Gizmo.Settings.GridSpacing ) - handlePosition;
-						up += Gizmo.Settings.GridSpacing;
-						up *= delta;
-
-						s.Component.OffsetFaces( MeshSelection.OfType<MeshElement>().Select( x => x.Index ), up );
+						var rotation = entry.Component.Transform.Rotation;
+						var localOffset = (entry.Component.GetVertexPosition( entry.Index ) * rotation) + offset;
+						entry.Component.SetVertexPosition( entry.Index, rotation.Inverse * localOffset );
 					}
 
-					EditLog( "Moved", MeshSelection.OfType<MeshElement>()
-						.Select( x => x.Component )
-						.Distinct() );
+					EditLog( "Moved", null );
 
 					nudge = true;
 				}
