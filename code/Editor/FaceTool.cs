@@ -60,6 +60,24 @@ public class FaceTool : EditorTool
 		Selection.Clear();
 	}
 
+	public override void OnDisabled()
+	{
+		base.OnDisabled();
+
+		Selection.Clear();
+
+		foreach ( var go in MeshSelection
+			.OfType<MeshElement>()
+			.Select( x => x.Component?.GameObject )
+			.Distinct() )
+		{
+			if ( !go.IsValid() )
+				continue;
+
+			Selection.Add( go );
+		}
+	}
+
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
 		yield return new PositionEditorTool();
