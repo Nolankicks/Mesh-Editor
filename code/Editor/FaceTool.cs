@@ -186,14 +186,28 @@ public class FaceTool : EditorTool
 					offset += Gizmo.Settings.GridSpacing;
 					offset *= delta;
 
-					foreach ( var entry in MeshSelection.OfType<MeshElement>()
-						.SelectMany( x => x.Component.GetFaceVertices( x.Index )
-						.Select( i => MeshElement.Vertex( x.Component, i ) )
-						.Distinct() ) )
+					if ( Gizmo.IsShiftPressed )
 					{
-						var rotation = entry.Component.Transform.Rotation;
-						var localOffset = (entry.Component.GetVertexPosition( entry.Index ) * rotation) + offset;
-						entry.Component.SetVertexPosition( entry.Index, rotation.Inverse * localOffset );
+						foreach ( var entry in MeshSelection.OfType<MeshElement>() )
+						{
+							if ( entry.ElementType != MeshElementType.Face )
+								continue;
+
+							var rotation = entry.Component.Transform.Rotation;
+							entry.Component.ExtrudeFace( entry.Index, rotation.Inverse * offset );
+						}
+					}
+					else
+					{
+						foreach ( var entry in MeshSelection.OfType<MeshElement>()
+							.SelectMany( x => x.Component.GetFaceVertices( x.Index )
+							.Select( i => MeshElement.Vertex( x.Component, i ) )
+							.Distinct() ) )
+						{
+							var rotation = entry.Component.Transform.Rotation;
+							var localOffset = (entry.Component.GetVertexPosition( entry.Index ) * rotation) + offset;
+							entry.Component.SetVertexPosition( entry.Index, rotation.Inverse * localOffset );
+						}
 					}
 
 					EditLog( "Moved", null );
