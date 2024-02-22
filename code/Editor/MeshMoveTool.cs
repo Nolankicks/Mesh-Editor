@@ -16,7 +16,7 @@ namespace Editor;
 [Shortcut( "mesh.move", "w" )]
 public class MeshMoveTool : EditorTool
 {
-	private BaseMeshTool _meshTool;
+	private readonly BaseMeshTool _meshTool;
 	private readonly Dictionary<BaseMeshTool.MeshElement, Vector3> _startVertices = new();
 	private Vector3 _moveDelta;
 

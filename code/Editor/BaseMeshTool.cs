@@ -143,6 +143,8 @@ public abstract class BaseMeshTool : EditorTool
 
 				EditLog( "Moved", null );
 
+				CalculateSelectionVertices();
+
 				_nudge = true;
 			}
 		}
