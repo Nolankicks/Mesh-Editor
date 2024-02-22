@@ -1,7 +1,6 @@
 ﻿using Sandbox;
-using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Editor;
 
@@ -13,82 +12,15 @@ namespace Editor;
 [Icon( "change_history" )]
 [Alias( "Face" )]
 [Group( "3" )]
-public class FaceTool : EditorTool
+public class FaceTool : BaseMeshTool
 {
-	private SelectionSystem MeshSelection { get; init; } = new();
 	private readonly Dictionary<MeshElement, Vector3> _startVertices = new();
 	private Vector3 _moveDelta;
-
-	public enum MeshElementType
-	{
-		Vertex,
-		Edge,
-		Face
-	}
-
-	private struct MeshElement
-	{
-		public EditorMeshComponent Component;
-		public MeshElementType ElementType;
-		public int Index;
-
-		public MeshElement( EditorMeshComponent component, MeshElementType elementType, int index )
-		{
-			Component = component;
-			ElementType = elementType;
-			Index = index;
-		}
-
-		public readonly override int GetHashCode() => HashCode.Combine( Component, ElementType, Index );
-
-		public override readonly string ToString()
-		{
-			return $"{Component.GameObject.Name} {ElementType} {Index}";
-		}
-
-		public static MeshElement Vertex( EditorMeshComponent component, int index ) => new( component, MeshElementType.Vertex, index );
-		public static MeshElement Edge( EditorMeshComponent component, int index ) => new( component, MeshElementType.Edge, index );
-		public static MeshElement Face( EditorMeshComponent component, int index ) => new( component, MeshElementType.Face, index );
-	}
-
-	public override void OnEnabled()
-	{
-		base.OnEnabled();
-
-		AllowGameObjectSelection = false;
-
-		Selection.Clear();
-	}
-
-	public override void OnDisabled()
-	{
-		base.OnDisabled();
-
-		foreach ( var go in MeshSelection
-			.OfType<MeshElement>()
-			.Select( x => x.Component?.GameObject )
-			.Distinct() )
-		{
-			if ( !go.IsValid() )
-				continue;
-
-			Selection.Add( go );
-		}
-	}
+	private bool _nudge = false;
 
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
 		return default;
-	}
-
-	public override void OnSelectionChanged()
-	{
-		base.OnSelectionChanged();
-
-		if ( Selection.OfType<GameObject>().Any() )
-		{
-			EditorToolManager.CurrentModeName = "object";
-		}
 	}
 
 	public override void OnUpdate()
@@ -97,21 +29,18 @@ public class FaceTool : EditorTool
 
 		var tr = MeshTrace.Run();
 
-		if ( tr.Hit && tr.Component is not null )
+		if ( tr.Hit && tr.Component is EditorMeshComponent component )
 		{
 			using ( Gizmo.ObjectScope( tr.GameObject, tr.GameObject.Transform.World ) )
 			{
 				Gizmo.Hitbox.DepthBias = 1;
 				Gizmo.Hitbox.TrySetHovered( tr.Distance );
 
-				if ( tr.Component is EditorMeshComponent c )
-				{
-					var f = c.TriangleToFace( tr.Triangle );
+				var face = component.TriangleToFace( tr.Triangle );
 
-					if ( Gizmo.WasClicked )
-					{
-						Select( MeshElement.Face( c, f ) );
-					}
+				if ( Gizmo.WasClicked )
+				{
+					Select( MeshElement.Face( component, face ) );
 				}
 			}
 		}
@@ -120,26 +49,8 @@ public class FaceTool : EditorTool
 			MeshSelection.Clear();
 		}
 
-		var selectionToRemove = MeshSelection.OfType<MeshElement>()
-			.Where( x => !x.Component.IsValid() )
-			.ToArray();
-
-		foreach ( var s in selectionToRemove )
-		{
-			MeshSelection.Remove( s );
-		}
-
 		UpdateMoveGizmo();
-
-		foreach ( var c in Scene.GetAllComponents<EditorMeshComponent>()
-			.Where( x => x.Dirty ) )
-		{
-			c.CreateSceneObject();
-			c.Dirty = false;
-		}
 	}
-
-	bool nudge = false;
 
 	private void UpdateMoveGizmo()
 	{
@@ -180,7 +91,7 @@ public class FaceTool : EditorTool
 
 			if ( delta.Length > 0.0f )
 			{
-				if ( !nudge )
+				if ( !_nudge )
 				{
 					var offset = handlePosition.SnapToGrid( Gizmo.Settings.GridSpacing ) - handlePosition;
 					offset += Gizmo.Settings.GridSpacing;
@@ -212,12 +123,12 @@ public class FaceTool : EditorTool
 
 					EditLog( "Moved", null );
 
-					nudge = true;
+					_nudge = true;
 				}
 			}
 			else
 			{
-				nudge = false;
+				_nudge = false;
 			}
 		}
 
@@ -269,33 +180,5 @@ public class FaceTool : EditorTool
 		{
 			_startVertices[entry] = entry.Component.Transform.World.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
 		}
-	}
-
-	private void Select( MeshElement element )
-	{
-		if ( Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Ctrl ) )
-		{
-			if ( MeshSelection.Contains( element ) )
-			{
-				MeshSelection.Remove( element );
-			}
-			else
-			{
-				MeshSelection.Add( element );
-			}
-
-			return;
-		}
-		else if ( Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Shift ) )
-		{
-			if ( !MeshSelection.Contains( element ) )
-			{
-				MeshSelection.Add( element );
-			}
-
-			return;
-		}
-
-		MeshSelection.Set( element );
 	}
 }

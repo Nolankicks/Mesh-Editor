@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Editor;
 
-public class MeshTool : EditorTool<MeshComponent>
+public class MeshComponentTool : EditorTool<MeshComponent>
 {
 	private MeshComponent _component;
 	private BBox _startBox;
@@ -14,6 +14,16 @@ public class MeshTool : EditorTool<MeshComponent>
 	public override void OnSelectionChanged()
 	{
 		_component = GetSelectedComponent<MeshComponent>();
+
+		Reset();
+	}
+
+	private void Reset()
+	{
+		_dragging = false;
+		_newBox = default;
+		_startBox = default;
+		_startTransform = default;
 	}
 
 	public override void OnUpdate()
@@ -32,10 +42,7 @@ public class MeshTool : EditorTool<MeshComponent>
 
 			if ( !Gizmo.HasPressed )
 			{
-				_dragging = false;
-				_newBox = default;
-				_startBox = default;
-				_startTransform = default;
+				Reset();
 			}
 
 			var box = BBox.FromPositionAndSize( _component.Center, _component.Size );
