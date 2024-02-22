@@ -296,6 +296,19 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 		}
 	}
 
+	public void OffsetFaces( IEnumerable<int> faces, Vector3 offset )
+	{
+		var faceVertices = faces.SelectMany( Mesh.Faces.GetFaceVertices )
+			.Distinct();
+
+		foreach ( var i in faceVertices )
+		{
+			Mesh.Vertices.OffsetVertex( i, offset.x, offset.y, offset.z );
+		}
+
+		Dirty = true;
+	}
+
 	public void ExtrudeFace( int faceIndex, Vector3 extrudeOffset )
 	{
 		var faceIndices = Mesh.Faces.GetFaceVertices( faceIndex );

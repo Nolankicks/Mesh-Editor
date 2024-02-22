@@ -78,9 +78,7 @@ public class FaceTool : EditorTool
 
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
-		yield return new PositionEditorTool();
-		yield return new RotationEditorTool();
-		yield return new ScaleEditorTool();
+		return default;
 	}
 
 	public override void OnSelectionChanged()
@@ -141,6 +139,8 @@ public class FaceTool : EditorTool
 		}
 	}
 
+	bool nudge = false;
+
 	private void UpdateMoveGizmo()
 	{
 		var points = new List<Vector3>();
@@ -169,6 +169,43 @@ public class FaceTool : EditorTool
 		var bbox = BBox.FromPoints( points );
 		var handlePosition = bbox.Center;
 		var handleRotation = Rotation.Identity;
+
+		if ( !Gizmo.HasPressed )
+		{
+			var delta = Vector3.Zero;
+			delta += Application.IsKeyDown( KeyCode.Up ) ? Vector3.Up : 0.0f;
+			delta += Application.IsKeyDown( KeyCode.Down ) ? Vector3.Down : 0.0f;
+			delta += Application.IsKeyDown( KeyCode.Right ) ? Vector3.Forward : 0.0f;
+			delta += Application.IsKeyDown( KeyCode.Left ) ? Vector3.Backward : 0.0f;
+
+			if ( delta.Length > 0.0f )
+			{
+				if ( !nudge )
+				{
+					foreach ( var s in MeshSelection.OfType<MeshElement>() )
+					{
+						if ( s.ElementType != MeshElementType.Face )
+							continue;
+
+						var up = handlePosition.SnapToGrid( Gizmo.Settings.GridSpacing ) - handlePosition;
+						up += Gizmo.Settings.GridSpacing;
+						up *= delta;
+
+						s.Component.OffsetFaces( MeshSelection.OfType<MeshElement>().Select( x => x.Index ), up );
+					}
+
+					EditLog( "Moved", MeshSelection.OfType<MeshElement>()
+						.Select( x => x.Component )
+						.Distinct() );
+
+					nudge = true;
+				}
+			}
+			else
+			{
+				nudge = false;
+			}
+		}
 
 		using ( Gizmo.Scope( "Tool", new Transform( handlePosition ) ) )
 		{
