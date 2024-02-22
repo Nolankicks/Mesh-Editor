@@ -1,3 +1,4 @@
+using Sandbox;
 using System;
 
 using static Sandbox.Component;
@@ -274,12 +275,31 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 				texcoord = PlanarUV( Mesh.Vertices[(int)v.Data].Position, faceData ),
 			} ) );
 
+		if ( startVertex == vertices.Count )
+			return;
+
 		for ( int index = 0; index < numElems; ++index )
 		{
 			var triangle = index * 3;
+
 			var a = startVertex + elems[triangle];
 			var b = startVertex + elems[triangle + 1];
 			var c = startVertex + elems[triangle + 2];
+
+			if ( a < 0 || a >= vertices.Count )
+			{
+				return;
+			}
+
+			if ( b < 0 || b >= vertices.Count )
+			{
+				return;
+			}
+
+			if ( c < 0 || c >= vertices.Count )
+			{
+				return;
+			}
 
 			Vector3 ab = vertices[b].position - vertices[a].position;
 			Vector3 ac = vertices[c].position - vertices[a].position;

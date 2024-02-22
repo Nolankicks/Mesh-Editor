@@ -18,6 +18,8 @@ public class MeshRotateTool : EditorTool
 	private readonly BaseMeshTool _meshTool;
 	private readonly Dictionary<BaseMeshTool.MeshElement, Vector3> _startVertices = new();
 	private Angles _moveDelta;
+	private Vector3 _startOrigin;
+	private bool _dragging;
 
 	public MeshRotateTool( BaseMeshTool meshTool )
 	{
@@ -32,13 +34,14 @@ public class MeshRotateTool : EditorTool
 		{
 			_startVertices.Clear();
 			_moveDelta = default;
+			_dragging = false;
 		}
 
 		if ( !_meshTool.MeshSelection.Any() )
 			return;
 
 		var bbox = _meshTool.CalculateSelectionBounds();
-		var handlePosition = bbox.Center;
+		var handlePosition = _dragging ? _startOrigin : bbox.Center;
 		var handleRotation = Rotation.Identity;
 
 		using ( Gizmo.Scope( "Tool", new Transform( handlePosition ) ) )
@@ -48,6 +51,7 @@ public class MeshRotateTool : EditorTool
 			if ( Gizmo.Control.Rotate( "rotation", out var angleDelta ) )
 			{
 				StartDrag();
+				handlePosition = _dragging ? _startOrigin : bbox.Center;
 
 				_moveDelta += angleDelta;
 				var snapped = Gizmo.Snap( _moveDelta, _moveDelta );
@@ -88,5 +92,8 @@ public class MeshRotateTool : EditorTool
 		{
 			_startVertices[entry] = entry.Component.Transform.World.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
 		}
+
+		_startOrigin = _meshTool.CalculateSelectionBounds().Center;
+		_dragging = true;
 	}
 }
