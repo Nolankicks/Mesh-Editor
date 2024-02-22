@@ -38,19 +38,23 @@ public class MeshRotateTool : EditorTool
 		{
 			_startVertices.Clear();
 			_moveDelta = default;
-			_origin = _meshTool.CalculateSelectionBounds().Center;
 
-			_basis = Rotation.Identity;
-
-			if ( !Gizmo.Settings.GlobalSpace )
+			if ( Gizmo.Settings.GlobalSpace )
+			{
+				_origin = _meshTool.CalculateSelectionBounds().Center;
+				_basis = Rotation.Identity;
+			}
+			else
 			{
 				var faceElement = _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
 					.FirstOrDefault( x => x.ElementType == BaseMeshTool.MeshElementType.Face );
 
 				var normal = faceElement.Component.GetAverageFaceNormal( faceElement.Index );
 				var vAxis = EditorMeshComponent.ComputeTextureVAxis( normal );
+				var transform = faceElement.Component.Transform.World;
 				_basis = Rotation.LookAt( normal, vAxis * -1.0f );
-				_basis = faceElement.Component.Transform.World.RotationToWorld( _basis );
+				_basis = transform.RotationToWorld( _basis );
+				_origin = transform.PointToWorld( faceElement.Component.GetFaceCenter( faceElement.Index ) );
 			}
 		}
 
@@ -63,17 +67,17 @@ public class MeshRotateTool : EditorTool
 				StartDrag();
 
 				_moveDelta += angleDelta;
-				var snapped = Gizmo.Snap( _moveDelta, _moveDelta );
+				var snapDelta = Gizmo.Snap( _moveDelta, _moveDelta );
 
 				foreach ( var entry in _startVertices )
 				{
-					var rot = _basis * snapped * _basis.Inverse;
-					var p = entry.Value - _origin;
-					p *= rot;
-					p += _origin;
+					var rotation = _basis * snapDelta * _basis.Inverse;
+					var position = entry.Value - _origin;
+					position *= rotation;
+					position += _origin;
 
 					var transform = entry.Key.Component.Transform.World;
-					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( p ) );
+					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
 				}
 
 				EditLog( "Rotated", _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()

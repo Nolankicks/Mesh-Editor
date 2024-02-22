@@ -51,12 +51,13 @@ public class MeshMoveTool : EditorTool
 				StartDrag();
 
 				_moveDelta += delta;
-				var snapped = Gizmo.Snap( _moveDelta, _moveDelta );
+				var snapDelta = Gizmo.Snap( _moveDelta, _moveDelta );
 
 				foreach ( var entry in _startVertices )
 				{
+					var position = entry.Value + snapDelta;
 					var transform = entry.Key.Component.Transform.World;
-					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( entry.Value + snapped ) );
+					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
 				}
 
 				EditLog( "Moved", _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
