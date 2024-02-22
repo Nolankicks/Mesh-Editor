@@ -105,7 +105,7 @@ public class FaceTool : EditorTool
 				Gizmo.Hitbox.DepthBias = 1;
 				Gizmo.Hitbox.TrySetHovered( tr.Distance );
 
-				if ( tr.Component is EditorMeshComponent c && c.Model is not null )
+				if ( tr.Component is EditorMeshComponent c )
 				{
 					var f = c.TriangleToFace( tr.Triangle );
 

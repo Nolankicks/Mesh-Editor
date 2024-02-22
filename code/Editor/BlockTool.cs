@@ -1,7 +1,4 @@
 using Sandbox;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Editor;
 
@@ -14,6 +11,9 @@ namespace Editor;
 [Shortcut( "editortool.block", "b" )]
 public class BlockTool : EditorTool
 {
+	private bool _dragging = false;
+	private Vector3 _dragStartPos;
+
 	public override void OnEnabled()
 	{
 		AllowGameObjectSelection = false;
@@ -21,17 +21,15 @@ public class BlockTool : EditorTool
 		Selection.Clear();
 	}
 
-	bool dragging = false;
-	Vector3 dragStartPos;
 	public override void OnUpdate()
 	{
 		if ( Gizmo.HasHovered )
 			return;
 
 		var tr = MeshTrace.Run();
-		if ( !tr.Hit || dragging )
+		if ( !tr.Hit || _dragging )
 		{
-			var plane = dragging ? new Plane( dragStartPos, Vector3.Up ) : new Plane( Vector3.Up, 0.0f );
+			var plane = _dragging ? new Plane( _dragStartPos, Vector3.Up ) : new Plane( Vector3.Up, 0.0f );
 			if ( plane.TryTrace( new Ray( tr.StartPosition, tr.Direction ), out tr.EndPosition, true ) )
 			{
 				tr.Hit = true;
@@ -49,7 +47,7 @@ public class BlockTool : EditorTool
 
 			tr.EndPosition = localPosition * r;
 
-			if ( !dragging )
+			if ( !_dragging )
 			{
 				using ( Gizmo.Scope( "Aim Handle", new Transform( tr.EndPosition, Rotation.LookAt( tr.Normal ) ) ) )
 				{
@@ -66,15 +64,15 @@ public class BlockTool : EditorTool
 
 			if ( Gizmo.WasLeftMousePressed )
 			{
-				dragging = true;
-				dragStartPos = tr.EndPosition;
+				_dragging = true;
+				_dragStartPos = tr.EndPosition;
 
 				Selection.Clear();
 			}
-			else if ( Gizmo.WasLeftMouseReleased && dragging )
+			else if ( Gizmo.WasLeftMouseReleased && _dragging )
 			{
 				var spacing = Gizmo.Settings.SnapToGrid ? Gizmo.Settings.GridSpacing : 1.0f;
-				var box = new BBox( dragStartPos, tr.EndPosition );
+				var box = new BBox( _dragStartPos, tr.EndPosition );
 
 				if ( box.Size.x >= spacing || box.Size.y >= spacing )
 				{
@@ -95,19 +93,19 @@ public class BlockTool : EditorTool
 					Selection.Set( go );
 				}
 
-				dragging = false;
-				dragStartPos = default;
+				_dragging = false;
+				_dragStartPos = default;
 			}
 
 			using ( Gizmo.Scope( "box", 0 ) )
 			{
-				if ( dragging )
+				if ( _dragging )
 				{
 					Gizmo.Draw.IgnoreDepth = true;
 					Gizmo.Draw.LineThickness = 2;
 					Gizmo.Draw.Color = Gizmo.Colors.Active;
 
-					var box = new BBox( dragStartPos, tr.EndPosition );
+					var box = new BBox( _dragStartPos, tr.EndPosition );
 					Gizmo.Draw.LineBBox( box );
 
 					Gizmo.Draw.Color = Color.White;

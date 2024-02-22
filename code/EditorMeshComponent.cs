@@ -1,11 +1,33 @@
 using System;
 
-public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
+using static Sandbox.Component;
+
+public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 {
 	[Property, Hide] private HalfEdgeMesh Mesh { get; set; }
-	private readonly List<int> TriangleFaces = new();
-	private SceneObject SceneObject;
-	public Model Model { get; private set; }
+
+	[Property, Title( "Tint" )]
+	public Color Color
+	{
+		get => _color;
+		set
+		{
+			if ( _color == value )
+				return;
+
+			_color = value;
+
+			if ( _sceneObject.IsValid() )
+			{
+				_sceneObject.ColorTint = Color;
+			}
+		}
+	}
+
+	private Color _color = Color.White;
+
+	private SceneObject _sceneObject;
+	private readonly List<int> _triangleFaces = new();
 
 	protected override void OnEnabled()
 	{
@@ -37,10 +59,10 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 	{
 		base.OnDisabled();
 
-		if ( SceneObject.IsValid() )
+		if ( _sceneObject.IsValid() )
 		{
-			SceneObject.Delete();
-			SceneObject = null;
+			_sceneObject.Delete();
+			_sceneObject = null;
 		}
 	}
 
@@ -53,10 +75,10 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 	{
 		base.OnPreRender();
 
-		if ( !SceneObject.IsValid() )
+		if ( !_sceneObject.IsValid() )
 			return;
 
-		SceneObject.Transform = Transform.World;
+		_sceneObject.Transform = Transform.World;
 	}
 
 	protected override void DrawGizmos()
@@ -147,7 +169,7 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 		var vertices = new List<SimpleVertex>();
 		var indices = new List<int>();
 
-		TriangleFaces.Clear();
+		_triangleFaces.Clear();
 
 		for ( var i = 0; i < Mesh.Faces.Count; ++i )
 		{
@@ -161,26 +183,31 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 		mesh.CreateIndexBuffer( indices.Count, indices );
 		mesh.Bounds = bounds;
 
-		Model = Model.Builder
+		var model = Model.Builder
 			.AddMesh( mesh )
 			.Create();
 
-		if ( SceneObject.IsValid() )
+		if ( !_sceneObject.IsValid() )
 		{
-			SceneObject.Delete();
+			_sceneObject = new SceneObject( Scene.SceneWorld, model, Transform.World );
+		}
+		else
+		{
+			_sceneObject.Model = model;
+			_sceneObject.Transform = Transform.World;
 		}
 
-		SceneObject = new SceneObject( Scene.SceneWorld, Model, Transform.World );
-		SceneObject.SetComponentSource( this );
-		SceneObject.Tags.SetFrom( GameObject.Tags );
+		_sceneObject.SetComponentSource( this );
+		_sceneObject.Tags.SetFrom( GameObject.Tags );
+		_sceneObject.ColorTint = Color.WithAlpha( 1.0f );
 	}
 
 	public int TriangleToFace( int triangle )
 	{
-		if ( triangle < 0 || triangle >= TriangleFaces.Count )
+		if ( triangle < 0 || triangle >= _triangleFaces.Count )
 			return -1;
 
-		return TriangleFaces[triangle];
+		return _triangleFaces[triangle];
 	}
 
 	private static Vector2 PlanarUV( Vector3 vertexPosition, FaceData faceData )
@@ -266,7 +293,7 @@ public sealed class EditorMeshComponent : Component, Component.ExecuteInEditor
 			triangles.Add( b );
 			triangles.Add( c );
 
-			TriangleFaces.Add( faceIndex );
+			_triangleFaces.Add( faceIndex );
 		}
 	}
 
