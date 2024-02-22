@@ -41,10 +41,7 @@ public class BlockTool : EditorTool
 		{
 			var r = Rotation.LookAt( tr.Normal );
 			var localPosition = tr.EndPosition * r.Inverse;
-
-			if ( Gizmo.Settings.SnapToGrid )
-				localPosition = localPosition.SnapToGrid( Gizmo.Settings.GridSpacing, false, true, true );
-
+			localPosition = Gizmo.Snap( localPosition, new Vector3( 0, 1, 1 ) );
 			tr.EndPosition = localPosition * r;
 
 			if ( !_dragging )
