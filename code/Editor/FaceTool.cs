@@ -54,16 +54,12 @@ public class FaceTool : BaseMeshTool
 
 	private void UpdateMoveGizmo()
 	{
-		var points = new List<Vector3>();
-
 		foreach ( var s in MeshSelection.OfType<MeshElement>()
 			.Where( x => x.ElementType == MeshElementType.Face ) )
 		{
 			Gizmo.Draw.Color = Color.Green;
 			var p = s.Component.Transform.World.PointToWorld( s.Component.GetFaceCenter( s.Index ) );
 			Gizmo.Draw.SolidSphere( p, 4 );
-
-			points.Add( p );
 		}
 
 		if ( !Gizmo.HasPressed )
@@ -72,10 +68,7 @@ public class FaceTool : BaseMeshTool
 			_moveDelta = default;
 		}
 
-		if ( points.Count == 0 )
-			return;
-
-		var bbox = BBox.FromPoints( points );
+		var bbox = CalculateSelectionBounds();
 		var handlePosition = bbox.Center;
 		var handleRotation = Rotation.Identity;
 
@@ -106,7 +99,7 @@ public class FaceTool : BaseMeshTool
 					}
 					else
 					{
-						foreach ( var entry in SelectedVertices )
+						foreach ( var entry in VertexSelection )
 						{
 							var rotation = entry.Component.Transform.Rotation;
 							var localOffset = (entry.Component.GetVertexPosition( entry.Index ) * rotation) + offset;
@@ -165,10 +158,10 @@ public class FaceTool : BaseMeshTool
 				s.Component.ExtrudeFace( s.Index, s.Component.GetAverageFaceNormal( s.Index ) * 0.01f );
 			}
 
-			UpdateSelectedVertices();
+			CalculateSelectionVertices();
 		}
 
-		foreach ( var entry in SelectedVertices )
+		foreach ( var entry in VertexSelection )
 		{
 			_startVertices[entry] = entry.Component.Transform.World.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
 		}

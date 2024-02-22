@@ -8,7 +8,8 @@ namespace Editor;
 public abstract class BaseMeshTool : EditorTool
 {
 	protected SelectionSystem MeshSelection { get; init; } = new();
-	protected HashSet<MeshElement> SelectedVertices { get; init; } = new();
+	protected HashSet<MeshElement> VertexSelection { get; init; } = new();
+
 	private bool _meshSelectionDirty;
 
 	protected enum MeshElementType
@@ -92,7 +93,7 @@ public abstract class BaseMeshTool : EditorTool
 
 		if ( _meshSelectionDirty )
 		{
-			UpdateSelectedVertices();
+			CalculateSelectionVertices();
 		}
 	}
 
@@ -106,9 +107,14 @@ public abstract class BaseMeshTool : EditorTool
 		}
 	}
 
-	protected void UpdateSelectedVertices()
+	protected BBox CalculateSelectionBounds()
 	{
-		SelectedVertices.Clear();
+		return BBox.FromPoints( VertexSelection.Select( x => x.Component.GetVertexPosition( x.Index ) ) );
+	}
+
+	protected void CalculateSelectionVertices()
+	{
+		VertexSelection.Clear();
 
 		foreach ( var element in MeshSelection.OfType<MeshElement>() )
 		{
@@ -117,12 +123,12 @@ public abstract class BaseMeshTool : EditorTool
 				foreach ( var vertexElement in element.Component.GetFaceVertices( element.Index )
 					.Select( i => MeshElement.Vertex( element.Component, i ) ) )
 				{
-					SelectedVertices.Add( vertexElement );
+					VertexSelection.Add( vertexElement );
 				}
 			}
 			else if ( element.ElementType == MeshElementType.Vertex )
 			{
-				SelectedVertices.Add( element );
+				VertexSelection.Add( element );
 			}
 		}
 
