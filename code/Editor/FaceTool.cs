@@ -56,6 +56,8 @@ public class FaceTool : EditorTool
 		base.OnEnabled();
 
 		AllowGameObjectSelection = false;
+
+		Selection.Clear();
 	}
 
 	public override IEnumerable<EditorTool> GetSubtools()
@@ -63,6 +65,16 @@ public class FaceTool : EditorTool
 		yield return new PositionEditorTool();
 		yield return new RotationEditorTool();
 		yield return new ScaleEditorTool();
+	}
+
+	public override void OnSelectionChanged()
+	{
+		base.OnSelectionChanged();
+
+		if ( Selection.OfType<GameObject>().Any() )
+		{
+			EditorToolManager.CurrentModeName = "object";
+		}
 	}
 
 	public override void OnUpdate()
@@ -151,13 +163,39 @@ public class FaceTool : EditorTool
 
 				foreach ( var entry in _startVertices )
 				{
-					entry.Key.Component.SetVertexPosition( entry.Key.Index, entry.Key.Component.Transform.World.PointToLocal( entry.Value + targetPosition ) );
+					var transform = entry.Key.Component.Transform.World;
+					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( entry.Value + targetPosition ) );
 				}
 
 				EditLog( "Moved", MeshSelection.OfType<MeshElement>()
 					.Select( x => x.Component )
 					.Distinct() );
 			}
+		}
+	}
+
+	private void StartDrag()
+	{
+		if ( _startVertices.Any() )
+			return;
+
+		if ( Gizmo.IsShiftPressed )
+		{
+			foreach ( var s in MeshSelection.OfType<MeshElement>() )
+			{
+				if ( s.ElementType != MeshElementType.Face )
+					continue;
+
+				s.Component.ExtrudeFace( s.Index, s.Component.GetAverageFaceNormal( s.Index ) * 0.01f );
+			}
+		}
+
+		foreach ( var entry in MeshSelection.OfType<MeshElement>()
+			.SelectMany( x => x.Component.GetFaceVertices( x.Index )
+			.Select( i => MeshElement.Vertex( x.Component, i ) )
+			.Distinct() ) )
+		{
+			_startVertices[entry] = entry.Component.Transform.World.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
 		}
 	}
 
@@ -187,30 +225,5 @@ public class FaceTool : EditorTool
 		}
 
 		MeshSelection.Set( element );
-	}
-
-	private void StartDrag()
-	{
-		if ( _startVertices.Any() )
-			return;
-
-		if ( Gizmo.IsShiftPressed )
-		{
-			foreach ( var s in MeshSelection.OfType<MeshElement>() )
-			{
-				if ( s.ElementType != MeshElementType.Face )
-					continue;
-
-				s.Component.ExtrudeFace( s.Index, s.Component.GetAverageFaceNormal( s.Index ) * 0.01f );
-			}
-		}
-
-		foreach ( var entry in MeshSelection.OfType<MeshElement>()
-			.SelectMany( x => x.Component.GetFaceVertices( x.Index )
-			.Select( i => MeshElement.Vertex( x.Component, i ) )
-			.Distinct() ) )
-		{
-			_startVertices[entry] = entry.Component.Transform.World.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
-		}
 	}
 }
