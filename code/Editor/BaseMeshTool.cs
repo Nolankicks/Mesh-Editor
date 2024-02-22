@@ -1,12 +1,15 @@
 ﻿using Sandbox;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Editor;
 
 public abstract class BaseMeshTool : EditorTool
 {
 	protected SelectionSystem MeshSelection { get; init; } = new();
+	protected HashSet<MeshElement> SelectedVertices { get; init; } = new();
+	private bool _meshSelectionDirty;
 
 	protected enum MeshElementType
 	{
@@ -47,6 +50,9 @@ public abstract class BaseMeshTool : EditorTool
 		AllowGameObjectSelection = false;
 
 		Selection.Clear();
+
+		MeshSelection.OnItemAdded += OnMeshSelectionChanged;
+		MeshSelection.OnItemRemoved += OnMeshSelectionChanged;
 	}
 
 	public override void OnDisabled()
@@ -83,6 +89,11 @@ public abstract class BaseMeshTool : EditorTool
 			c.CreateSceneObject();
 			c.Dirty = false;
 		}
+
+		if ( _meshSelectionDirty )
+		{
+			UpdateSelectedVertices();
+		}
 	}
 
 	public override void OnSelectionChanged()
@@ -93,6 +104,34 @@ public abstract class BaseMeshTool : EditorTool
 		{
 			EditorToolManager.CurrentModeName = "object";
 		}
+	}
+
+	protected void UpdateSelectedVertices()
+	{
+		SelectedVertices.Clear();
+
+		foreach ( var element in MeshSelection.OfType<MeshElement>() )
+		{
+			if ( element.ElementType == MeshElementType.Face )
+			{
+				foreach ( var vertexElement in element.Component.GetFaceVertices( element.Index )
+					.Select( i => MeshElement.Vertex( element.Component, i ) ) )
+				{
+					SelectedVertices.Add( vertexElement );
+				}
+			}
+			else if ( element.ElementType == MeshElementType.Vertex )
+			{
+				SelectedVertices.Add( element );
+			}
+		}
+
+		_meshSelectionDirty = false;
+	}
+
+	private void OnMeshSelectionChanged( object o )
+	{
+		_meshSelectionDirty = true;
 	}
 
 	protected void Select( MeshElement element )

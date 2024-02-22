@@ -56,11 +56,9 @@ public class FaceTool : BaseMeshTool
 	{
 		var points = new List<Vector3>();
 
-		foreach ( var s in MeshSelection.OfType<MeshElement>() )
+		foreach ( var s in MeshSelection.OfType<MeshElement>()
+			.Where( x => x.ElementType == MeshElementType.Face ) )
 		{
-			if ( s.ElementType != MeshElementType.Face )
-				continue;
-
 			Gizmo.Draw.Color = Color.Green;
 			var p = s.Component.Transform.World.PointToWorld( s.Component.GetFaceCenter( s.Index ) );
 			Gizmo.Draw.SolidSphere( p, 4 );
@@ -99,21 +97,16 @@ public class FaceTool : BaseMeshTool
 
 					if ( Gizmo.IsShiftPressed )
 					{
-						foreach ( var entry in MeshSelection.OfType<MeshElement>() )
+						foreach ( var entry in MeshSelection.OfType<MeshElement>()
+							.Where( x => x.ElementType == MeshElementType.Face ) )
 						{
-							if ( entry.ElementType != MeshElementType.Face )
-								continue;
-
 							var rotation = entry.Component.Transform.Rotation;
 							entry.Component.ExtrudeFace( entry.Index, rotation.Inverse * offset );
 						}
 					}
 					else
 					{
-						foreach ( var entry in MeshSelection.OfType<MeshElement>()
-							.SelectMany( x => x.Component.GetFaceVertices( x.Index )
-							.Select( i => MeshElement.Vertex( x.Component, i ) )
-							.Distinct() ) )
+						foreach ( var entry in SelectedVertices )
 						{
 							var rotation = entry.Component.Transform.Rotation;
 							var localOffset = (entry.Component.GetVertexPosition( entry.Index ) * rotation) + offset;
@@ -171,12 +164,11 @@ public class FaceTool : BaseMeshTool
 
 				s.Component.ExtrudeFace( s.Index, s.Component.GetAverageFaceNormal( s.Index ) * 0.01f );
 			}
+
+			UpdateSelectedVertices();
 		}
 
-		foreach ( var entry in MeshSelection.OfType<MeshElement>()
-			.SelectMany( x => x.Component.GetFaceVertices( x.Index )
-			.Select( i => MeshElement.Vertex( x.Component, i ) )
-			.Distinct() ) )
+		foreach ( var entry in SelectedVertices )
 		{
 			_startVertices[entry] = entry.Component.Transform.World.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
 		}
