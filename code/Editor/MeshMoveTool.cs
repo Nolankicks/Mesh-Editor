@@ -19,6 +19,7 @@ public class MeshMoveTool : EditorTool
 	private readonly BaseMeshTool _meshTool;
 	private readonly Dictionary<BaseMeshTool.MeshElement, Vector3> _startVertices = new();
 	private Vector3 _moveDelta;
+	private Rotation _basis;
 
 	public MeshMoveTool( BaseMeshTool meshTool )
 	{
@@ -29,24 +30,38 @@ public class MeshMoveTool : EditorTool
 	{
 		base.OnUpdate();
 
+		if ( !_meshTool.MeshSelection.Any() )
+			return;
+
 		if ( !Gizmo.HasPressed )
 		{
 			_startVertices.Clear();
 			_moveDelta = default;
+
+			if ( Gizmo.Settings.GlobalSpace )
+			{
+				_basis = Rotation.Identity;
+			}
+			else
+			{
+				var faceElement = _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
+					.FirstOrDefault( x => x.ElementType == BaseMeshTool.MeshElementType.Face );
+
+				var normal = faceElement.Component.GetAverageFaceNormal( faceElement.Index );
+				var vAxis = EditorMeshComponent.ComputeTextureVAxis( normal );
+				var transform = faceElement.Component.Transform.World;
+				_basis = Rotation.LookAt( normal, vAxis * -1.0f );
+				_basis = transform.RotationToWorld( _basis );
+			}
 		}
 
-		if ( !_meshTool.MeshSelection.Any() )
-			return;
-
 		var bbox = _meshTool.CalculateSelectionBounds();
-		var handlePosition = bbox.Center;
-		var handleRotation = Rotation.Identity;
 
-		using ( Gizmo.Scope( "Tool", new Transform( handlePosition ) ) )
+		using ( Gizmo.Scope( "Tool", new Transform( bbox.Center ) ) )
 		{
 			Gizmo.Hitbox.DepthBias = 0.01f;
 
-			if ( Gizmo.Control.Position( "position", Vector3.Zero, out var delta, handleRotation ) )
+			if ( Gizmo.Control.Position( "position", Vector3.Zero, out var delta, _basis ) )
 			{
 				StartDrag();
 
