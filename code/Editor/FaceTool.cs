@@ -64,8 +64,6 @@ public class FaceTool : EditorTool
 	{
 		base.OnDisabled();
 
-		Selection.Clear();
-
 		foreach ( var go in MeshSelection
 			.OfType<MeshElement>()
 			.Select( x => x.Component?.GameObject )
