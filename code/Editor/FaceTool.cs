@@ -16,7 +16,6 @@ public class FaceTool : BaseMeshTool
 {
 	private readonly Dictionary<MeshElement, Vector3> _startVertices = new();
 	private Vector3 _moveDelta;
-	private bool _nudge = false;
 
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
@@ -68,55 +67,12 @@ public class FaceTool : BaseMeshTool
 			_moveDelta = default;
 		}
 
+		if ( !MeshSelection.Any() )
+			return;
+
 		var bbox = CalculateSelectionBounds();
 		var handlePosition = bbox.Center;
 		var handleRotation = Rotation.Identity;
-
-		if ( !Gizmo.HasPressed )
-		{
-			var delta = Vector3.Zero;
-			delta += Application.IsKeyDown( KeyCode.Up ) ? Vector3.Up : 0.0f;
-			delta += Application.IsKeyDown( KeyCode.Down ) ? Vector3.Down : 0.0f;
-			delta += Application.IsKeyDown( KeyCode.Right ) ? Vector3.Forward : 0.0f;
-			delta += Application.IsKeyDown( KeyCode.Left ) ? Vector3.Backward : 0.0f;
-
-			if ( delta.Length > 0.0f )
-			{
-				if ( !_nudge )
-				{
-					var offset = handlePosition.SnapToGrid( Gizmo.Settings.GridSpacing ) - handlePosition;
-					offset += Gizmo.Settings.GridSpacing;
-					offset *= delta;
-
-					if ( Gizmo.IsShiftPressed )
-					{
-						foreach ( var entry in MeshSelection.OfType<MeshElement>()
-							.Where( x => x.ElementType == MeshElementType.Face ) )
-						{
-							var rotation = entry.Component.Transform.Rotation;
-							entry.Component.ExtrudeFace( entry.Index, rotation.Inverse * offset );
-						}
-					}
-					else
-					{
-						foreach ( var entry in VertexSelection )
-						{
-							var rotation = entry.Component.Transform.Rotation;
-							var localOffset = (entry.Component.GetVertexPosition( entry.Index ) * rotation) + offset;
-							entry.Component.SetVertexPosition( entry.Index, rotation.Inverse * localOffset );
-						}
-					}
-
-					EditLog( "Moved", null );
-
-					_nudge = true;
-				}
-			}
-			else
-			{
-				_nudge = false;
-			}
-		}
 
 		using ( Gizmo.Scope( "Tool", new Transform( handlePosition ) ) )
 		{

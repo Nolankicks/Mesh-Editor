@@ -11,6 +11,7 @@ public abstract class BaseMeshTool : EditorTool
 	protected HashSet<MeshElement> VertexSelection { get; init; } = new();
 
 	private bool _meshSelectionDirty;
+	private bool _nudge;
 
 	protected enum MeshElementType
 	{
@@ -84,6 +85,8 @@ public abstract class BaseMeshTool : EditorTool
 			MeshSelection.Remove( s );
 		}
 
+		UpdateNudge();
+
 		foreach ( var c in Scene.GetAllComponents<EditorMeshComponent>()
 			.Where( x => x.Dirty ) )
 		{
@@ -94,6 +97,58 @@ public abstract class BaseMeshTool : EditorTool
 		if ( _meshSelectionDirty )
 		{
 			CalculateSelectionVertices();
+		}
+	}
+
+	private void UpdateNudge()
+	{
+		if ( Gizmo.HasPressed )
+			return;
+
+		var bounds = CalculateSelectionBounds();
+		var origin = bounds.Center;
+
+		var delta = Vector3.Zero;
+		delta += Application.IsKeyDown( KeyCode.Up ) ? Vector3.Up : 0.0f;
+		delta += Application.IsKeyDown( KeyCode.Down ) ? Vector3.Down : 0.0f;
+		delta += Application.IsKeyDown( KeyCode.Right ) ? Vector3.Forward : 0.0f;
+		delta += Application.IsKeyDown( KeyCode.Left ) ? Vector3.Backward : 0.0f;
+
+		if ( delta.Length > 0.0f )
+		{
+			if ( !_nudge )
+			{
+				var offset = origin.SnapToGrid( Gizmo.Settings.GridSpacing ) - origin;
+				offset += Gizmo.Settings.GridSpacing;
+				offset *= delta;
+
+				if ( Gizmo.IsShiftPressed )
+				{
+					foreach ( var entry in MeshSelection.OfType<MeshElement>()
+						.Where( x => x.ElementType == MeshElementType.Face ) )
+					{
+						var rotation = entry.Component.Transform.Rotation;
+						entry.Component.ExtrudeFace( entry.Index, rotation.Inverse * offset );
+					}
+				}
+				else
+				{
+					foreach ( var vertexElement in VertexSelection )
+					{
+						var rotation = vertexElement.Component.Transform.Rotation;
+						var localOffset = (vertexElement.Component.GetVertexPosition( vertexElement.Index ) * rotation) + offset;
+						vertexElement.Component.SetVertexPosition( vertexElement.Index, rotation.Inverse * localOffset );
+					}
+				}
+
+				EditLog( "Moved", null );
+
+				_nudge = true;
+			}
+		}
+		else
+		{
+			_nudge = false;
 		}
 	}
 
