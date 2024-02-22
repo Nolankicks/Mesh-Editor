@@ -66,11 +66,22 @@ public class MeshMoveTool : EditorTool
 				StartDrag();
 
 				_moveDelta += delta;
-				var snapDelta = Gizmo.Snap( _moveDelta, _moveDelta );
+
+				var moveDelta = _moveDelta;
+
+				if ( Gizmo.Settings.GlobalSpace )
+				{
+					moveDelta = Gizmo.Snap( moveDelta, moveDelta );
+				}
+				else
+				{
+					moveDelta *= _basis.Inverse;
+					moveDelta = _basis * Gizmo.Snap( moveDelta, moveDelta );
+				}
 
 				foreach ( var entry in _startVertices )
 				{
-					var position = entry.Value + snapDelta;
+					var position = entry.Value + moveDelta;
 					var transform = entry.Key.Component.Transform.World;
 					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
 				}
