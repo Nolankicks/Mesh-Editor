@@ -7,20 +7,20 @@ namespace Editor;
 
 public abstract class BaseMeshTool : EditorTool
 {
-	protected SelectionSystem MeshSelection { get; init; } = new();
-	protected HashSet<MeshElement> VertexSelection { get; init; } = new();
+	public SelectionSystem MeshSelection { get; init; } = new();
+	public HashSet<MeshElement> VertexSelection { get; init; } = new();
 
 	private bool _meshSelectionDirty;
 	private bool _nudge;
 
-	protected enum MeshElementType
+	public enum MeshElementType
 	{
 		Vertex,
 		Edge,
 		Face
 	}
 
-	protected struct MeshElement
+	public struct MeshElement
 	{
 		public EditorMeshComponent Component;
 		public MeshElementType ElementType;
@@ -162,12 +162,12 @@ public abstract class BaseMeshTool : EditorTool
 		}
 	}
 
-	protected BBox CalculateSelectionBounds()
+	public BBox CalculateSelectionBounds()
 	{
 		return BBox.FromPoints( VertexSelection.Select( x => x.Component.GetVertexPosition( x.Index ) ) );
 	}
 
-	protected void CalculateSelectionVertices()
+	public void CalculateSelectionVertices()
 	{
 		VertexSelection.Clear();
 
