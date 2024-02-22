@@ -17,6 +17,7 @@ public class FaceTool : BaseMeshTool
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
 		yield return new MeshMoveTool( this );
+		yield return new MeshRotateTool( this );
 	}
 
 	public override void OnUpdate()

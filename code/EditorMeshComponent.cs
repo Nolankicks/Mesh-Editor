@@ -88,8 +88,8 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 
 		using ( Gizmo.ObjectScope( GameObject, GameObject.Transform.World ) )
 		{
-			if ( !Gizmo.IsHovered && !Gizmo.IsSelected )
-				return;
+			//if ( !Gizmo.IsHovered && !Gizmo.IsSelected )
+				//return;
 		}
 
 		if ( Mesh is null )
