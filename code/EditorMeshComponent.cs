@@ -419,6 +419,29 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 		Dirty = true;
 	}
 
+	public int GetClosestVertex( Vector3 position )
+	{
+		int closestIndex = -1;
+		float closestDistance = float.MaxValue;
+
+		for ( int i = 0; i < Mesh.Vertices.Count; i++ )
+		{
+			var v = Mesh.Vertices[i];
+			if ( v.IsUnused )
+				continue;
+
+			var p = v.Position;
+			float distance = Vector3.DistanceBetween( p, position );
+			if ( distance < closestDistance )
+			{
+				closestDistance = distance;
+				closestIndex = i;
+			}
+		}
+
+		return closestIndex;
+	}
+
 	private static readonly Vector3[] FaceNormals =
 {
 		new( 0, 0, 1 ),
