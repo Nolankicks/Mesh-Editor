@@ -93,9 +93,11 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 		if ( Mesh is null )
 			return;
 
+		var color = new Color( 0.3137f, 0.7843f, 1.0f );
+
 		using ( Gizmo.Scope( "Vertices" ) )
 		{
-			Gizmo.Draw.Color = Color.Cyan;
+			Gizmo.Draw.Color = color;
 
 			for ( int i = 0; i < Mesh.Vertices.Count; i++ )
 			{
@@ -103,13 +105,13 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 				if ( v.IsUnused )
 					continue;
 
-				Gizmo.Draw.SolidSphere( v.Position, 2 );
+				Gizmo.Draw.Sprite( v.Position, 8, null, false );
 			}
 		}
 
 		using ( Gizmo.Scope( "Edges" ) )
 		{
-			Gizmo.Draw.Color = Color.Cyan;
+			Gizmo.Draw.Color = color;
 			Gizmo.Draw.LineThickness = 2;
 
 			for ( int i = 0; i < Mesh.Halfedges.Count; i++ )
