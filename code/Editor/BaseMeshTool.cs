@@ -168,7 +168,11 @@ public abstract class BaseMeshTool : EditorTool
 		delta += keyRight ? -left : 0.0f;
 
 		var targetPosition = origin;
-		delta *= Gizmo.Settings.GridSpacing;
+
+		float spacing = Gizmo.Settings.SnapToGrid != Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Ctrl )
+			? Gizmo.Settings.GridSpacing : 1;
+
+		delta *= spacing;
 
 		targetPosition += delta;
 		targetPosition *= basis.Inverse;
