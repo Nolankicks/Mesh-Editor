@@ -155,9 +155,7 @@ public abstract class BaseMeshTool : EditorTool
 		if ( _nudge )
 			return;
 
-		var origin = CalculateSelectionOrigin();
 		var basis = CalculateSelectionBasis();
-
 		var up = ClosestAxis( Gizmo.Camera.Rotation.Up, basis );
 		var left = ClosestAxis( Gizmo.Camera.Rotation.Left, basis );
 
@@ -178,7 +176,7 @@ public abstract class BaseMeshTool : EditorTool
 				.Where( x => x.ElementType == MeshElementType.Face ) )
 			{
 				var transform = faceElement.Transform;
-				faceElement.Component.ExtrudeFace( faceElement.Index, transform.PointToLocal( delta ) );
+				faceElement.Component.ExtrudeFace( faceElement.Index, transform.Rotation.Inverse * delta );
 			}
 		}
 		else
