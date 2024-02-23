@@ -54,16 +54,8 @@ public class MeshMoveTool : EditorTool
 				_moveDelta += delta;
 
 				var moveDelta = _moveDelta;
-
-				if ( Gizmo.Settings.GlobalSpace )
-				{
-					moveDelta = Gizmo.Snap( moveDelta, moveDelta );
-				}
-				else
-				{
-					moveDelta *= _basis.Inverse;
-					moveDelta = _basis * Gizmo.Snap( moveDelta, moveDelta );
-				}
+				moveDelta *= _basis.Inverse;
+				moveDelta = _basis * Gizmo.Snap( moveDelta, moveDelta );
 
 				foreach ( var entry in _startVertices )
 				{
