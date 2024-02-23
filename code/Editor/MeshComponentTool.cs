@@ -8,8 +8,8 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 	private BBox _startBox;
 	private BBox _newBox;
 	private bool _dragging;
-	private Transform _startTransform;
-	private Vector3 _startTextureOrigin;
+	//private Transform _startTransform;
+	//private Vector3 _startTextureOrigin;
 
 	public override void OnSelectionChanged()
 	{
@@ -23,7 +23,7 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 		_dragging = false;
 		_newBox = default;
 		_startBox = default;
-		_startTransform = default;
+		//_startTransform = default;
 	}
 
 	public override void OnUpdate()
@@ -53,7 +53,7 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 				{
 					_startBox = box;
 					_dragging = true;
-					_startTransform = _component.Transform.World;
+					//_startTransform = _component.Transform.World;
 					//_startTextureOrigin = _component.TextureOrigin;
 				}
 

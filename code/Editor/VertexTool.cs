@@ -38,13 +38,21 @@ public class VertexTool : BaseMeshTool
 				var vertex = component.GetClosestVertex( tr.EndPosition );
 				if ( vertex >= 0 )
 				{
-					Gizmo.Draw.Color = Color.Yellow;
 					var p = component.GetVertexPosition( vertex );
-					Gizmo.Draw.SolidSphere( p, 4 );
-
-					if ( Gizmo.WasClicked )
+					if ( p.Distance( tr.EndPosition ) < 16 )
 					{
-						Select( MeshElement.Vertex( component, vertex ) );
+						using ( Gizmo.Scope( "Vertex Hover" ) )
+						{
+							Gizmo.Draw.IgnoreDepth = true;
+							Gizmo.Draw.Color = Color.Green;
+
+							Gizmo.Draw.Sprite( p, 12, null, false );
+						}
+
+						if ( Gizmo.WasClicked )
+						{
+							Select( MeshElement.Vertex( component, vertex ) );
+						}
 					}
 				}
 			}
@@ -56,12 +64,14 @@ public class VertexTool : BaseMeshTool
 
 		using ( Gizmo.Scope( "Vertex Selection" ) )
 		{
+			Gizmo.Draw.IgnoreDepth = true;
+			Gizmo.Draw.Color = Color.Yellow;
+
 			foreach ( var element in MeshSelection.OfType<MeshElement>()
-			.Where( x => x.ElementType == MeshElementType.Vertex ) )
+				.Where( x => x.ElementType == MeshElementType.Vertex ) )
 			{
-				Gizmo.Draw.Color = Color.Green;
 				var p = element.Transform.PointToWorld( element.Component.GetVertexPosition( element.Index ) );
-				Gizmo.Draw.SolidSphere( p, 4 );
+				Gizmo.Draw.Sprite( p, 12, null, false );
 			}
 		}
 	}
