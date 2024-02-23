@@ -167,18 +167,10 @@ public abstract class BaseMeshTool : EditorTool
 		delta += keyLeft ? left : 0.0f;
 		delta += keyRight ? -left : 0.0f;
 
-		var targetPosition = origin;
-
 		float spacing = Gizmo.Settings.SnapToGrid != Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Ctrl )
 			? Gizmo.Settings.GridSpacing : 1;
 
 		delta *= spacing;
-
-		targetPosition += delta;
-		targetPosition *= basis.Inverse;
-		targetPosition = basis * Gizmo.Snap( targetPosition, delta * basis.Inverse );
-
-		var moveDelta = targetPosition - origin;
 
 		if ( Gizmo.IsShiftPressed )
 		{
@@ -186,7 +178,7 @@ public abstract class BaseMeshTool : EditorTool
 				.Where( x => x.ElementType == MeshElementType.Face ) )
 			{
 				var transform = faceElement.Transform;
-				faceElement.Component.ExtrudeFace( faceElement.Index, transform.PointToLocal( moveDelta ) );
+				faceElement.Component.ExtrudeFace( faceElement.Index, transform.PointToLocal( delta ) );
 			}
 		}
 		else
@@ -195,7 +187,7 @@ public abstract class BaseMeshTool : EditorTool
 			{
 				var transform = vertexElement.Transform;
 				var position = vertexElement.Component.GetVertexPosition( vertexElement.Index );
-				position = transform.PointToWorld( position ) + moveDelta;
+				position = transform.PointToWorld( position ) + delta;
 				vertexElement.Component.SetVertexPosition( vertexElement.Index, transform.PointToLocal( position ) );
 			}
 		}
