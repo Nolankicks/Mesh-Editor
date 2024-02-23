@@ -13,7 +13,7 @@ namespace Editor;
 [Icon( "zoom_out_map" )]
 [Alias( "mesh.scale" )]
 [Group( "2" )]
-[Shortcut( "mesh.scale", "e" )]
+[Shortcut( "mesh.scale", "r" )]
 public class MeshScaleTool : EditorTool
 {
 	private readonly BaseMeshTool _meshTool;
@@ -39,10 +39,12 @@ public class MeshScaleTool : EditorTool
 			_startVertices.Clear();
 			_moveDelta = default;
 			_basis = _meshTool.CalculateSelectionBasis();
-			_origin = _meshTool.CalculateSelectionOrigin();
+
+			var bounds = _meshTool.CalculateSelectionBounds();
+			_origin = bounds.Center;
 		}
 
-		using ( Gizmo.Scope( "Tool", new Transform( _origin, _basis ) ) )
+		using ( Gizmo.Scope( "Tool", new Transform( _origin ) ) )
 		{
 			Gizmo.Hitbox.DepthBias = 0.01f;
 
@@ -54,9 +56,11 @@ public class MeshScaleTool : EditorTool
 
 				foreach ( var entry in _startVertices )
 				{
-					var position = entry.Value - _origin;
+					var position = (entry.Value - _origin) * _basis.Inverse;
 					position += position * _moveDelta;
+					position *= _basis;
 					position += _origin;
+
 					var transform = entry.Key.Transform;
 					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
 				}
