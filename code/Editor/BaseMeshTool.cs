@@ -107,9 +107,6 @@ public abstract class BaseMeshTool : EditorTool
 		if ( Gizmo.HasPressed )
 			return;
 
-		var bounds = CalculateSelectionBounds();
-		var origin = bounds.Center;
-
 		var delta = Vector3.Zero;
 		delta += Application.IsKeyDown( KeyCode.Up ) ? Vector3.Up : 0.0f;
 		delta += Application.IsKeyDown( KeyCode.Down ) ? Vector3.Down : 0.0f;
@@ -120,26 +117,44 @@ public abstract class BaseMeshTool : EditorTool
 		{
 			if ( !_nudge )
 			{
-				var offset = origin.SnapToGrid( Gizmo.Settings.GridSpacing ) - origin;
-				offset += Gizmo.Settings.GridSpacing;
-				offset *= delta;
+				var origin = CalculateSelectionOrigin();
+				var basis = CalculateSelectionBasis();
+
+				var targetPosition = origin;
+				delta *= Gizmo.Settings.GridSpacing;
+
+				if ( Gizmo.Settings.GlobalSpace )
+				{
+					targetPosition += delta;
+					targetPosition = Gizmo.Snap( targetPosition, delta );
+				}
+				else
+				{
+					delta = new Vector3( delta.z, delta.x, delta.y );
+					targetPosition += delta * basis;
+					targetPosition *= basis.Inverse;
+					targetPosition = basis * Gizmo.Snap( targetPosition, delta );
+				}
+
+				var moveDelta = targetPosition - origin;
 
 				if ( Gizmo.IsShiftPressed )
 				{
-					foreach ( var entry in MeshSelection.OfType<MeshElement>()
+					foreach ( var faceElement in MeshSelection.OfType<MeshElement>()
 						.Where( x => x.ElementType == MeshElementType.Face ) )
 					{
-						var rotation = entry.Component.Transform.Rotation;
-						entry.Component.ExtrudeFace( entry.Index, rotation.Inverse * offset );
+						var transform = faceElement.Transform;
+						faceElement.Component.ExtrudeFace( faceElement.Index, transform.PointToLocal( moveDelta ) );
 					}
 				}
 				else
 				{
 					foreach ( var vertexElement in VertexSelection )
 					{
-						var rotation = vertexElement.Component.Transform.Rotation;
-						var localOffset = (vertexElement.Component.GetVertexPosition( vertexElement.Index ) * rotation) + offset;
-						vertexElement.Component.SetVertexPosition( vertexElement.Index, rotation.Inverse * localOffset );
+						var transform = vertexElement.Transform;
+						var position = vertexElement.Component.GetVertexPosition( vertexElement.Index );
+						position = transform.PointToWorld( position ) + moveDelta;
+						vertexElement.Component.SetVertexPosition( vertexElement.Index, transform.PointToLocal( position ) );
 					}
 				}
 
