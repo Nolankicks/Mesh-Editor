@@ -48,11 +48,11 @@ public class FaceTool : BaseMeshTool
 
 		using ( Gizmo.Scope( "Face Selection" ) )
 		{
-			foreach ( var s in MeshSelection.OfType<MeshElement>()
+			foreach ( var element in MeshSelection.OfType<MeshElement>()
 			.Where( x => x.ElementType == MeshElementType.Face ) )
 			{
 				Gizmo.Draw.Color = Color.Green;
-				var p = s.Component.Transform.World.PointToWorld( s.Component.GetFaceCenter( s.Index ) );
+				var p = element.Transform.PointToWorld( element.Component.GetFaceCenter( element.Index ) );
 				Gizmo.Draw.SolidSphere( p, 4 );
 			}
 		}

@@ -37,27 +37,13 @@ public class MeshMoveTool : EditorTool
 		{
 			_startVertices.Clear();
 			_moveDelta = default;
-
-			if ( Gizmo.Settings.GlobalSpace )
-			{
-				_basis = Rotation.Identity;
-			}
-			else
-			{
-				var faceElement = _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
-					.FirstOrDefault( x => x.ElementType == BaseMeshTool.MeshElementType.Face );
-
-				var normal = faceElement.Component.GetAverageFaceNormal( faceElement.Index );
-				var vAxis = EditorMeshComponent.ComputeTextureVAxis( normal );
-				var transform = faceElement.Component.Transform.World;
-				_basis = Rotation.LookAt( normal, vAxis * -1.0f );
-				_basis = transform.RotationToWorld( _basis );
-			}
+			_basis = _meshTool.CalculateSelectionBasis();
 		}
 
-		var bbox = _meshTool.CalculateSelectionBounds();
+		var bounds = _meshTool.CalculateSelectionBounds();
+		var origin = bounds.Center;
 
-		using ( Gizmo.Scope( "Tool", new Transform( bbox.Center ) ) )
+		using ( Gizmo.Scope( "Tool", new Transform( origin ) ) )
 		{
 			Gizmo.Hitbox.DepthBias = 0.01f;
 
@@ -82,7 +68,7 @@ public class MeshMoveTool : EditorTool
 				foreach ( var entry in _startVertices )
 				{
 					var position = entry.Value + moveDelta;
-					var transform = entry.Key.Component.Transform.World;
+					var transform = entry.Key.Transform;
 					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
 				}
 
@@ -111,7 +97,7 @@ public class MeshMoveTool : EditorTool
 
 		foreach ( var entry in _meshTool.VertexSelection )
 		{
-			_startVertices[entry] = entry.Component.Transform.World.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
+			_startVertices[entry] = entry.Transform.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
 		}
 	}
 }

@@ -37,24 +37,8 @@ public class MeshRotateTool : EditorTool
 		{
 			_startVertices.Clear();
 			_moveDelta = default;
-
-			if ( Gizmo.Settings.GlobalSpace )
-			{
-				_origin = _meshTool.CalculateSelectionBounds().Center;
-				_basis = Rotation.Identity;
-			}
-			else
-			{
-				var faceElement = _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
-					.FirstOrDefault( x => x.ElementType == BaseMeshTool.MeshElementType.Face );
-
-				var normal = faceElement.Component.GetAverageFaceNormal( faceElement.Index );
-				var vAxis = EditorMeshComponent.ComputeTextureVAxis( normal );
-				var transform = faceElement.Component.Transform.World;
-				_basis = Rotation.LookAt( normal, vAxis * -1.0f );
-				_basis = transform.RotationToWorld( _basis );
-				_origin = transform.PointToWorld( faceElement.Component.GetFaceCenter( faceElement.Index ) );
-			}
+			_basis = _meshTool.CalculateSelectionBasis();
+			_origin = _meshTool.CalculateSelectionOrigin();
 		}
 
 		using ( Gizmo.Scope( "Tool", new Transform( _origin, _basis ) ) )
@@ -75,7 +59,7 @@ public class MeshRotateTool : EditorTool
 					position *= rotation;
 					position += _origin;
 
-					var transform = entry.Key.Component.Transform.World;
+					var transform = entry.Key.Transform;
 					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
 				}
 
@@ -104,7 +88,7 @@ public class MeshRotateTool : EditorTool
 
 		foreach ( var entry in _meshTool.VertexSelection )
 		{
-			_startVertices[entry] = entry.Component.Transform.World.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
+			_startVertices[entry] = entry.Transform.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
 		}
 	}
 }

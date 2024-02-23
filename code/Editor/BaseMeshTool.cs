@@ -26,6 +26,8 @@ public abstract class BaseMeshTool : EditorTool
 		public MeshElementType ElementType;
 		public int Index;
 
+		public readonly Transform Transform => Component.IsValid() ? Component.Transform.World : Transform.Zero;
+
 		public MeshElement( EditorMeshComponent component, MeshElementType elementType, int index )
 		{
 			Component = component;
@@ -87,11 +89,11 @@ public abstract class BaseMeshTool : EditorTool
 
 		UpdateNudge();
 
-		foreach ( var c in Scene.GetAllComponents<EditorMeshComponent>()
+		foreach ( var component in Scene.GetAllComponents<EditorMeshComponent>()
 			.Where( x => x.Dirty ) )
 		{
-			c.CreateSceneObject();
-			c.Dirty = false;
+			component.CreateSceneObject();
+			component.Dirty = false;
 		}
 
 		if ( _meshSelectionDirty )
@@ -166,7 +168,46 @@ public abstract class BaseMeshTool : EditorTool
 
 	public BBox CalculateSelectionBounds()
 	{
-		return BBox.FromPoints( VertexSelection.Select( x => x.Component.Transform.World.PointToWorld( x.Component.GetVertexPosition( x.Index ) ) ) );
+		return BBox.FromPoints( VertexSelection
+			.Select( x => x.Transform.PointToWorld( x.Component.GetVertexPosition( x.Index ) ) ) );
+	}
+
+	public Rotation CalculateSelectionBasis()
+	{
+		if ( Gizmo.Settings.GlobalSpace )
+		{
+			return Rotation.Identity;
+		}
+
+		var faceElement = MeshSelection.OfType<MeshElement>()
+			.FirstOrDefault( x => x.ElementType == MeshElementType.Face );
+
+		if ( !faceElement.Component.IsValid() )
+			return Rotation.Identity;
+
+		var normal = faceElement.Component.GetAverageFaceNormal( faceElement.Index );
+		var vAxis = EditorMeshComponent.ComputeTextureVAxis( normal );
+		var transform = faceElement.Transform;
+		var basis = Rotation.LookAt( normal, vAxis * -1.0f );
+		return transform.RotationToWorld( basis );
+	}
+
+	public Vector3 CalculateSelectionOrigin()
+	{
+		if ( Gizmo.Settings.GlobalSpace )
+		{
+			var bounds = CalculateSelectionBounds();
+			return bounds.Center;
+		}
+
+		var faceElement = MeshSelection.OfType<MeshElement>()
+			.FirstOrDefault( x => x.ElementType == MeshElementType.Face );
+
+		if ( !faceElement.Component.IsValid() )
+			return Vector3.Zero;
+
+		var transform = faceElement.Transform;
+		return transform.PointToWorld( faceElement.Component.GetFaceCenter( faceElement.Index ) );
 	}
 
 	public void CalculateSelectionVertices()
