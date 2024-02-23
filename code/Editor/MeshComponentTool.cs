@@ -1,10 +1,10 @@
 using Sandbox;
 
-namespace Editor;
+namespace Editor.MeshEditor;
 
-public class MeshComponentTool : EditorTool<MeshComponent>
+public class MeshComponentTool : EditorTool<EditorMeshComponent>
 {
-	private MeshComponent _component;
+	private EditorMeshComponent _component;
 	private BBox _startBox;
 	private BBox _newBox;
 	private bool _dragging;
@@ -13,7 +13,7 @@ public class MeshComponentTool : EditorTool<MeshComponent>
 
 	public override void OnSelectionChanged()
 	{
-		_component = GetSelectedComponent<MeshComponent>();
+		_component = GetSelectedComponent<EditorMeshComponent>();
 
 		Reset();
 	}
@@ -45,7 +45,7 @@ public class MeshComponentTool : EditorTool<MeshComponent>
 				Reset();
 			}
 
-			var box = BBox.FromPositionAndSize( _component.Center, _component.Size );
+			var box = BBox.FromPositionAndSize( 0, 128 );
 
 			if ( Gizmo.Control.BoundingBox( "Resize", box, out var outBox ) )
 			{
@@ -54,7 +54,7 @@ public class MeshComponentTool : EditorTool<MeshComponent>
 					_startBox = box;
 					_dragging = true;
 					_startTransform = _component.Transform.World;
-					_startTextureOrigin = _component.TextureOrigin;
+					//_startTextureOrigin = _component.TextureOrigin;
 				}
 
 				_newBox.Maxs += outBox.Maxs - box.Maxs;
@@ -63,18 +63,18 @@ public class MeshComponentTool : EditorTool<MeshComponent>
 				outBox.Maxs = _startBox.Maxs + Gizmo.Snap( _newBox.Maxs, _newBox.Maxs );
 				outBox.Mins = _startBox.Mins + Gizmo.Snap( _newBox.Mins, _newBox.Mins );
 
-				if ( _component.Type == MeshComponent.PrimitiveType.Plane )
-				{
-					_component.PlaneSize = outBox.Size;
-				}
-				else if ( _component.Type == MeshComponent.PrimitiveType.Box )
-				{
-					_component.BoxSize = outBox.Size;
-				}
+				//if ( _component.Type == MeshComponent.PrimitiveType.Plane )
+				//{
+				//	_component.PlaneSize = outBox.Size;
+				//}
+				//else if ( _component.Type == MeshComponent.PrimitiveType.Box )
+				//{
+				//	_component.BoxSize = outBox.Size;
+				//}
 
-				var origin = outBox.Center - _component.Center;
-				_component.TextureOrigin = _startTextureOrigin + origin;
-				_component.Transform.World = _startTransform.ToWorld( new Transform( origin ) );
+				//var origin = outBox.Center - _component.Center;
+				//_component.TextureOrigin = _startTextureOrigin + origin;
+				//_component.Transform.World = _startTransform.ToWorld( new Transform( origin ) );
 			}
 		}
 	}
