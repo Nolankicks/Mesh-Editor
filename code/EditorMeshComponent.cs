@@ -103,7 +103,7 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 				if ( v.IsUnused )
 					continue;
 
-				Gizmo.Draw.SolidSphere( v.Position, 4 );
+				Gizmo.Draw.SolidSphere( v.Position, 2 );
 			}
 		}
 
