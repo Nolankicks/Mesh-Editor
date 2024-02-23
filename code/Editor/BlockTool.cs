@@ -82,9 +82,10 @@ public class BlockTool : EditorTool
 						if ( box.Size.y < spacing ) box.Maxs.y += spacing;
 					}
 
-					var size = box.Size.WithZ( 128 );
-					mc.FromBox( BBox.FromPositionAndSize( 0, size ) );
-					mc.Transform.Position = box.Center.WithZ( box.Center.z + 64 );
+					const float height = 128;
+					var size = box.Size.WithZ( height );
+					var position = box.Center.WithZ( box.Center.z + (height * 0.5f) );
+					mc.FromBox( BBox.FromPositionAndSize( position, size ) );
 					mc.Enabled = true;
 
 					Selection.Set( go );

@@ -61,6 +61,10 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 	{
 		Mesh = new();
 
+		var position = box.Center;
+		box = BBox.FromPositionAndSize( 0, box.Size );
+		Transform.Position = position;
+
 		Mesh.Vertices.Add( new Vector3( box.Mins.x, box.Mins.y, box.Mins.z ) );
 		Mesh.Vertices.Add( new Vector3( box.Maxs.x, box.Mins.y, box.Mins.z ) );
 		Mesh.Vertices.Add( new Vector3( box.Maxs.x, box.Maxs.y, box.Mins.z ) );
@@ -72,6 +76,7 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 
 		var faceData = new FaceData
 		{
+			TextureOrigin = position,
 			TextureScale = 0.25f,
 			TextureUAxis = Vector3.Right,
 			TextureVAxis = Vector3.Forward
