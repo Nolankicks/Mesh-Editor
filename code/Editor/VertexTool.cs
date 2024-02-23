@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -39,7 +40,7 @@ public class VertexTool : BaseMeshTool
 				if ( vertex >= 0 )
 				{
 					var p = component.GetVertexPosition( vertex );
-					if ( p.Distance( tr.EndPosition ) < 16 )
+					if ( p.Distance( component.Transform.World.PointToLocal( tr.EndPosition ) ) < 16 )
 					{
 						using ( Gizmo.Scope( "Vertex Hover" ) )
 						{

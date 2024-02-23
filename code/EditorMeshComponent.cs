@@ -424,6 +424,8 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 		int closestIndex = -1;
 		float closestDistance = float.MaxValue;
 
+		position = Transform.World.PointToLocal( position );
+
 		for ( int i = 0; i < Mesh.Vertices.Count; i++ )
 		{
 			var v = Mesh.Vertices[i];
