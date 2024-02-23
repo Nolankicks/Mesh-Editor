@@ -74,8 +74,7 @@ public class BlockTool : EditorTool
 				if ( box.Size.x >= spacing || box.Size.y >= spacing )
 				{
 					var go = new GameObject( true, "Box" );
-					var mc = go.Components.Create<MeshComponent>();
-					mc.Type = MeshComponent.PrimitiveType.Box;
+					var mc = go.Components.Create<EditorMeshComponent>( false );
 
 					if ( Gizmo.Settings.SnapToGrid )
 					{
@@ -83,11 +82,14 @@ public class BlockTool : EditorTool
 						if ( box.Size.y < spacing ) box.Maxs.y += spacing;
 					}
 
-					mc.BoxSize = box.Size.WithZ( 128 );
+					var size = box.Size.WithZ( 128 );
+					mc.FromBox( BBox.FromPositionAndSize( 0, size ) );
 					mc.Transform.Position = box.Center.WithZ( box.Center.z + 64 );
-					mc.TextureOrigin = mc.Transform.Position;
+					mc.Enabled = true;
 
 					Selection.Set( go );
+
+					EditLog( "Create Block", null );
 				}
 
 				_dragging = false;

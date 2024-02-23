@@ -57,12 +57,58 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 		CreateSceneObject();
 	}
 
+	public void FromBox( BBox box )
+	{
+		Mesh = new();
+
+		Mesh.Vertices.Add( new Vector3( box.Mins.x, box.Mins.y, box.Mins.z ) );
+		Mesh.Vertices.Add( new Vector3( box.Maxs.x, box.Mins.y, box.Mins.z ) );
+		Mesh.Vertices.Add( new Vector3( box.Maxs.x, box.Maxs.y, box.Mins.z ) );
+		Mesh.Vertices.Add( new Vector3( box.Mins.x, box.Maxs.y, box.Mins.z ) );
+		Mesh.Vertices.Add( new Vector3( box.Mins.x, box.Mins.y, box.Maxs.z ) );
+		Mesh.Vertices.Add( new Vector3( box.Maxs.x, box.Mins.y, box.Maxs.z ) );
+		Mesh.Vertices.Add( new Vector3( box.Maxs.x, box.Maxs.y, box.Maxs.z ) );
+		Mesh.Vertices.Add( new Vector3( box.Mins.x, box.Maxs.y, box.Maxs.z ) );
+
+		var faceData = new FaceData
+		{
+			TextureScale = 0.25f,
+			TextureUAxis = Vector3.Right,
+			TextureVAxis = Vector3.Forward
+		};
+
+		Mesh.Faces.AddFace( 0, 3, 2, 1, faceData );
+
+		faceData.TextureUAxis = Vector3.Forward;
+		faceData.TextureVAxis = Vector3.Right;
+		Mesh.Faces.AddFace( 4, 5, 6, 7, faceData );
+
+		faceData.TextureUAxis = Vector3.Right;
+		faceData.TextureVAxis = Vector3.Down;
+		Mesh.Faces.AddFace( 4, 7, 3, 0, faceData );
+
+		faceData.TextureUAxis = Vector3.Left;
+		faceData.TextureVAxis = Vector3.Down;
+		Mesh.Faces.AddFace( 1, 2, 6, 5, faceData );
+
+		faceData.TextureUAxis = Vector3.Forward;
+		faceData.TextureVAxis = Vector3.Down;
+		Mesh.Faces.AddFace( 0, 1, 5, 4, faceData );
+
+		faceData.TextureUAxis = Vector3.Backward;
+		faceData.TextureVAxis = Vector3.Down;
+		Mesh.Faces.AddFace( 3, 7, 6, 2, faceData );
+
+		CreateSceneObject();
+	}
+
 	protected override void OnDisabled()
 	{
 		base.OnDisabled();
 
 		if ( _sceneObject.IsValid() )
 		{
+			_sceneObject.RenderingEnabled = false;
 			_sceneObject.Delete();
 			_sceneObject = null;
 		}

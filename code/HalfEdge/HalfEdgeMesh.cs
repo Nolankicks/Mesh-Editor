@@ -129,8 +129,6 @@ public class HalfEdgeMesh : PlanktonMesh<FaceData, HalfEdgeData, VertexData>
 		if ( flags.HasFlag( TextureFlags.TextureAngle ) )
 			textureAngle = reader.ReadSingle();
 
-		Log.Info( textureUAxis );
-
 		return new FaceData
 		{
 			TextureOrigin = textureOrigin,
