@@ -102,39 +102,6 @@ public abstract class BaseMeshTool : EditorTool
 		}
 	}
 
-	private static Vector3 ClosestAxis( Vector3 normal, Rotation basis )
-	{
-		normal = normal.Normal;
-
-		var forward = basis.Forward;
-		var left = basis.Left;
-		var up = basis.Up;
-
-		var axis = new Vector3[6];
-		axis[0] = forward;
-		axis[1] = left;
-		axis[2] = up;
-		axis[3] = -axis[0];
-		axis[4] = -axis[1];
-		axis[5] = -axis[2];
-
-		var bestAxis = Vector3.Zero;
-		var bestDot = -1.0f;
-
-		for ( var i = 0; i < 6; i++ )
-		{
-			float dot = normal.Dot( axis[i] );
-			if ( dot > bestDot )
-			{
-				bestDot = dot;
-				bestAxis = axis[i];
-			}
-		}
-
-		return bestAxis;
-	}
-
-
 	private void UpdateNudge()
 	{
 		if ( Gizmo.HasPressed )
@@ -156,19 +123,8 @@ public abstract class BaseMeshTool : EditorTool
 			return;
 
 		var basis = CalculateSelectionBasis();
-		var up = ClosestAxis( Gizmo.Camera.Rotation.Up, basis );
-		var left = ClosestAxis( Gizmo.Camera.Rotation.Left, basis );
-
-		var delta = Vector3.Zero;
-		delta += keyUp ? up : 0.0f;
-		delta += keyDown ? -up : 0.0f;
-		delta += keyLeft ? left : 0.0f;
-		delta += keyRight ? -left : 0.0f;
-
-		float spacing = Gizmo.Settings.SnapToGrid != Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Ctrl )
-			? Gizmo.Settings.GridSpacing : 1;
-
-		delta *= spacing;
+		var direction = new Vector2( keyLeft ? 1 : keyRight ? -1 : 0, keyUp ? 1 : keyDown ? -1 : 0 );
+		var delta = Gizmo.Nudge( basis, direction );
 
 		if ( Gizmo.IsShiftPressed )
 		{
