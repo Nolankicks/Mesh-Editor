@@ -1,6 +1,6 @@
 using Sandbox;
 
-namespace Editor;
+namespace Editor.MeshEditor;
 
 /// <summary>
 /// Create new shapes by dragging out a block

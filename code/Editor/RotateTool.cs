@@ -2,27 +2,26 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Editor;
+namespace Editor.MeshEditor;
 
 /// <summary>
-/// Scale selected Mesh Elements.<br/> <br/> 
-/// <b>Ctrl</b> - toggle snap to grid<br/>
-/// <b>Shift</b> - scale all 3 axis
+/// Rotate selected Mesh Elements.<br/> <br/> 
+/// <b>Ctrl</b> - toggle snap to grid
 /// </summary>
-[Title( "Scale" )]
-[Icon( "zoom_out_map" )]
-[Alias( "mesh.scale" )]
-[Group( "2" )]
-[Shortcut( "mesh.scale", "r" )]
-public class MeshScaleTool : EditorTool
+[Title( "Rotate" )]
+[Icon( "360" )]
+[Alias( "mesh.rotate" )]
+[Group( "1" )]
+[Shortcut( "mesh.rotate", "e" )]
+public class RotateTool : EditorTool
 {
 	private readonly BaseMeshTool _meshTool;
 	private readonly Dictionary<BaseMeshTool.MeshElement, Vector3> _startVertices = new();
-	private Vector3 _moveDelta;
+	private Angles _moveDelta;
 	private Vector3 _origin;
 	private Rotation _basis;
 
-	public MeshScaleTool( BaseMeshTool meshTool )
+	public RotateTool( BaseMeshTool meshTool )
 	{
 		_meshTool = meshTool;
 	}
@@ -39,33 +38,32 @@ public class MeshScaleTool : EditorTool
 			_startVertices.Clear();
 			_moveDelta = default;
 			_basis = _meshTool.CalculateSelectionBasis();
-
-			var bounds = _meshTool.CalculateSelectionBounds();
-			_origin = bounds.Center;
+			_origin = _meshTool.CalculateSelectionOrigin();
 		}
 
-		using ( Gizmo.Scope( "Tool", new Transform( _origin ) ) )
+		using ( Gizmo.Scope( "Tool", new Transform( _origin, _basis ) ) )
 		{
 			Gizmo.Hitbox.DepthBias = 0.01f;
 
-			if ( Gizmo.Control.Scale( "scale", Vector3.Zero, out var delta, _basis ) )
+			if ( Gizmo.Control.Rotate( "rotation", out var angleDelta ) )
 			{
 				StartDrag();
 
-				_moveDelta += delta;
+				_moveDelta += angleDelta;
+				var snapDelta = Gizmo.Snap( _moveDelta, _moveDelta );
 
 				foreach ( var entry in _startVertices )
 				{
-					var position = (entry.Value - _origin) * _basis.Inverse;
-					position += position * _moveDelta;
-					position *= _basis;
+					var rotation = _basis * snapDelta * _basis.Inverse;
+					var position = entry.Value - _origin;
+					position *= rotation;
 					position += _origin;
 
 					var transform = entry.Key.Transform;
 					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
 				}
 
-				EditLog( "Scale Mesh Element", _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
+				EditLog( "Rotate Mesh Element", _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
 					.Select( x => x.Component )
 					.Distinct() );
 			}

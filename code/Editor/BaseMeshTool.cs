@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Editor;
+namespace Editor.MeshEditor;
 
 public abstract class BaseMeshTool : EditorTool
 {

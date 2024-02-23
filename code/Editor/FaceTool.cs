@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Editor;
+namespace Editor.MeshEditor;
 
 /// <summary>
 /// Move, rotate and scale mesh faces
@@ -16,9 +16,9 @@ public class FaceTool : BaseMeshTool
 {
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
-		yield return new MeshMoveTool( this );
-		yield return new MeshRotateTool( this );
-		yield return new MeshScaleTool( this );
+		yield return new MoveTool( this );
+		yield return new RotateTool( this );
+		yield return new ScaleTool( this );
 	}
 
 	public override void OnUpdate()
