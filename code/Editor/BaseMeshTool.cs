@@ -102,73 +102,105 @@ public abstract class BaseMeshTool : EditorTool
 		}
 	}
 
+	private static Vector3 ClosestAxis( Vector3 normal, Rotation basis )
+	{
+		normal = normal.Normal;
+
+		var forward = basis.Forward;
+		var left = basis.Left;
+		var up = basis.Up;
+
+		var axis = new Vector3[6];
+		axis[0] = forward;
+		axis[1] = left;
+		axis[2] = up;
+		axis[3] = -axis[0];
+		axis[4] = -axis[1];
+		axis[5] = -axis[2];
+
+		var bestAxis = Vector3.Zero;
+		var bestDot = -1.0f;
+
+		for ( var i = 0; i < 6; i++ )
+		{
+			float dot = normal.Dot( axis[i] );
+			if ( dot > bestDot )
+			{
+				bestDot = dot;
+				bestAxis = axis[i];
+			}
+		}
+
+		return bestAxis;
+	}
+
+
 	private void UpdateNudge()
 	{
 		if ( Gizmo.HasPressed )
 			return;
 
-		var delta = Vector3.Zero;
-		delta += Application.IsKeyDown( KeyCode.Up ) ? Vector3.Up : 0.0f;
-		delta += Application.IsKeyDown( KeyCode.Down ) ? Vector3.Down : 0.0f;
-		delta += Application.IsKeyDown( KeyCode.Right ) ? Vector3.Forward : 0.0f;
-		delta += Application.IsKeyDown( KeyCode.Left ) ? Vector3.Backward : 0.0f;
+		var keyUp = Application.IsKeyDown( KeyCode.Up );
+		var keyDown = Application.IsKeyDown( KeyCode.Down );
+		var keyLeft = Application.IsKeyDown( KeyCode.Left );
+		var keyRight = Application.IsKeyDown( KeyCode.Right );
 
-		if ( delta.Length > 0.0f )
+		if ( !keyUp && !keyDown && !keyLeft && !keyRight )
 		{
-			if ( !_nudge )
+			_nudge = false;
+
+			return;
+		}
+
+		if ( _nudge )
+			return;
+
+		var origin = CalculateSelectionOrigin();
+		var basis = CalculateSelectionBasis();
+
+		var up = ClosestAxis( Gizmo.Camera.Rotation.Up, basis );
+		var left = ClosestAxis( Gizmo.Camera.Rotation.Left, basis );
+
+		var delta = Vector3.Zero;
+		delta += keyUp ? up : 0.0f;
+		delta += keyDown ? -up : 0.0f;
+		delta += keyLeft ? left : 0.0f;
+		delta += keyRight ? -left : 0.0f;
+
+		var targetPosition = origin;
+		delta *= Gizmo.Settings.GridSpacing;
+
+		targetPosition += delta;
+		targetPosition *= basis.Inverse;
+		targetPosition = basis * Gizmo.Snap( targetPosition, delta * basis.Inverse );
+
+		var moveDelta = targetPosition - origin;
+
+		if ( Gizmo.IsShiftPressed )
+		{
+			foreach ( var faceElement in MeshSelection.OfType<MeshElement>()
+				.Where( x => x.ElementType == MeshElementType.Face ) )
 			{
-				var origin = CalculateSelectionOrigin();
-				var basis = CalculateSelectionBasis();
-
-				var targetPosition = origin;
-				delta *= Gizmo.Settings.GridSpacing;
-
-				if ( Gizmo.Settings.GlobalSpace )
-				{
-					targetPosition += delta;
-					targetPosition = Gizmo.Snap( targetPosition, delta );
-				}
-				else
-				{
-					delta = new Vector3( delta.z, delta.x, delta.y );
-					targetPosition += delta * basis;
-					targetPosition *= basis.Inverse;
-					targetPosition = basis * Gizmo.Snap( targetPosition, delta );
-				}
-
-				var moveDelta = targetPosition - origin;
-
-				if ( Gizmo.IsShiftPressed )
-				{
-					foreach ( var faceElement in MeshSelection.OfType<MeshElement>()
-						.Where( x => x.ElementType == MeshElementType.Face ) )
-					{
-						var transform = faceElement.Transform;
-						faceElement.Component.ExtrudeFace( faceElement.Index, transform.PointToLocal( moveDelta ) );
-					}
-				}
-				else
-				{
-					foreach ( var vertexElement in VertexSelection )
-					{
-						var transform = vertexElement.Transform;
-						var position = vertexElement.Component.GetVertexPosition( vertexElement.Index );
-						position = transform.PointToWorld( position ) + moveDelta;
-						vertexElement.Component.SetVertexPosition( vertexElement.Index, transform.PointToLocal( position ) );
-					}
-				}
-
-				EditLog( "Moved", null );
-
-				CalculateSelectionVertices();
-
-				_nudge = true;
+				var transform = faceElement.Transform;
+				faceElement.Component.ExtrudeFace( faceElement.Index, transform.PointToLocal( moveDelta ) );
 			}
 		}
 		else
 		{
-			_nudge = false;
+			foreach ( var vertexElement in VertexSelection )
+			{
+				var transform = vertexElement.Transform;
+				var position = vertexElement.Component.GetVertexPosition( vertexElement.Index );
+				position = transform.PointToWorld( position ) + moveDelta;
+				vertexElement.Component.SetVertexPosition( vertexElement.Index, transform.PointToLocal( position ) );
+			}
 		}
+
+		EditLog( "Moved", null );
+
+		CalculateSelectionVertices();
+
+		_nudge = true;
 	}
 
 	public override void OnSelectionChanged()
