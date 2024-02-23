@@ -18,6 +18,7 @@ public class FaceTool : BaseMeshTool
 	{
 		yield return new MeshMoveTool( this );
 		yield return new MeshRotateTool( this );
+		yield return new MeshScaleTool( this );
 	}
 
 	public override void OnUpdate()

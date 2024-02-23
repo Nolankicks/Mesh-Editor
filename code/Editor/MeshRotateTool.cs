@@ -63,7 +63,7 @@ public class MeshRotateTool : EditorTool
 					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
 				}
 
-				EditLog( "Rotated", _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
+				EditLog( "Rotate Mesh Element", _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
 					.Select( x => x.Component )
 					.Distinct() );
 			}
