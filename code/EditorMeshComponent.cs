@@ -3,7 +3,7 @@ using System;
 
 using static Sandbox.Component;
 
-public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
+public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable, IMaterialSetter
 {
 	[Property, Hide]
 	private HalfEdgeMesh Mesh { get; set; }
@@ -535,5 +535,46 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 		}
 
 		return orientation;
+	}
+
+	public void SetMaterial( Material material, int triangle )
+	{	
+		if ( material is null )
+			return;
+
+		if ( Mesh is null )
+			return;
+
+		var face = TriangleToFace( triangle );
+		if ( face < 0 )
+			return;
+
+		if ( Mesh.Faces[face].IsUnused )
+			return;
+
+		var faceData = Mesh.Faces[face].Traits;
+		if ( faceData.TextureName == material.Name )
+			return;
+
+		faceData.TextureName = material.Name;
+		Mesh.Faces[face].Traits = faceData;
+
+		CreateSceneObject();
+	}
+
+	public Material GetMaterial( int triangle )
+	{
+		if ( Mesh is null )
+			return default;
+
+		var face = TriangleToFace( triangle );
+		if ( face < 0 )
+			return default;
+
+		if ( Mesh.Faces[face].IsUnused )
+			return default;
+
+		var faceData = Mesh.Faces[face].Traits;
+		return Material.Load( faceData.TextureName );
 	}
 }
