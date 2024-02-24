@@ -11,6 +11,7 @@ public struct FaceData
 	public Vector2 TextureScale;
 	public Vector2 TextureOffset;
 	public float TextureAngle;
+	public string TextureName;
 }
 
 public struct VertexData
@@ -53,6 +54,7 @@ public class HalfEdgeMesh : PlanktonMesh<FaceData, HalfEdgeData, VertexData>
 		TextureScale = 1 << 3,
 		TextureOffset = 1 << 4,
 		TextureAngle = 1 << 5,
+		TextureName = 1 << 6,
 	}
 
 	protected override void WriteFaceTraits( BinaryWriter writer, FaceData face )
@@ -64,6 +66,7 @@ public class HalfEdgeMesh : PlanktonMesh<FaceData, HalfEdgeData, VertexData>
 		if ( face.TextureScale != Vector2.Zero ) flags |= TextureFlags.TextureScale;
 		if ( face.TextureOffset != Vector2.Zero ) flags |= TextureFlags.TextureOffset;
 		if ( face.TextureAngle != 0 ) flags |= TextureFlags.TextureAngle;
+		if ( !string.IsNullOrWhiteSpace( face.TextureName ) ) flags |= TextureFlags.TextureName;
 
 		writer.Write( (int)flags );
 
@@ -104,6 +107,11 @@ public class HalfEdgeMesh : PlanktonMesh<FaceData, HalfEdgeData, VertexData>
 		{
 			writer.Write( face.TextureAngle );
 		}
+
+		if ( flags.HasFlag( TextureFlags.TextureName ) )
+		{
+			writer.Write( face.TextureName );
+		}
 	}
 
 	protected override FaceData ReadFaceTraits( BinaryReader reader )
@@ -115,6 +123,7 @@ public class HalfEdgeMesh : PlanktonMesh<FaceData, HalfEdgeData, VertexData>
 		var textureScale = Vector2.Zero;
 		var textureOffset = Vector2.Zero;
 		var textureAngle = 0.0f;
+		var textureName = "";
 
 		if ( flags.HasFlag( TextureFlags.TextureOrigin ) )
 			textureOrigin = new Vector3( reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle() );
@@ -128,6 +137,8 @@ public class HalfEdgeMesh : PlanktonMesh<FaceData, HalfEdgeData, VertexData>
 			textureOffset = new Vector2( reader.ReadSingle(), reader.ReadSingle() );
 		if ( flags.HasFlag( TextureFlags.TextureAngle ) )
 			textureAngle = reader.ReadSingle();
+		if ( flags.HasFlag( TextureFlags.TextureName ) )
+			textureName = reader.ReadString();
 
 		return new FaceData
 		{
@@ -137,6 +148,7 @@ public class HalfEdgeMesh : PlanktonMesh<FaceData, HalfEdgeData, VertexData>
 			TextureScale = textureScale,
 			TextureOffset = textureOffset,
 			TextureAngle = textureAngle,
+			TextureName = textureName,
 		};
 	}
 }
