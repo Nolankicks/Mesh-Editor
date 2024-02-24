@@ -215,6 +215,7 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 	{
 		public List<SimpleVertex> Vertices { get; init; } = new();
 		public List<int> Indices { get; init; } = new();
+		public List<int> TriangleFaces { get; init; } = new();
 		public Material Material { get; set; }
 	}
 
@@ -245,6 +246,8 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 		var builder = Model.Builder;
 		foreach ( var submesh in submeshes.Values )
 		{
+			_triangleFaces.AddRange( submesh.TriangleFaces );
+
 			var vertices = submesh.Vertices;
 			var indices = submesh.Indices;
 			var bounds = BBox.FromPoints( vertices.Select( x => x.position ) );
@@ -336,6 +339,7 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 
 		var vertices = submesh.Vertices;
 		var triangles = submesh.Indices;
+		var triangleFaces = submesh.TriangleFaces;
 
 		FaceData faceData = face;
 		int startVertex = vertices.Count;
@@ -386,7 +390,7 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 			triangles.Add( b );
 			triangles.Add( c );
 
-			_triangleFaces.Add( faceIndex );
+			triangleFaces.Add( faceIndex );
 		}
 	}
 
