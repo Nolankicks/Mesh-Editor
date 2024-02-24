@@ -219,10 +219,18 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 		public Material Material { get; set; }
 	}
 
+	List<int> meshIndices = new();
+	List<Vector3> meshVertices = new();
+
 	public void CreateSceneObject()
 	{
 		var submeshes = new Dictionary<string, Submesh>();
+
 		_triangleFaces.Clear();
+		meshIndices.Clear();
+		meshVertices.Clear();
+
+		var builder = Model.Builder;
 
 		for ( var i = 0; i < Mesh.Faces.Count; ++i )
 		{
@@ -243,11 +251,8 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 			TriangulateFace( i, submesh );
 		}
 
-		var builder = Model.Builder;
 		foreach ( var submesh in submeshes.Values )
 		{
-			_triangleFaces.AddRange( submesh.TriangleFaces );
-
 			var vertices = submesh.Vertices;
 			var indices = submesh.Indices;
 			var bounds = BBox.FromPoints( vertices.Select( x => x.position ) );
@@ -259,6 +264,7 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 			builder.AddMesh( mesh );
 		}
 
+		builder.AddCollisionMesh( meshVertices.ToArray(), meshIndices.ToArray() );
 		var model = builder.Create();
 
 		if ( !_sceneObject.IsValid() )
@@ -343,6 +349,7 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 
 		FaceData faceData = face;
 		int startVertex = vertices.Count;
+		int startCollisionVertex = meshVertices.Count;
 		vertices.AddRange( tess.Vertices
 			.Where( v => v.Data is not null )
 			.Select( v => new SimpleVertex
@@ -352,6 +359,10 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 				tangent = faceData.TextureUAxis,
 				texcoord = PlanarUV( Mesh.Vertices[(int)v.Data].Position, faceData ),
 			} ) );
+
+		meshVertices.AddRange( tess.Vertices
+			.Where( v => v.Data is not null )
+			.Select( v => Mesh.Vertices[(int)v.Data].Position ) );
 
 		if ( startVertex == vertices.Count )
 			return;
@@ -390,7 +401,11 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 			triangles.Add( b );
 			triangles.Add( c );
 
-			triangleFaces.Add( faceIndex );
+			_triangleFaces.Add( faceIndex );
+
+			meshIndices.Add( startCollisionVertex + elems[triangle] );
+			meshIndices.Add( startCollisionVertex + elems[triangle + 1] );
+			meshIndices.Add( startCollisionVertex + elems[triangle + 2] );
 		}
 	}
 
@@ -413,7 +428,6 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 		var faceVertices = faceIndices.Select( v => Mesh.Vertices[v] );
 
 		FaceData faceData = Mesh.Faces[faceIndex];
-		faceData.TextureName = "dev/helper/testgrid.vmat";
 		var sideFaceData = faceData;
 
 		var newFaceIndices = Mesh.Vertices.AddVertices( faceVertices.Select( v => v.Position + extrudeOffset ) );
@@ -538,10 +552,7 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 	}
 
 	public void SetMaterial( Material material, int triangle )
-	{	
-		if ( material is null )
-			return;
-
+	{
 		if ( Mesh is null )
 			return;
 
@@ -552,11 +563,13 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 		if ( Mesh.Faces[face].IsUnused )
 			return;
 
+		var materialName = material?.Name ?? "";
+
 		var faceData = Mesh.Faces[face].Traits;
-		if ( faceData.TextureName == material.Name )
+		if ( faceData.TextureName == materialName )
 			return;
 
-		faceData.TextureName = material.Name;
+		faceData.TextureName = materialName;
 		Mesh.Faces[face].Traits = faceData;
 
 		CreateSceneObject();
