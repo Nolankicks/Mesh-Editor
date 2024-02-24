@@ -211,28 +211,52 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 		return Mesh.Faces.GetFaceVertices( f );
 	}
 
+	private class Submesh
+	{
+		public List<SimpleVertex> Vertices { get; init; } = new();
+		public List<int> Indices { get; init; } = new();
+		public Material Material { get; set; }
+	}
+
 	public void CreateSceneObject()
 	{
-		var vertices = new List<SimpleVertex>();
-		var indices = new List<int>();
-
+		var submeshes = new Dictionary<string, Submesh>();
 		_triangleFaces.Clear();
 
 		for ( var i = 0; i < Mesh.Faces.Count; ++i )
 		{
-			TriangulateFace( i, ref vertices, ref indices );
+			var face = Mesh.Faces[i];
+			if ( face.IsUnused )
+				continue;
+
+			FaceData faceData = face;
+			var textureName = faceData.TextureName ?? "";
+
+			if ( !submeshes.TryGetValue( textureName, out var submesh ) )
+			{
+				submesh = new();
+				submesh.Material = Material.Load( textureName );
+				submeshes.Add( textureName, submesh );
+			}
+
+			TriangulateFace( i, submesh );
 		}
 
-		var bounds = BBox.FromPoints( vertices.Select( x => x.position ) );
-		var material = Material.Load( "materials/dev/reflectivity_30.vmat" );
-		var mesh = new Mesh( material );
-		mesh.CreateVertexBuffer( vertices.Count, SimpleVertex.Layout, vertices );
-		mesh.CreateIndexBuffer( indices.Count, indices );
-		mesh.Bounds = bounds;
+		var builder = Model.Builder;
+		foreach ( var submesh in submeshes.Values )
+		{
+			var vertices = submesh.Vertices;
+			var indices = submesh.Indices;
+			var bounds = BBox.FromPoints( vertices.Select( x => x.position ) );
+			var material = submesh.Material ?? Material.Load( "materials/dev/reflectivity_30.vmat" );
+			var mesh = new Mesh( material );
+			mesh.CreateVertexBuffer( vertices.Count, SimpleVertex.Layout, vertices );
+			mesh.CreateIndexBuffer( indices.Count, indices );
+			mesh.Bounds = bounds;
+			builder.AddMesh( mesh );
+		}
 
-		var model = Model.Builder
-			.AddMesh( mesh )
-			.Create();
+		var model = builder.Create();
 
 		if ( !_sceneObject.IsValid() )
 		{
@@ -283,7 +307,7 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 
 	private static LibTessDotNet.Vec3 ConvertToTessVertex( Vector3 p ) => new() { X = p.x, Y = p.y, Z = p.z };
 
-	private void TriangulateFace( int faceIndex, ref List<SimpleVertex> vertices, ref List<int> triangles )
+	private void TriangulateFace( int faceIndex, Submesh submesh )
 	{
 		var face = Mesh.Faces[faceIndex];
 		if ( face.IsUnused )
@@ -309,6 +333,9 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 			return;
 
 		var normal = Mesh.Faces.GetAverageFaceNormal( faceIndex ).Normal;
+
+		var vertices = submesh.Vertices;
+		var triangles = submesh.Indices;
 
 		FaceData faceData = face;
 		int startVertex = vertices.Count;
@@ -382,6 +409,7 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable
 		var faceVertices = faceIndices.Select( v => Mesh.Vertices[v] );
 
 		FaceData faceData = Mesh.Faces[faceIndex];
+		faceData.TextureName = "dev/helper/testgrid.vmat";
 		var sideFaceData = faceData;
 
 		var newFaceIndices = Mesh.Vertices.AddVertices( faceVertices.Select( v => v.Position + extrudeOffset ) );
