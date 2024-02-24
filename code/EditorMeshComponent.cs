@@ -1,12 +1,14 @@
-using Sandbox;
 using System;
+using Sandbox.Diagnostics;
 
 using static Sandbox.Component;
 
-public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable, IMaterialSetter
+public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, IMaterialSetter
 {
 	[Property, Hide]
 	private HalfEdgeMesh Mesh { get; set; }
+
+	public Model Model { get; private set; }
 
 	[Property, Title( "Tint" )]
 	public Color Color
@@ -27,13 +29,27 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 	}
 
 	private Color _color = Color.White;
-
 	private SceneObject _sceneObject;
 	private readonly List<int> _triangleFaces = new();
+
+	protected override void OnValidate()
+	{
+		Static = true;
+	}
+
+	private void TransformChanged()
+	{
+		if ( _sceneObject.IsValid() )
+		{
+			_sceneObject.Transform = Transform.World;
+		}
+	}
 
 	protected override void OnEnabled()
 	{
 		base.OnEnabled();
+
+		Transform.OnTransformChanged += TransformChanged;
 
 		if ( Mesh == null )
 		{
@@ -54,7 +70,47 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 			Mesh.Faces.AddFace( 0, 1, 2, 3, faceData );
 		}
 
-		CreateSceneObject();
+		CreateSceneObject();		
+	}
+
+	protected override void OnDisabled()
+	{
+		base.OnDisabled();
+
+		Transform.OnTransformChanged -= TransformChanged;
+
+		if ( _sceneObject.IsValid() )
+		{
+			_sceneObject.RenderingEnabled = false;
+			_sceneObject.Delete();
+			_sceneObject = null;
+		}
+	}
+
+	protected override IEnumerable<PhysicsShape> CreatePhysicsShapes( PhysicsBody targetBody )
+	{
+		if ( Model is null || Model.Physics is null )
+			yield break;
+
+		var bodyTransform = targetBody.Transform.ToLocal( Transform.World );
+
+		foreach ( var part in Model.Physics.Parts )
+		{
+			Assert.NotNull( part, "Physics part was null" );
+
+			var bx = bodyTransform.ToWorld( part.Transform );
+
+			foreach ( var mesh in part.Meshes )
+			{
+				var shape = targetBody.AddShape( mesh, bx, false, true );
+				Assert.NotNull( shape, "Mesh shape was null" );
+
+				shape.Surface = mesh.Surface;
+				shape.Surfaces = mesh.Surfaces;
+
+				yield return shape;
+			}
+		}
 	}
 
 	public void FromBox( BBox box )
@@ -105,18 +161,6 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 		Mesh.Faces.AddFace( 3, 7, 6, 2, faceData );
 
 		CreateSceneObject();
-	}
-
-	protected override void OnDisabled()
-	{
-		base.OnDisabled();
-
-		if ( _sceneObject.IsValid() )
-		{
-			_sceneObject.RenderingEnabled = false;
-			_sceneObject.Delete();
-			_sceneObject = null;
-		}
 	}
 
 	protected override void OnUpdate()
@@ -215,20 +259,19 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 	{
 		public List<SimpleVertex> Vertices { get; init; } = new();
 		public List<int> Indices { get; init; } = new();
-		public List<int> TriangleFaces { get; init; } = new();
 		public Material Material { get; set; }
 	}
 
-	List<int> meshIndices = new();
-	List<Vector3> meshVertices = new();
+	List<int> _meshIndices = new();
+	List<Vector3> _meshVertices = new();
 
 	public void CreateSceneObject()
 	{
 		var submeshes = new Dictionary<string, Submesh>();
 
 		_triangleFaces.Clear();
-		meshIndices.Clear();
-		meshVertices.Clear();
+		_meshIndices.Clear();
+		_meshVertices.Clear();
 
 		var builder = Model.Builder;
 
@@ -264,22 +307,24 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 			builder.AddMesh( mesh );
 		}
 
-		builder.AddCollisionMesh( meshVertices.ToArray(), meshIndices.ToArray() );
-		var model = builder.Create();
+		builder.AddCollisionMesh( _meshVertices.ToArray(), _meshIndices.ToArray() );
+		Model = builder.Create();
 
 		if ( !_sceneObject.IsValid() )
 		{
-			_sceneObject = new SceneObject( Scene.SceneWorld, model, Transform.World );
+			_sceneObject = new SceneObject( Scene.SceneWorld, Model, Transform.World );
 		}
 		else
 		{
-			_sceneObject.Model = model;
+			_sceneObject.Model = Model;
 			_sceneObject.Transform = Transform.World;
 		}
 
 		_sceneObject.SetComponentSource( this );
 		_sceneObject.Tags.SetFrom( GameObject.Tags );
 		_sceneObject.ColorTint = Color.WithAlpha( 1.0f );
+
+		Rebuild();
 	}
 
 	public int TriangleToFace( int triangle )
@@ -345,11 +390,10 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 
 		var vertices = submesh.Vertices;
 		var triangles = submesh.Indices;
-		var triangleFaces = submesh.TriangleFaces;
 
 		FaceData faceData = face;
 		int startVertex = vertices.Count;
-		int startCollisionVertex = meshVertices.Count;
+		int startCollisionVertex = _meshVertices.Count;
 		vertices.AddRange( tess.Vertices
 			.Where( v => v.Data is not null )
 			.Select( v => new SimpleVertex
@@ -360,7 +404,7 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 				texcoord = PlanarUV( Mesh.Vertices[(int)v.Data].Position, faceData ),
 			} ) );
 
-		meshVertices.AddRange( tess.Vertices
+		_meshVertices.AddRange( tess.Vertices
 			.Where( v => v.Data is not null )
 			.Select( v => Mesh.Vertices[(int)v.Data].Position ) );
 
@@ -403,9 +447,9 @@ public sealed class EditorMeshComponent : Component, ExecuteInEditor, ITintable,
 
 			_triangleFaces.Add( faceIndex );
 
-			meshIndices.Add( startCollisionVertex + elems[triangle] );
-			meshIndices.Add( startCollisionVertex + elems[triangle + 1] );
-			meshIndices.Add( startCollisionVertex + elems[triangle + 2] );
+			_meshIndices.Add( startCollisionVertex + elems[triangle] );
+			_meshIndices.Add( startCollisionVertex + elems[triangle + 1] );
+			_meshIndices.Add( startCollisionVertex + elems[triangle + 2] );
 		}
 	}
 
