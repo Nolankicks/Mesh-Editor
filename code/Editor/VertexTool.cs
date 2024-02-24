@@ -12,6 +12,7 @@ namespace Editor.MeshEditor;
 [Icon( "workspaces" )]
 [Alias( "Vertex" )]
 [Group( "1" )]
+[Shortcut( "mesh.vertex", "1" )]
 public class VertexTool : BaseMeshTool
 {
 	public override IEnumerable<EditorTool> GetSubtools()

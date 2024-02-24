@@ -12,6 +12,7 @@ namespace Editor.MeshEditor;
 [Icon( "change_history" )]
 [Alias( "Face" )]
 [Group( "3" )]
+[Shortcut( "mesh.face", "3" )]
 public class FaceTool : BaseMeshTool
 {
 	public override IEnumerable<EditorTool> GetSubtools()
