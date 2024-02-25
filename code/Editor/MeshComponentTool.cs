@@ -57,6 +57,27 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 				Reset();
 			}
 
+			using ( Gizmo.Scope( "Box" ) )
+			{
+				var textSize = 22 * Gizmo.Settings.GizmoScale * Application.DpiScale;
+
+				Gizmo.Draw.IgnoreDepth = true;
+				Gizmo.Draw.LineThickness = 2;
+				Gizmo.Draw.Color = Gizmo.Colors.Active;
+				Gizmo.Draw.LineBBox( _box );
+
+				var l = _startTransform.PointToWorld( _box.Maxs.WithY( _box.Center.y ) );
+				var w = _startTransform.PointToWorld( _box.Maxs.WithX( _box.Center.x ) );
+				var h = _startTransform.PointToWorld( _box.Maxs.WithZ( _box.Center.z ) );
+
+				Gizmo.Draw.Color = Gizmo.Colors.Left;
+				Gizmo.Draw.ScreenText( $"L: {_box.Size.y:0.#}", Gizmo.Camera.ToScreen( l ) + Vector2.Down * 32, size: textSize );
+				Gizmo.Draw.Color = Gizmo.Colors.Forward;
+				Gizmo.Draw.ScreenText( $"W: {_box.Size.x:0.#}", Gizmo.Camera.ToScreen( w ) + Vector2.Down * 32, size: textSize );
+				Gizmo.Draw.Color = Gizmo.Colors.Up;
+				Gizmo.Draw.ScreenText( $"H: {_box.Size.z:0.#}", Gizmo.Camera.ToScreen( h ) + Vector2.Down * 32, size: textSize );
+			}
+
 			if ( Gizmo.Control.BoundingBox( "Resize", _box, out var outBox ) )
 			{
 				if ( !_dragging )
@@ -87,16 +108,6 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 				_component.TextureOrigin = _startTextureOrigin + offset;
 
 				_component.CreateSceneObject();
-			}
-
-			using ( Gizmo.Scope( "Box" ) )
-			{
-				var textSize = 22 * Gizmo.Settings.GizmoScale * Application.DpiScale;
-
-				Gizmo.Draw.IgnoreDepth = true;
-				Gizmo.Draw.LineThickness = 2;
-				Gizmo.Draw.Color = Gizmo.Colors.Active;
-				Gizmo.Draw.LineBBox( _box );
 			}
 		}
 	}

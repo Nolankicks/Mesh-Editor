@@ -87,7 +87,7 @@ public class BlockTool : EditorTool
 
 		if ( _boxCreated )
 		{
-			using ( Gizmo.Scope( "box", 0 ) )
+			using ( Gizmo.Scope( "box" ) )
 			{
 				Gizmo.Draw.IgnoreDepth = true;
 				Gizmo.Draw.LineThickness = 2;
