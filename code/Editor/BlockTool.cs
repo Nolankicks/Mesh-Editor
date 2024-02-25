@@ -1,4 +1,5 @@
 using Sandbox;
+using System.Linq;
 
 namespace Editor.MeshEditor;
 
@@ -27,6 +28,20 @@ public class BlockTool : EditorTool
 		Selection.Clear();
 	}
 
+	public override void OnDisabled()
+	{
+		base.OnDisabled();
+
+		if ( _boxCreated )
+		{
+			var go = CreateFromBox( _box );
+			Selection.Set( go );
+
+			_finished = true;
+			_boxCreated = false;
+		}
+	}
+
 	private GameObject CreateFromBox( BBox box )
 	{
 		var go = new GameObject( true, "Box" );
@@ -40,9 +55,23 @@ public class BlockTool : EditorTool
 		return go;
 	}
 
+	public override void OnSelectionChanged()
+	{
+		base.OnSelectionChanged();
+
+		if ( !Selection.OfType<GameObject>().Any() )
+			return;
+
+		EditorToolManager.CurrentModeName = "object";
+		_finished = true;
+	}
+
 	public override void OnUpdate()
 	{
 		if ( _finished )
+			return;
+
+		if ( Selection.OfType<GameObject>().Any() )
 			return;
 
 		if ( _boxCreated && Application.IsKeyDown( KeyCode.Escape ) )
@@ -97,8 +126,10 @@ public class BlockTool : EditorTool
 				var go = CreateFromBox( _box );
 				Selection.Set( go );
 
-				EditorToolManager.CurrentModeName = "object";
 				_finished = true;
+				_boxCreated = false;
+
+				EditorToolManager.CurrentModeName = "object";
 			}
 		}
 
