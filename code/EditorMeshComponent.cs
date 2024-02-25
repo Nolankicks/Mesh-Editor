@@ -41,10 +41,13 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 	protected override void OnValidate()
 	{
 		Static = true;
+		Transform.Scale = 1;
 	}
 
 	private void TransformChanged()
 	{
+		Transform.Scale = 1;
+
 		if ( _sceneObject.IsValid() )
 		{
 			_sceneObject.Transform = Transform.World;
