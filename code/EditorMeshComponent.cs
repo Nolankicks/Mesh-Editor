@@ -31,6 +31,11 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 	private Color _color = Color.White;
 	private SceneObject _sceneObject;
 	private readonly List<int> _triangleFaces = new();
+	private List<int> _meshIndices = new();
+	private List<Vector3> _meshVertices = new();
+
+	public IEnumerable<int> Vertices => Mesh != null ? Enumerable.Range( 0, Mesh.Vertices.Count )
+		.Where( x => !Mesh.Vertices[x].IsUnused ) : Enumerable.Empty<int>();
 
 	protected override void OnValidate()
 	{
@@ -269,9 +274,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		public Vector2 TextureSize { get; set; }
 	}
 
-	List<int> _meshIndices = new();
-	List<Vector3> _meshVertices = new();
-
 	public void CreateSceneObject()
 	{
 		var submeshes = new Dictionary<string, Submesh>();
@@ -293,16 +295,17 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 			if ( !submeshes.TryGetValue( textureName, out var submesh ) )
 			{
+				var material = Material.Load( textureName );
 				submesh = new();
-				submesh.Material = Material.Load( textureName );
+				submesh.Material = material;
 				submeshes.Add( textureName, submesh );
 
 				Vector2 textureSize = 512;
-				if ( submesh.Material != null )
+				if ( material != null )
 				{
-					var width = submesh.Material.Attributes.GetInt( "WorldMappingWidth" );
-					var height = submesh.Material.Attributes.GetInt( "WorldMappingHeight" );
-					var texture = submesh.Material.FirstTexture;
+					var width = material.Attributes.GetInt( "WorldMappingWidth" );
+					var height = material.Attributes.GetInt( "WorldMappingHeight" );
+					var texture = material.FirstTexture;
 					if ( texture != null )
 					{
 						textureSize = texture.Size;

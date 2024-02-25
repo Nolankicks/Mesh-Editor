@@ -1,4 +1,5 @@
 using Sandbox;
+using System.Linq;
 
 namespace Editor.MeshEditor;
 
@@ -8,8 +9,6 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 	private BBox _startBox;
 	private BBox _newBox;
 	private bool _dragging;
-	//private Transform _startTransform;
-	//private Vector3 _startTextureOrigin;
 
 	public override void OnSelectionChanged()
 	{
@@ -23,7 +22,6 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 		_dragging = false;
 		_newBox = default;
 		_startBox = default;
-		//_startTransform = default;
 	}
 
 	public override void OnUpdate()
@@ -36,6 +34,9 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 		if ( Manager.CurrentSubTool is not null )
 			return;
 
+		var box = BBox.FromPoints( _component.Vertices
+			.Select( x => _component.GetVertexPosition( x ) ) );
+
 		using ( Gizmo.Scope( "Tool", _component.Transform.World ) )
 		{
 			Gizmo.Hitbox.DepthBias = 0.01f;
@@ -45,16 +46,12 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 				Reset();
 			}
 
-			var box = BBox.FromPositionAndSize( 0, 128 );
-
 			if ( Gizmo.Control.BoundingBox( "Resize", box, out var outBox ) )
 			{
 				if ( !_dragging )
 				{
 					_startBox = box;
 					_dragging = true;
-					//_startTransform = _component.Transform.World;
-					//_startTextureOrigin = _component.TextureOrigin;
 				}
 
 				_newBox.Maxs += outBox.Maxs - box.Maxs;
@@ -62,19 +59,6 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 
 				outBox.Maxs = _startBox.Maxs + Gizmo.Snap( _newBox.Maxs, _newBox.Maxs );
 				outBox.Mins = _startBox.Mins + Gizmo.Snap( _newBox.Mins, _newBox.Mins );
-
-				//if ( _component.Type == MeshComponent.PrimitiveType.Plane )
-				//{
-				//	_component.PlaneSize = outBox.Size;
-				//}
-				//else if ( _component.Type == MeshComponent.PrimitiveType.Box )
-				//{
-				//	_component.BoxSize = outBox.Size;
-				//}
-
-				//var origin = outBox.Center - _component.Center;
-				//_component.TextureOrigin = _startTextureOrigin + origin;
-				//_component.Transform.World = _startTransform.ToWorld( new Transform( origin ) );
 			}
 		}
 	}
