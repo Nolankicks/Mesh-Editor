@@ -92,9 +92,16 @@ public class BlockTool : EditorTool
 				Gizmo.Draw.Color = Gizmo.Colors.Active;
 				Gizmo.Draw.LineBBox( _box );
 				Gizmo.Draw.Color = Color.White;
-				Gizmo.Draw.ScreenText( $"L: {_box.Size.y:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithY( _box.Center.y ) ) + Vector2.Down * 32, size: 14 );
-				Gizmo.Draw.ScreenText( $"W: {_box.Size.x:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithX( _box.Center.x ) ) + Vector2.Down * 32, size: 14 );
-				Gizmo.Draw.ScreenText( $"H: {_box.Size.z:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithZ( _box.Center.z ) ) + Vector2.Down * 32, size: 14 );
+
+				var dist = Gizmo.Camera.Position.Distance( _box.Center ) * 0.0025f;
+				dist = System.MathF.Max( 1.75f, 2.5f );
+
+				Gizmo.Draw.Color = Gizmo.Colors.Left;
+				Gizmo.Draw.ScreenText( $"L: {_box.Size.y:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithY( _box.Center.y ) ) + Vector2.Down * 32, size: 14 * dist );
+				Gizmo.Draw.Color = Gizmo.Colors.Forward;
+				Gizmo.Draw.ScreenText( $"W: {_box.Size.x:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithX( _box.Center.x ) ) + Vector2.Down * 32, size: 14 * dist );
+				Gizmo.Draw.Color = Gizmo.Colors.Up;
+				Gizmo.Draw.ScreenText( $"H: {_box.Size.z:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithZ( _box.Center.z ) ) + Vector2.Down * 32, size: 14 * dist );
 			}
 
 			using ( Gizmo.Scope( "Tool" ) )
@@ -230,9 +237,14 @@ public class BlockTool : EditorTool
 				Gizmo.Draw.Color = Gizmo.Colors.Active;
 				var box = new BBox( _dragStartPos, tr.EndPosition );
 				Gizmo.Draw.LineBBox( box );
-				Gizmo.Draw.Color = Color.White;
-				Gizmo.Draw.ScreenText( $"L: {box.Size.y:0.#}", Gizmo.Camera.ToScreen( box.Mins.WithY( box.Center.y ) ) + Vector2.Down * 32, size: 14 );
-				Gizmo.Draw.ScreenText( $"W: {box.Size.x:0.#}", Gizmo.Camera.ToScreen( box.Mins.WithX( box.Center.x ) ) + Vector2.Down * 32, size: 14 );
+
+				var dist = Gizmo.Camera.Position.Distance( _box.Center ) * 0.0025f;
+				dist = System.MathF.Max( 1.75f, 2.5f );
+
+				Gizmo.Draw.Color = Gizmo.Colors.Left;
+				Gizmo.Draw.ScreenText( $"L: {box.Size.y:0.#}", Gizmo.Camera.ToScreen( box.Mins.WithY( box.Center.y ) ) + Vector2.Down * 32, size: 14 * dist );
+				Gizmo.Draw.Color = Gizmo.Colors.Forward;
+				Gizmo.Draw.ScreenText( $"W: {box.Size.x:0.#}", Gizmo.Camera.ToScreen( box.Mins.WithX( box.Center.x ) ) + Vector2.Down * 32, size: 14 * dist );
 			}
 		}
 	}
