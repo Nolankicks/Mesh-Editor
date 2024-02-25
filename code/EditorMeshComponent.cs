@@ -43,6 +43,12 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		{
 			_sceneObject.Transform = Transform.World;
 		}
+
+		if ( KeyframeBody.IsValid() )
+		{
+			KeyframeBody.BodyType = PhysicsBodyType.Keyframed;
+			KeyframeBody.BodyType = PhysicsBodyType.Static;
+		}
 	}
 
 	protected override void OnEnabled()
