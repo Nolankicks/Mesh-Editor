@@ -93,9 +93,6 @@ public class BlockTool : EditorTool
 				Gizmo.Draw.LineThickness = 2;
 				Gizmo.Draw.Color = Gizmo.Colors.Active;
 				Gizmo.Draw.LineBBox( _box );
-				Gizmo.Draw.Color = Color.White;
-
-
 				Gizmo.Draw.Color = Gizmo.Colors.Left;
 				Gizmo.Draw.ScreenText( $"L: {_box.Size.y:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithY( _box.Center.y ) ) + Vector2.Down * 32, size: textSize );
 				Gizmo.Draw.Color = Gizmo.Colors.Forward;
