@@ -9,7 +9,7 @@ namespace Editor.MeshEditor;
 [EditorTool]
 [Title( "Block Tool" )]
 [Icon( "hardware" )]
-[Shortcut( "editortool.block", "b" )]
+[Shortcut( "editortool.block", "Shift+B" )]
 public class BlockTool : EditorTool
 {
 	private BBox _box;
