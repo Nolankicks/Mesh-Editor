@@ -46,7 +46,12 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 	private void TransformChanged()
 	{
-		Transform.Scale = 1;
+		if ( Transform.Scale != Vector3.One )
+		{
+			Scale( Transform.Scale );
+
+			Transform.Scale = 1;
+		}
 
 		if ( _sceneObject.IsValid() )
 		{
@@ -58,6 +63,19 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			KeyframeBody.BodyType = PhysicsBodyType.Keyframed;
 			KeyframeBody.BodyType = PhysicsBodyType.Static;
 		}
+	}
+
+	private void Scale( Vector3 scale )
+	{
+		for ( int i = 0; i < Mesh.Vertices.Count; i++ )
+		{
+			if ( Mesh.Vertices[i].IsUnused )
+				continue;
+
+			Mesh.Vertices[i].Position *= scale;
+		}
+
+		CreateSceneObject();
 	}
 
 	protected override void OnEnabled()
