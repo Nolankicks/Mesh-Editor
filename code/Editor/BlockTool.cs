@@ -76,7 +76,7 @@ public class BlockTool : EditorTool
 		if ( Selection.OfType<GameObject>().Any() )
 			return;
 
-		if ( _boxCreated && Application.IsKeyDown( KeyCode.Escape ) )
+		if ( _boxCreated && Application.FocusWidget is not null && Application.IsKeyDown( KeyCode.Escape ) )
 		{
 			_resizing = false;
 			_dragging = false;
@@ -137,7 +137,7 @@ public class BlockTool : EditorTool
 				Gizmo.Draw.LineBBox( _startBox );
 			}
 
-			if ( Application.IsKeyDown( KeyCode.Enter ) )
+			if ( Application.FocusWidget is not null && Application.IsKeyDown( KeyCode.Enter ) )
 			{
 				var go = CreateFromBox( _box );
 				Selection.Set( go );
