@@ -46,9 +46,10 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 	private void TransformChanged()
 	{
-		if ( Transform.Scale != Vector3.One )
+		var scale = Transform.Scale;
+		if ( !scale.x.AlmostEqual( scale.y ) || !scale.y.AlmostEqual( scale.z ) )
 		{
-			Scale( Transform.Scale );
+			Scale( scale );
 
 			Transform.Scale = 1;
 		}
