@@ -104,7 +104,7 @@ public abstract class BaseMeshTool : EditorTool
 
 	private void UpdateNudge()
 	{
-		if ( Gizmo.HasPressed )
+		if ( Gizmo.HasPressed || Application.FocusWidget is null )
 			return;
 
 		var keyUp = Application.IsKeyDown( KeyCode.Up );
