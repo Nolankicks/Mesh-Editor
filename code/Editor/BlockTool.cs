@@ -83,7 +83,7 @@ public class BlockTool : EditorTool
 			_boxCreated = false;
 		}
 
-		var textSize = 22 * Gizmo.Settings.GimzoScale * Application.DpiScale;
+		var textSize = 22 * Gizmo.Settings.GizmoScale * Application.DpiScale;
 
 		if ( _boxCreated )
 		{
