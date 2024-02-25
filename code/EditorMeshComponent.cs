@@ -9,6 +9,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 	private HalfEdgeMesh Mesh { get; set; }
 
 	public Model Model { get; private set; }
+	public Vector3 TextureOrigin { get; set; }
 
 	[Property, Title( "Tint" )]
 	public Color Color
@@ -361,13 +362,13 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		return _triangleFaces[triangle];
 	}
 
-	private static Vector2 PlanarUV( Vector3 vertexPosition, FaceData faceData, Vector2 textureSize )
+	private Vector2 PlanarUV( Vector3 vertexPosition, FaceData faceData, Vector2 textureSize )
 	{
 		var uv = Vector2.Zero;
 		var scale = 1.0f / textureSize;
 
-		uv.x = Vector3.Dot( faceData.TextureUAxis, faceData.TextureOrigin + vertexPosition );
-		uv.y = Vector3.Dot( faceData.TextureVAxis, faceData.TextureOrigin + vertexPosition );
+		uv.x = Vector3.Dot( faceData.TextureUAxis, TextureOrigin + vertexPosition );
+		uv.y = Vector3.Dot( faceData.TextureVAxis, TextureOrigin + vertexPosition );
 
 		uv *= scale;
 
