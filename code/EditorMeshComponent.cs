@@ -76,7 +76,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			Mesh.Faces.AddFace( 0, 1, 2, 3, faceData );
 		}
 
-		CreateSceneObject();		
+		CreateSceneObject();
 	}
 
 	protected override void OnDisabled()
@@ -266,6 +266,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		public List<SimpleVertex> Vertices { get; init; } = new();
 		public List<int> Indices { get; init; } = new();
 		public Material Material { get; set; }
+		public Vector2 TextureSize { get; set; }
 	}
 
 	List<int> _meshIndices = new();
@@ -295,6 +296,22 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 				submesh = new();
 				submesh.Material = Material.Load( textureName );
 				submeshes.Add( textureName, submesh );
+
+				Vector2 textureSize = 512;
+				if ( submesh.Material != null )
+				{
+					var width = submesh.Material.Attributes.GetInt( "WorldMappingWidth" );
+					var height = submesh.Material.Attributes.GetInt( "WorldMappingHeight" );
+					var texture = submesh.Material.FirstTexture;
+					if ( texture != null )
+					{
+						textureSize = texture.Size;
+						if ( width > 0 ) textureSize.x = width / 0.25f;
+						if ( height > 0 ) textureSize.y = height / 0.25f;
+					}
+				}
+
+				submesh.TextureSize = textureSize;
 			}
 
 			TriangulateFace( i, submesh );
@@ -341,10 +358,10 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		return _triangleFaces[triangle];
 	}
 
-	private static Vector2 PlanarUV( Vector3 vertexPosition, FaceData faceData )
+	private static Vector2 PlanarUV( Vector3 vertexPosition, FaceData faceData, Vector2 textureSize )
 	{
 		var uv = Vector2.Zero;
-		float scale = 1.0f / 512.0f;
+		var scale = 1.0f / textureSize;
 
 		uv.x = Vector3.Dot( faceData.TextureUAxis, faceData.TextureOrigin + vertexPosition );
 		uv.y = Vector3.Dot( faceData.TextureVAxis, faceData.TextureOrigin + vertexPosition );
@@ -396,6 +413,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 		var vertices = submesh.Vertices;
 		var triangles = submesh.Indices;
+		var textureSize = submesh.TextureSize;
 
 		FaceData faceData = face;
 		int startVertex = vertices.Count;
@@ -407,7 +425,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 				position = Mesh.Vertices[(int)v.Data].Position,
 				normal = normal,
 				tangent = faceData.TextureUAxis,
-				texcoord = PlanarUV( Mesh.Vertices[(int)v.Data].Position, faceData ),
+				texcoord = PlanarUV( Mesh.Vertices[(int)v.Data].Position, faceData, textureSize ),
 			} ) );
 
 		_meshVertices.AddRange( tess.Vertices
