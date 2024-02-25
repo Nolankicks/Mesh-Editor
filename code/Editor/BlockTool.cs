@@ -92,8 +92,9 @@ public class BlockTool : EditorTool
 				Gizmo.Draw.Color = Gizmo.Colors.Active;
 				Gizmo.Draw.LineBBox( _box );
 				Gizmo.Draw.Color = Color.White;
-				Gizmo.Draw.ScreenText( $"L: {_box.Size.y:0.#}", Gizmo.Camera.ToScreen( _box.Mins.WithY( _box.Center.y ) ) + Vector2.Down * 32, size: 14 );
-				Gizmo.Draw.ScreenText( $"W: {_box.Size.x:0.#}", Gizmo.Camera.ToScreen( _box.Mins.WithX( _box.Center.x ) ) + Vector2.Down * 32, size: 14 );
+				Gizmo.Draw.ScreenText( $"L: {_box.Size.y:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithY( _box.Center.y ) ) + Vector2.Down * 32, size: 14 );
+				Gizmo.Draw.ScreenText( $"W: {_box.Size.x:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithX( _box.Center.x ) ) + Vector2.Down * 32, size: 14 );
+				Gizmo.Draw.ScreenText( $"H: {_box.Size.z:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithZ( _box.Center.z ) ) + Vector2.Down * 32, size: 14 );
 			}
 
 			using ( Gizmo.Scope( "Tool" ) )
@@ -121,8 +122,19 @@ public class BlockTool : EditorTool
 					_box.Maxs = _startBox.Maxs + Gizmo.Snap( _deltaBox.Maxs, _deltaBox.Maxs );
 					_box.Mins = _startBox.Mins + Gizmo.Snap( _deltaBox.Mins, _deltaBox.Mins );
 
-					LastHeight = _box.Size.z;
+					var spacing = (Gizmo.Settings.SnapToGrid != Gizmo.IsCtrlPressed) ? Gizmo.Settings.GridSpacing : 1.0f;
+					_box.Maxs.x = System.Math.Max( _box.Maxs.x, _startBox.Mins.x + spacing );
+					_box.Mins.x = System.Math.Min( _box.Mins.x, _startBox.Maxs.x - spacing );
+					_box.Maxs.y = System.Math.Max( _box.Maxs.y, _startBox.Mins.y + spacing );
+					_box.Mins.y = System.Math.Min( _box.Mins.y, _startBox.Maxs.y - spacing );
+					_box.Maxs.z = System.Math.Max( _box.Maxs.z, _startBox.Mins.z + spacing );
+					_box.Mins.z = System.Math.Min( _box.Mins.z, _startBox.Maxs.z - spacing );
+
+					LastHeight = System.MathF.Abs( _box.Size.z );
 				}
+
+				Gizmo.Draw.Color = Color.Red.WithAlpha( 0.5f );
+				Gizmo.Draw.LineBBox( _startBox );
 			}
 
 			if ( Application.IsKeyDown( KeyCode.Enter ) )
