@@ -21,6 +21,8 @@ public class BlockTool : EditorTool
 	private bool _finished;
 	private Vector3 _dragStartPos;
 
+	private static float LastHeight = 128;
+
 	public override void OnEnabled()
 	{
 		AllowGameObjectSelection = false;
@@ -118,6 +120,8 @@ public class BlockTool : EditorTool
 
 					_box.Maxs = _startBox.Maxs + Gizmo.Snap( _deltaBox.Maxs, _deltaBox.Maxs );
 					_box.Mins = _startBox.Mins + Gizmo.Snap( _deltaBox.Mins, _deltaBox.Mins );
+
+					LastHeight = _box.Size.z;
 				}
 			}
 
@@ -194,7 +198,7 @@ public class BlockTool : EditorTool
 					if ( box.Size.y < spacing ) box.Maxs.y += spacing;
 				}
 
-				const float height = 128;
+				float height = LastHeight;
 				var size = box.Size.WithZ( height );
 				var position = box.Center.WithZ( box.Center.z + (height * 0.5f) );
 				_box = BBox.FromPositionAndSize( position, size );
