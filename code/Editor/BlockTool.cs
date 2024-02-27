@@ -25,13 +25,28 @@ public class BlockTool : EditorTool
 
 	private static float LastHeight = 128;
 
-	StairsPrimitive primitive = new();
+	private readonly List<PrimitiveBuilder> _primitives = new();
+	private PrimitiveBuilder _primitive;
 
 	public override void OnEnabled()
 	{
 		AllowGameObjectSelection = false;
 
 		Selection.Clear();
+
+		_primitives.Clear();
+
+		CreatePrimitiveBuilders();
+	}
+
+	private void CreatePrimitiveBuilders()
+	{
+		foreach ( var type in EditorTypeLibrary.GetTypes<BlockPrimitive>() )
+		{
+			_primitives.Add( type.Create<BlockPrimitive>() );
+		}
+
+		_primitive = _primitives.FirstOrDefault();
 	}
 
 	public override void OnDisabled()
@@ -50,31 +65,33 @@ public class BlockTool : EditorTool
 
 	private GameObject CreateFromBox( BBox box )
 	{
+		if ( _primitive is null )
+			return null;
+
 		var go = new GameObject( true, "Box" );
 		var mc = go.Components.Create<EditorMeshComponent>( false );
 
-		//var position = box.Center;
-		//box = BBox.FromPositionAndSize( 0, box.Size );
+		var position = box.Center;
+		box = BBox.FromPositionAndSize( 0, box.Size );
 
-		//var polygonMesh = new PolygonMesh();
-		//primitive.SetFromBox( box );
-		//primitive.Build( polygonMesh );
+		var polygonMesh = new PolygonMesh();
+		_primitive.SetFromBox( box );
+		_primitive.Build( polygonMesh );
 
-		//var vertexPositions = polygonMesh.Vertices;
-		//var faceIndices = new List<int>( polygonMesh.Faces.Sum( f => f.Indices.Count ) );
-		//var faceVertexCounts = new List<int>( polygonMesh.Faces.Count );
-		//var faceMaterials = new List<IntPtr>( polygonMesh.Faces.Count );
+		var vertexPositions = polygonMesh.Vertices;
+		var faceIndices = new List<int>( polygonMesh.Faces.Sum( f => f.Indices.Count ) );
+		var faceVertexCounts = new List<int>( polygonMesh.Faces.Count );
+		var faceMaterials = new List<IntPtr>( polygonMesh.Faces.Count );
 
-		//foreach ( var face in polygonMesh.Faces )
-		//{
-		//	faceIndices.AddRange( face.Indices );
-		//	faceVertexCounts.Add( face.Indices.Count );
-		//}
+		foreach ( var face in polygonMesh.Faces )
+		{
+			faceIndices.AddRange( face.Indices );
+			faceVertexCounts.Add( face.Indices.Count );
+		}
 
-		//mc.Transform.Position = position;
-		//mc.ConstructFromData( vertexPositions, faceIndices, faceVertexCounts );
+		mc.Transform.Position = position;
+		mc.ConstructFromData( vertexPositions, faceIndices, faceVertexCounts );
 
-		mc.FromBox( box );
 		mc.Enabled = true;
 
 		EditLog( "Create Block", null );

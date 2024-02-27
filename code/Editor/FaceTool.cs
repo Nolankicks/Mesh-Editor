@@ -37,7 +37,7 @@ public class FaceTool : BaseMeshTool
 					Gizmo.Draw.SolidSphere( position, 4 );
 				}
 
-				if ( Gizmo.HasClicked )
+				if ( Gizmo.WasClicked )
 					Select( new MeshFace( component, face ) );
 			}
 		}
