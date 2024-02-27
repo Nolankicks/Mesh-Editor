@@ -12,7 +12,7 @@ namespace Editor.MeshEditor;
 [Title( "Block Tool" )]
 [Icon( "hardware" )]
 [Shortcut( "editortool.block", "Shift+B" )]
-public class BlockTool : EditorTool
+public partial class BlockTool : EditorTool
 {
 	private BBox _box;
 	private BBox _startBox;
@@ -26,6 +26,23 @@ public class BlockTool : EditorTool
 	private readonly HashSet<PrimitiveBuilder> _primitives = new();
 	private PrimitiveBuilder _primitive;
 
+	private PrimitiveBuilder Current
+	{
+		get => _primitive;
+		set
+		{
+			if ( _primitive == value )
+				return;
+
+			_primitive = value;
+
+			if ( Properties.IsValid() )
+				Properties.Target = _primitive;
+		}
+	}
+
+	private bool InProgress => _boxCreated;
+
 	private static float LastHeight = 128;
 
 	public override void OnEnabled()
@@ -38,6 +55,8 @@ public class BlockTool : EditorTool
 		Selection.Clear();
 
 		CreatePrimitiveBuilders();
+
+		CreateOverlay();
 	}
 
 	public override void OnDisabled()
@@ -64,12 +83,31 @@ public class BlockTool : EditorTool
 	{
 		_primitives.Clear();
 
-		foreach ( var type in EditorTypeLibrary.GetTypes<BlockPrimitive>() )
+		foreach ( var type in GetBuilderTypes() )
 		{
-			_primitives.Add( type.Create<BlockPrimitive>() );
+			_primitives.Add( type.Create<PrimitiveBuilder>() );
 		}
 
 		_primitive = _primitives.FirstOrDefault();
+	}
+
+	private static IEnumerable<TypeDescription> GetBuilderTypes()
+	{
+		return EditorTypeLibrary.GetTypes<PrimitiveBuilder>()
+			.Where( x => !x.IsAbstract ).OrderBy( x => x.Name );
+	}
+
+	private void CreateOverlay()
+	{
+		var window = new WidgetWindow( SceneOverlay, "Block Tool" );
+		window.Layout = Layout.Column();
+		window.Layout.Margin = 4;
+		window.Layout.Add( BuildUI() );
+		window.FixedWidth = 300;
+		window.FixedHeight = 400;
+		window.AdjustSize();
+
+		AddOverlay( window, TextFlag.RightTop, 10 );
 	}
 
 	private GameObject CreateFromBox( BBox box )
@@ -123,6 +161,8 @@ public class BlockTool : EditorTool
 	{
 		if ( _finished )
 			return;
+
+		UpdateStatus();
 
 		if ( Selection.OfType<GameObject>().Any() )
 			return;

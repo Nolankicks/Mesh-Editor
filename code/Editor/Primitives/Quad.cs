@@ -2,7 +2,7 @@
 namespace Editor.MeshEditor;
 
 [Title( "Quad" ), Icon( "rectangle" )]
-internal class QuadPrimitive : PrimitiveBuilder
+public class QuadPrimitive : PrimitiveBuilder
 {
 	public override bool Is2D => true;
 

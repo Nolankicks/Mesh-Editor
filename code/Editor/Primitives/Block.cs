@@ -2,7 +2,7 @@
 namespace Editor.MeshEditor;
 
 [Title( "Block" ), Icon( "rectangle" )]
-internal class BlockPrimitive : PrimitiveBuilder
+public class BlockPrimitive : PrimitiveBuilder
 {
 	public bool Top { get; set; } = true;
 	public bool Bottom { get; set; } = true;

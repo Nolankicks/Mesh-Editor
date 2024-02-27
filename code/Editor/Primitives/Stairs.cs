@@ -3,7 +3,7 @@ using System;
 namespace Editor.MeshEditor;
 
 [Title( "Stairs (Experimental)" ), Icon( "stairs" )]
-internal class StairsPrimitive : PrimitiveBuilder
+public class StairsPrimitive : PrimitiveBuilder
 {
 	[Title( "Number of steps" )]
 	public int NumberOfSteps { get; set; } = 16;
