@@ -23,30 +23,21 @@ public class BlockTool : EditorTool
 	private bool _finished;
 	private Vector3 _dragStartPos;
 
-	private static float LastHeight = 128;
-
-	private readonly List<PrimitiveBuilder> _primitives = new();
+	private readonly HashSet<PrimitiveBuilder> _primitives = new();
 	private PrimitiveBuilder _primitive;
+
+	private static float LastHeight = 128;
 
 	public override void OnEnabled()
 	{
-		AllowGameObjectSelection = false;
+		base.OnEnabled();
 
+		EditorEvent.Register( this );
+
+		AllowGameObjectSelection = false;
 		Selection.Clear();
 
-		_primitives.Clear();
-
 		CreatePrimitiveBuilders();
-	}
-
-	private void CreatePrimitiveBuilders()
-	{
-		foreach ( var type in EditorTypeLibrary.GetTypes<BlockPrimitive>() )
-		{
-			_primitives.Add( type.Create<BlockPrimitive>() );
-		}
-
-		_primitive = _primitives.FirstOrDefault();
 	}
 
 	public override void OnDisabled()
@@ -61,6 +52,24 @@ public class BlockTool : EditorTool
 			_finished = true;
 			_boxCreated = false;
 		}
+	}
+
+	[EditorEvent.Hotload]
+	protected void OnHotload()
+	{
+		CreatePrimitiveBuilders();
+	}
+
+	private void CreatePrimitiveBuilders()
+	{
+		_primitives.Clear();
+
+		foreach ( var type in EditorTypeLibrary.GetTypes<BlockPrimitive>() )
+		{
+			_primitives.Add( type.Create<BlockPrimitive>() );
+		}
+
+		_primitive = _primitives.FirstOrDefault();
 	}
 
 	private GameObject CreateFromBox( BBox box )
