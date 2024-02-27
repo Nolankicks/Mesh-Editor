@@ -23,16 +23,14 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			_color = value;
 
 			if ( _sceneObject.IsValid() )
-			{
 				_sceneObject.ColorTint = Color;
-			}
 		}
 	}
 
 	private Color _color = Color.White;
 	private SceneObject _sceneObject;
 	private readonly List<int> _triangleFaces = new();
-	private List<int> _meshIndices = new();
+	private readonly List<int> _meshIndices = new();
 	private readonly List<Vector3> _meshVertices = new();
 	private bool _dirty;
 
@@ -51,14 +49,11 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		if ( !scale.x.AlmostEqual( scale.y ) || !scale.y.AlmostEqual( scale.z ) )
 		{
 			Scale( scale );
-
 			Transform.Scale = 1;
 		}
 
 		if ( _sceneObject.IsValid() )
-		{
 			_sceneObject.Transform = Transform.World;
-		}
 
 		if ( KeyframeBody.IsValid() )
 		{
@@ -148,6 +143,47 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		}
 	}
 
+	public void ConstructFromData( IList<Vector3> vertices, IList<int> faceIndices, IList<int> faceIndexCounts )
+	{
+		Mesh = new();
+
+		foreach ( var v in vertices )
+		{
+			Mesh.Vertices.Add( v );
+		}
+
+		var faceData = new FaceData
+		{
+			TextureOrigin = Transform.Position,
+			TextureScale = 0.25f,
+			TextureUAxis = Vector3.Right,
+			TextureVAxis = Vector3.Forward
+		};
+
+		int indexCount = 0;
+		foreach ( var faceIndexCount in faceIndexCounts )
+		{
+			var a = Mesh.Vertices[faceIndices[indexCount]].Position;
+			var b = Mesh.Vertices[faceIndices[indexCount + 1]].Position;
+			var c = Mesh.Vertices[faceIndices[indexCount + 2]].Position;
+
+			var normal = Vector3.Cross( b - a, c - a ).Normal;
+			if ( !normal.IsNearZeroLength )
+			{
+				ComputeTextureAxes( normal, out var uAxis, out var vAxis );
+				faceData.TextureUAxis = uAxis;
+				faceData.TextureVAxis = vAxis;
+			}
+
+			Mesh.Faces.AddFace( Enumerable.Range( indexCount, faceIndexCount )
+				.Select( x => faceIndices[x] ), faceData );
+
+			indexCount += faceIndexCount;
+		}
+
+		RebuildMesh();
+	}
+
 	public void FromBox( BBox box )
 	{
 		Mesh = new();
@@ -228,7 +264,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		if ( Mesh is null )
 			return;
 
-		var color = new Color( 0.3137f, 0.7843f, 1.0f );
+		var color = new Color( 0.3137f, 0.7843f, 1.0f, 0.5f );
 
 		using ( Gizmo.Scope( "Vertices" ) )
 		{

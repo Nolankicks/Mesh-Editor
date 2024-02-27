@@ -1,4 +1,6 @@
 using Sandbox;
+using System.Collections.Generic;
+using System;
 using System.Linq;
 
 namespace Editor.MeshEditor;
@@ -22,6 +24,8 @@ public class BlockTool : EditorTool
 	private Vector3 _dragStartPos;
 
 	private static float LastHeight = 128;
+
+	StairsPrimitive primitive = new();
 
 	public override void OnEnabled()
 	{
@@ -49,7 +53,28 @@ public class BlockTool : EditorTool
 		var go = new GameObject( true, "Box" );
 		var mc = go.Components.Create<EditorMeshComponent>( false );
 
-		mc.FromBox( box );
+		var position = box.Center;
+		box = BBox.FromPositionAndSize( 0, box.Size );
+
+		var polygonMesh = new PolygonMesh();
+		primitive.SetFromBox( box );
+		primitive.Build( polygonMesh );
+
+		var vertexPositions = polygonMesh.Vertices;
+		var faceIndices = new List<int>( polygonMesh.Faces.Sum( f => f.Indices.Count ) );
+		var faceVertexCounts = new List<int>( polygonMesh.Faces.Count );
+		var faceMaterials = new List<IntPtr>( polygonMesh.Faces.Count );
+
+		foreach ( var face in polygonMesh.Faces )
+		{
+			faceIndices.AddRange( face.Indices );
+			faceVertexCounts.Add( face.Indices.Count );
+		}
+
+		mc.Transform.Position = position;
+		mc.ConstructFromData( vertexPositions, faceIndices, faceVertexCounts );
+
+		//mc.FromBox( box );
 		mc.Enabled = true;
 
 		EditLog( "Create Block", null );
