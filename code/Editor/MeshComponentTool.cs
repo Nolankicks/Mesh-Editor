@@ -107,7 +107,7 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 				_component.Transform.Position = _startTransform.Position + (_startTransform.Rotation * offset);
 				_component.TextureOrigin = _startTextureOrigin + offset;
 
-				_component.CreateSceneObject();
+				_component.RebuildMesh();
 			}
 		}
 	}

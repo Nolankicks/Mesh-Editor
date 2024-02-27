@@ -2,8 +2,6 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Drawing;
-using static Sandbox.ParticleSnapshot;
 
 namespace Editor.MeshEditor;
 
@@ -11,6 +9,8 @@ public abstract class BaseMeshTool : EditorTool
 {
 	public SelectionSystem MeshSelection { get; init; } = new();
 	public HashSet<MeshElement> VertexSelection { get; init; } = new();
+
+	public static Vector2 RayScreenPosition => Application.CursorPosition - SceneViewWidget.Current.Overlay.Position;
 
 	private bool _meshSelectionDirty;
 	private bool _nudge;
@@ -92,13 +92,6 @@ public abstract class BaseMeshTool : EditorTool
 		}
 
 		UpdateNudge();
-
-		foreach ( var component in Scene.GetAllComponents<EditorMeshComponent>()
-			.Where( x => x.Dirty ) )
-		{
-			component.CreateSceneObject();
-			component.Dirty = false;
-		}
 
 		if ( _meshSelectionDirty )
 		{
@@ -371,7 +364,7 @@ public abstract class BaseMeshTool : EditorTool
 
 	protected MeshElement GetClosestVertex( int radius )
 	{
-		var point = Application.CursorPosition - SceneViewWidget.Current.Overlay.Position;
+		var point = RayScreenPosition;
 		var bestFace = TraceFace( out var bestHitDistance );
 		var bestVertex = GetClosestVertexInFace( bestFace, point, radius );
 
@@ -400,7 +393,7 @@ public abstract class BaseMeshTool : EditorTool
 
 	protected MeshElement GetClosestEdge( int radius )
 	{
-		var point = Application.CursorPosition - SceneViewWidget.Current.Overlay.Position;
+		var point = RayScreenPosition;
 		var bestFace = TraceFace( out var bestHitDistance );
 		var hitPosition = Gizmo.CurrentRay.Project( bestHitDistance );
 		var bestEdge = GetClosestEdgeInFace( bestFace, hitPosition, point, radius );

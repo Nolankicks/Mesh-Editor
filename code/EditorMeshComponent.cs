@@ -33,7 +33,8 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 	private SceneObject _sceneObject;
 	private readonly List<int> _triangleFaces = new();
 	private List<int> _meshIndices = new();
-	private List<Vector3> _meshVertices = new();
+	private readonly List<Vector3> _meshVertices = new();
+	private bool _dirty;
 
 	public IEnumerable<int> Vertices => Mesh != null ? Enumerable.Range( 0, Mesh.Vertices.Count )
 		.Where( x => !Mesh.Vertices[x].IsUnused ) : Enumerable.Empty<int>();
@@ -76,7 +77,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			Mesh.Vertices[i].Position *= scale;
 		}
 
-		CreateSceneObject();
+		RebuildMesh();
 	}
 
 	protected override void OnEnabled()
@@ -104,7 +105,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			Mesh.Faces.AddFace( 0, 1, 2, 3, faceData );
 		}
 
-		CreateSceneObject();
+		RebuildMesh();
 	}
 
 	protected override void OnDisabled()
@@ -194,12 +195,17 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		faceData.TextureVAxis = Vector3.Down;
 		Mesh.Faces.AddFace( 3, 7, 6, 2, faceData );
 
-		CreateSceneObject();
+		RebuildMesh();
 	}
 
 	protected override void OnUpdate()
 	{
 		base.OnUpdate();
+
+		if ( _dirty )
+		{
+			RebuildMesh();
+		}
 	}
 
 	protected override void OnPreRender()
@@ -281,12 +287,10 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		return Mesh.Halfedges.GetVertices( edge );
 	}
 
-	public bool Dirty { get; set; }
-
 	public void SetVertexPosition( int v, Vector3 position )
 	{
 		Mesh.Vertices[v].Position = position;
-		Dirty = true;
+		_dirty = true;
 	}
 
 	public Vector3 GetAverageFaceNormal( int f )
@@ -328,7 +332,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		public Vector2 TextureSize { get; set; }
 	}
 
-	public void CreateSceneObject()
+	public void RebuildMesh()
 	{
 		var submeshes = new Dictionary<string, Submesh>();
 
@@ -405,6 +409,8 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		_sceneObject.ColorTint = Color.WithAlpha( 1.0f );
 
 		Rebuild();
+
+		_dirty = false;
 	}
 
 	public int TriangleToFace( int triangle )
@@ -548,7 +554,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			Mesh.Vertices.OffsetVertex( i, offset.x, offset.y, offset.z );
 		}
 
-		Dirty = true;
+		_dirty = true;
 	}
 
 	public void ExtrudeFace( int faceIndex, Vector3 extrudeOffset )
@@ -590,8 +596,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 			Mesh.Faces.AddFace( v1, v2, v3, v4, sideFaceData );
 		}
-
-		Dirty = true;
 	}
 
 	private static readonly Vector3[] FaceNormals =
@@ -676,7 +680,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		faceData.TextureName = materialName;
 		Mesh.Faces[face].Traits = faceData;
 
-		CreateSceneObject();
+		RebuildMesh();
 	}
 
 	public Material GetMaterial( int triangle )

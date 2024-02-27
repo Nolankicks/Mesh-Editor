@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using System.Linq;
 using System.Collections.Generic;
+using static Sandbox.ParticleSnapshot;
 
 namespace Editor.MeshEditor;
 
@@ -37,6 +38,15 @@ public class FaceTool : BaseMeshTool
 
 				var face = component.TriangleToFace( tr.Triangle );
 
+				using ( Gizmo.Scope( "Face Hover" ) )
+				{
+					Gizmo.Draw.IgnoreDepth = true;
+					Gizmo.Draw.Color = Color.Green;
+
+					var position = component.GetFaceCenter( face );
+					Gizmo.Draw.SolidSphere( position, 4 );
+				}
+
 				if ( Gizmo.WasClicked )
 				{
 					Select( MeshElement.Face( component, face ) );
@@ -57,9 +67,9 @@ public class FaceTool : BaseMeshTool
 			foreach ( var element in MeshSelection.OfType<MeshElement>()
 			.Where( x => x.ElementType == MeshElementType.Face ) )
 			{
-				Gizmo.Draw.Color = Color.Green;
-				var p = element.Transform.PointToWorld( element.Component.GetFaceCenter( element.Index ) );
-				Gizmo.Draw.SolidSphere( p, 4 );
+				Gizmo.Draw.Color = Color.Yellow;
+				var position = element.Transform.PointToWorld( element.Component.GetFaceCenter( element.Index ) );
+				Gizmo.Draw.SolidSphere( position, 4 );
 			}
 		}
 	}
