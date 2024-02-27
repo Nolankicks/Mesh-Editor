@@ -18,7 +18,7 @@ public partial class BlockTool : EditorTool
 	private BBox _startBox;
 	private BBox _deltaBox;
 	private bool _resizing;
-	private bool _boxCreated;
+	private bool _inProgress;
 	private bool _dragging;
 	private bool _finished;
 	private Vector3 _dragStartPos;
@@ -41,7 +41,19 @@ public partial class BlockTool : EditorTool
 		}
 	}
 
-	private bool InProgress => _boxCreated;
+	private bool InProgress
+	{
+		get => _inProgress;
+		set
+		{
+			if ( _inProgress == value )
+				return;
+
+			_inProgress = value;
+
+			UpdateStatus();
+		}
+	}
 
 	private static float LastHeight = 128;
 
@@ -63,13 +75,13 @@ public partial class BlockTool : EditorTool
 	{
 		base.OnDisabled();
 
-		if ( _boxCreated )
+		if ( InProgress )
 		{
 			var go = CreateFromBox( _box );
 			Selection.Set( go );
 
 			_finished = true;
-			_boxCreated = false;
+			InProgress = false;
 		}
 	}
 
@@ -108,6 +120,12 @@ public partial class BlockTool : EditorTool
 		window.AdjustSize();
 
 		AddOverlay( window, TextFlag.RightTop, 10 );
+	}
+
+	private void UpdateGeometry()
+	{
+		if ( !InProgress )
+			return;
 	}
 
 	private GameObject CreateFromBox( BBox box )
@@ -162,21 +180,19 @@ public partial class BlockTool : EditorTool
 		if ( _finished )
 			return;
 
-		UpdateStatus();
-
 		if ( Selection.OfType<GameObject>().Any() )
 			return;
 
-		if ( _boxCreated && Application.FocusWidget is not null && Application.IsKeyDown( KeyCode.Escape ) )
+		if ( InProgress && Application.FocusWidget is not null && Application.IsKeyDown( KeyCode.Escape ) )
 		{
 			_resizing = false;
 			_dragging = false;
-			_boxCreated = false;
+			InProgress = false;
 		}
 
 		var textSize = 22 * Gizmo.Settings.GizmoScale * Application.DpiScale;
 
-		if ( _boxCreated )
+		if ( InProgress )
 		{
 			using ( Gizmo.Scope( "box" ) )
 			{
@@ -238,7 +254,7 @@ public partial class BlockTool : EditorTool
 				Selection.Set( go );
 
 				_finished = true;
-				_boxCreated = false;
+				InProgress = false;
 
 				EditorToolManager.CurrentModeName = "object";
 			}
@@ -283,14 +299,14 @@ public partial class BlockTool : EditorTool
 
 		if ( Gizmo.WasLeftMousePressed )
 		{
-			if ( _boxCreated )
+			if ( _inProgress )
 			{
 				CreateFromBox( _box );
 			}
 
 			_dragging = true;
 			_dragStartPos = tr.EndPosition;
-			_boxCreated = false;
+			InProgress = false;
 		}
 		else if ( Gizmo.WasLeftMouseReleased && _dragging )
 		{
@@ -309,7 +325,7 @@ public partial class BlockTool : EditorTool
 				var size = box.Size.WithZ( height );
 				var position = box.Center.WithZ( box.Center.z + (height * 0.5f) );
 				_box = BBox.FromPositionAndSize( position, size );
-				_boxCreated = true;
+				InProgress = true;
 			}
 
 			_dragging = false;
