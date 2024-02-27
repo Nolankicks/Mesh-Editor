@@ -190,24 +190,13 @@ public partial class BlockTool : EditorTool
 			InProgress = false;
 		}
 
+		if ( Current is null )
+			return;
+
 		var textSize = 22 * Gizmo.Settings.GizmoScale * Application.DpiScale;
 
 		if ( InProgress )
 		{
-			using ( Gizmo.Scope( "box" ) )
-			{
-				Gizmo.Draw.IgnoreDepth = true;
-				Gizmo.Draw.LineThickness = 2;
-				Gizmo.Draw.Color = Gizmo.Colors.Active;
-				Gizmo.Draw.LineBBox( _box );
-				Gizmo.Draw.Color = Gizmo.Colors.Left;
-				Gizmo.Draw.ScreenText( $"L: {_box.Size.y:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithY( _box.Center.y ) ) + Vector2.Down * 32, size: textSize );
-				Gizmo.Draw.Color = Gizmo.Colors.Forward;
-				Gizmo.Draw.ScreenText( $"W: {_box.Size.x:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithX( _box.Center.x ) ) + Vector2.Down * 32, size: textSize );
-				Gizmo.Draw.Color = Gizmo.Colors.Up;
-				Gizmo.Draw.ScreenText( $"H: {_box.Size.z:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithZ( _box.Center.z ) ) + Vector2.Down * 32, size: textSize );
-			}
-
 			using ( Gizmo.Scope( "Tool" ) )
 			{
 				Gizmo.Hitbox.DepthBias = 0.01f;
@@ -217,6 +206,15 @@ public partial class BlockTool : EditorTool
 					_resizing = false;
 					_deltaBox = default;
 					_startBox = default;
+
+					if ( Current.Is2D )
+					{
+						_box.Maxs.z = _box.Mins.z;
+					}
+					else
+					{
+						_box.Maxs.z = _box.Mins.z + LastHeight;
+					}
 				}
 
 				if ( Gizmo.Control.BoundingBox( "Resize", _box, out var outBox ) )
@@ -241,11 +239,33 @@ public partial class BlockTool : EditorTool
 					_box.Maxs.z = System.Math.Max( _box.Maxs.z, _startBox.Mins.z + spacing );
 					_box.Mins.z = System.Math.Min( _box.Mins.z, _startBox.Maxs.z - spacing );
 
-					LastHeight = System.MathF.Abs( _box.Size.z );
+					if ( Current.Is2D )
+					{
+						_box.Mins.z = _startBox.Mins.z;
+						_box.Maxs.z = _startBox.Mins.z;
+					}
+					else
+					{
+						LastHeight = System.MathF.Abs( _box.Size.z );
+					}
 				}
 
 				Gizmo.Draw.Color = Color.Red.WithAlpha( 0.5f );
 				Gizmo.Draw.LineBBox( _startBox );
+			}
+
+			using ( Gizmo.Scope( "box" ) )
+			{
+				Gizmo.Draw.IgnoreDepth = true;
+				Gizmo.Draw.LineThickness = 2;
+				Gizmo.Draw.Color = Gizmo.Colors.Active;
+				Gizmo.Draw.LineBBox( _box );
+				Gizmo.Draw.Color = Gizmo.Colors.Left;
+				Gizmo.Draw.ScreenText( $"L: {_box.Size.y:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithY( _box.Center.y ) ) + Vector2.Down * 32, size: textSize );
+				Gizmo.Draw.Color = Gizmo.Colors.Forward;
+				Gizmo.Draw.ScreenText( $"W: {_box.Size.x:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithX( _box.Center.x ) ) + Vector2.Down * 32, size: textSize );
+				Gizmo.Draw.Color = Gizmo.Colors.Up;
+				Gizmo.Draw.ScreenText( $"H: {_box.Size.z:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithZ( _box.Center.z ) ) + Vector2.Down * 32, size: textSize );
 			}
 
 			if ( Application.FocusWidget is not null && Application.IsKeyDown( KeyCode.Enter ) )
@@ -321,7 +341,7 @@ public partial class BlockTool : EditorTool
 					if ( box.Size.y < spacing ) box.Maxs.y += spacing;
 				}
 
-				float height = LastHeight;
+				float height = Current.Is2D ? 0 : LastHeight;
 				var size = box.Size.WithZ( height );
 				var position = box.Center.WithZ( box.Center.z + (height * 0.5f) );
 				_box = BBox.FromPositionAndSize( position, size );
