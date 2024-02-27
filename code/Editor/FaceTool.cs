@@ -1,7 +1,5 @@
 ﻿using Sandbox;
 using System.Linq;
-using System.Collections.Generic;
-using static Sandbox.ParticleSnapshot;
 
 namespace Editor.MeshEditor;
 
@@ -16,19 +14,11 @@ namespace Editor.MeshEditor;
 [Shortcut( "mesh.face", "3" )]
 public class FaceTool : BaseMeshTool
 {
-	public override IEnumerable<EditorTool> GetSubtools()
-	{
-		yield return new MoveTool( this );
-		yield return new RotateTool( this );
-		yield return new ScaleTool( this );
-	}
-
 	public override void OnUpdate()
 	{
 		base.OnUpdate();
 
 		var tr = MeshTrace.Run();
-
 		if ( tr.Hit && tr.Component is EditorMeshComponent component )
 		{
 			using ( Gizmo.ObjectScope( tr.GameObject, tr.GameObject.Transform.World ) )
@@ -47,10 +37,8 @@ public class FaceTool : BaseMeshTool
 					Gizmo.Draw.SolidSphere( position, 4 );
 				}
 
-				if ( Gizmo.WasClicked )
-				{
-					Select( MeshElement.Face( component, face ) );
-				}
+				if ( Gizmo.HasClicked )
+					Select( new MeshFace( component, face ) );
 			}
 		}
 		else if ( !Gizmo.HasPressed && Gizmo.HasClicked )
@@ -64,11 +52,10 @@ public class FaceTool : BaseMeshTool
 
 		using ( Gizmo.Scope( "Face Selection" ) )
 		{
-			foreach ( var element in MeshSelection.OfType<MeshElement>()
-			.Where( x => x.ElementType == MeshElementType.Face ) )
+			foreach ( var face in MeshSelection.OfType<MeshFace>() )
 			{
 				Gizmo.Draw.Color = Color.Yellow;
-				var position = element.Transform.PointToWorld( element.Component.GetFaceCenter( element.Index ) );
+				var position = face.Transform.PointToWorld( face.Component.GetFaceCenter( face.Index ) );
 				Gizmo.Draw.SolidSphere( position, 4 );
 			}
 		}

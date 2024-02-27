@@ -1,6 +1,5 @@
 ﻿using Sandbox;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace Editor.MeshEditor;
 
@@ -15,33 +14,20 @@ namespace Editor.MeshEditor;
 [Shortcut( "mesh.vertex", "1" )]
 public class VertexTool : BaseMeshTool
 {
-	public override IEnumerable<EditorTool> GetSubtools()
-	{
-		yield return new MoveTool( this );
-		yield return new RotateTool( this );
-		yield return new ScaleTool( this );
-	}
-
 	public override void OnUpdate()
 	{
 		base.OnUpdate();
 
 		if ( !Gizmo.HasHovered )
-		{
 			SelectVertex();
-		}
 
 		using ( Gizmo.Scope( "Vertex Selection" ) )
 		{
 			Gizmo.Draw.IgnoreDepth = true;
 			Gizmo.Draw.Color = Color.Yellow;
 
-			foreach ( var element in MeshSelection.OfType<MeshElement>()
-				.Where( x => x.ElementType == MeshElementType.Vertex ) )
-			{
-				var p = element.Transform.PointToWorld( element.Component.GetVertexPosition( element.Index ) );
-				Gizmo.Draw.Sprite( p, 12, null, false );
-			}
+			foreach ( var vertex in MeshSelection.OfType<MeshVertex>() )
+				Gizmo.Draw.Sprite( vertex.PositionWorld, 12, null, false );
 		}
 	}
 
@@ -50,21 +36,17 @@ public class VertexTool : BaseMeshTool
 		var vertex = GetClosestVertex( 8 );
 		if ( vertex.IsValid() )
 		{
-			using ( Gizmo.ObjectScope( vertex.Component.GameObject, vertex.Transform ) )
+			using ( Gizmo.ObjectScope( vertex.GameObject, vertex.Transform ) )
 			{
 				using ( Gizmo.Scope( "Vertex Hover" ) )
 				{
 					Gizmo.Draw.IgnoreDepth = true;
 					Gizmo.Draw.Color = Color.Green;
-
-					var position = vertex.Component.GetVertexPosition( vertex.Index );
-					Gizmo.Draw.Sprite( position, 12, null, false );
+					Gizmo.Draw.Sprite( vertex.PositionLocal, 12, null, false );
 				}
 
 				if ( Gizmo.HasClicked )
-				{
 					Select( vertex );
-				}
 			}
 		}
 		else if ( !Gizmo.HasPressed && Gizmo.HasClicked )

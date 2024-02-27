@@ -13,7 +13,7 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 	private bool _dragging;
 	private Transform _startTransform;
 	private Vector3 _startTextureOrigin;
-	private Dictionary<int, Vector3> _vertices = new();
+	private readonly Dictionary<int, Vector3> _vertices = new();
 
 	public override void OnSelectionChanged()
 	{

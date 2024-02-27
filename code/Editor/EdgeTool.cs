@@ -1,6 +1,5 @@
 ﻿using Sandbox;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace Editor.MeshEditor;
 
@@ -15,21 +14,12 @@ namespace Editor.MeshEditor;
 [Shortcut( "mesh.edge", "2" )]
 public class EdgeTool : BaseMeshTool
 {
-	public override IEnumerable<EditorTool> GetSubtools()
-	{
-		yield return new MoveTool( this );
-		yield return new RotateTool( this );
-		yield return new ScaleTool( this );
-	}
-
 	public override void OnUpdate()
 	{
 		base.OnUpdate();
 
 		if ( !Gizmo.HasHovered )
-		{
 			SelectEdge();
-		}
 
 		using ( Gizmo.Scope( "Edge Selection" ) )
 		{
@@ -37,12 +27,11 @@ public class EdgeTool : BaseMeshTool
 			Gizmo.Draw.Color = Color.Yellow;
 			Gizmo.Draw.LineThickness = 4;
 
-			foreach ( var element in MeshSelection.OfType<MeshElement>()
-				.Where( x => x.ElementType == MeshElementType.Edge ) )
+			foreach ( var edge in MeshSelection.OfType<MeshEdge>() )
 			{
-				var line = element.Component.GetEdge( element.Index );
-				var a = element.Transform.PointToWorld( line.Start );
-				var b = element.Transform.PointToWorld( line.End );
+				var line = edge.Component.GetEdge( edge.Index );
+				var a = edge.Transform.PointToWorld( line.Start );
+				var b = edge.Transform.PointToWorld( line.End );
 				Gizmo.Draw.Line( a, b );
 			}
 		}
@@ -65,9 +54,7 @@ public class EdgeTool : BaseMeshTool
 				}
 
 				if ( Gizmo.HasClicked )
-				{
 					Select( edge );
-				}
 			}
 		}
 		else if ( !Gizmo.HasPressed && Gizmo.HasClicked )

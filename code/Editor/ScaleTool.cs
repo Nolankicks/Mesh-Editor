@@ -17,7 +17,7 @@ namespace Editor.MeshEditor;
 public class ScaleTool : EditorTool
 {
 	private readonly BaseMeshTool _meshTool;
-	private readonly Dictionary<BaseMeshTool.MeshElement, Vector3> _startVertices = new();
+	private readonly Dictionary<MeshVertex, Vector3> _startVertices = new();
 	private Vector3 _moveDelta;
 	private Vector3 _origin;
 	private Rotation _basis;
@@ -65,9 +65,7 @@ public class ScaleTool : EditorTool
 					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
 				}
 
-				EditLog( "Scale Mesh Element", _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
-					.Select( x => x.Component )
-					.Distinct() );
+				EditLog( "Scale Mesh Element", null );
 			}
 		}
 	}
@@ -79,18 +77,17 @@ public class ScaleTool : EditorTool
 
 		if ( Gizmo.IsShiftPressed )
 		{
-			foreach ( var s in _meshTool.MeshSelection.OfType<BaseMeshTool.MeshElement>()
-				.Where( x => x.ElementType == BaseMeshTool.MeshElementType.Face ) )
+			foreach ( var face in _meshTool.MeshSelection.OfType<MeshFace>() )
 			{
-				s.Component.ExtrudeFace( s.Index, s.Component.GetAverageFaceNormal( s.Index ) * 0.01f );
+				face.Component.ExtrudeFace( face.Index, face.Component.GetAverageFaceNormal( face.Index ) * 0.01f );
 			}
 
 			_meshTool.CalculateSelectionVertices();
 		}
 
-		foreach ( var entry in _meshTool.VertexSelection )
+		foreach ( var vertex in _meshTool.VertexSelection )
 		{
-			_startVertices[entry] = entry.Transform.PointToWorld( entry.Component.GetVertexPosition( entry.Index ) );
+			_startVertices[vertex] = vertex.PositionWorld;
 		}
 	}
 }
