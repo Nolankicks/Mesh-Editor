@@ -261,6 +261,26 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		}
 	}
 
+	public Line GetEdge( int edge )
+	{
+		if ( Mesh.Halfedges[edge].IsUnused )
+			return default;
+
+		var edgeVertices = Mesh.Halfedges.GetVertices( edge );
+		var a = Mesh.Vertices[edgeVertices[0]].Position;
+		var b = Mesh.Vertices[edgeVertices[1]].Position;
+
+		return new Line( a, b );
+	}
+
+	public int[] GetEdgeVertices( int edge )
+	{
+		if ( Mesh.Halfedges[edge].IsUnused )
+			return default;
+
+		return Mesh.Halfedges.GetVertices( edge );
+	}
+
 	public bool Dirty { get; set; }
 
 	public void SetVertexPosition( int v, Vector3 position )
@@ -286,7 +306,18 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 	public int[] GetFaceVertices( int f )
 	{
+		if ( f < 0 || Mesh.Faces[f].IsUnused )
+			return null;
+
 		return Mesh.Faces.GetFaceVertices( f );
+	}
+
+	public int[] GetFaceEdges( int f )
+	{
+		if ( f < 0 || Mesh.Faces[f].IsUnused )
+			return null;
+
+		return Mesh.Faces.GetHalfedges( f );
 	}
 
 	private class Submesh
@@ -381,7 +412,11 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		if ( triangle < 0 || triangle >= _triangleFaces.Count )
 			return -1;
 
-		return _triangleFaces[triangle];
+		var face = _triangleFaces[triangle];
+		if ( Mesh.Faces[face].IsUnused )
+			return -1;
+
+		return face;
 	}
 
 	private Vector2 PlanarUV( Vector3 vertexPosition, FaceData faceData, Vector2 textureSize )
@@ -557,31 +592,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		}
 
 		Dirty = true;
-	}
-
-	public int GetClosestVertex( Vector3 position )
-	{
-		int closestIndex = -1;
-		float closestDistance = float.MaxValue;
-
-		position = Transform.World.PointToLocal( position );
-
-		for ( int i = 0; i < Mesh.Vertices.Count; i++ )
-		{
-			var v = Mesh.Vertices[i];
-			if ( v.IsUnused )
-				continue;
-
-			var p = v.Position;
-			float distance = Vector3.DistanceBetween( p, position );
-			if ( distance < closestDistance )
-			{
-				closestDistance = distance;
-				closestIndex = i;
-			}
-		}
-
-		return closestIndex;
 	}
 
 	private static readonly Vector3[] FaceNormals =

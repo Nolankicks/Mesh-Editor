@@ -5,15 +5,15 @@ using System.Collections.Generic;
 namespace Editor.MeshEditor;
 
 /// <summary>
-/// Move, rotate and scale mesh vertices
+/// Move, rotate and scale mesh edges
 /// </summary>
 [EditorTool]
-[Title( "Vertex" )]
-[Icon( "workspaces" )]
-[Alias( "Vertex" )]
-[Group( "1" )]
-[Shortcut( "mesh.vertex", "1" )]
-public class VertexTool : BaseMeshTool
+[Title( "Edge" )]
+[Icon( "show_chart" )]
+[Alias( "Edge" )]
+[Group( "2" )]
+[Shortcut( "mesh.edge", "2" )]
+public class EdgeTool : BaseMeshTool
 {
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
@@ -28,42 +28,45 @@ public class VertexTool : BaseMeshTool
 
 		if ( !Gizmo.HasHovered )
 		{
-			SelectVertex();
+			SelectEdge();
 		}
 
-		using ( Gizmo.Scope( "Vertex Selection" ) )
+		using ( Gizmo.Scope( "Edge Selection" ) )
 		{
 			Gizmo.Draw.IgnoreDepth = true;
 			Gizmo.Draw.Color = Color.Yellow;
+			Gizmo.Draw.LineThickness = 4;
 
 			foreach ( var element in MeshSelection.OfType<MeshElement>()
-				.Where( x => x.ElementType == MeshElementType.Vertex ) )
+				.Where( x => x.ElementType == MeshElementType.Edge ) )
 			{
-				var p = element.Transform.PointToWorld( element.Component.GetVertexPosition( element.Index ) );
-				Gizmo.Draw.Sprite( p, 12, null, false );
+				var line = element.Component.GetEdge( element.Index );
+				var a = element.Transform.PointToWorld( line.Start );
+				var b = element.Transform.PointToWorld( line.End );
+				Gizmo.Draw.Line( a, b );
 			}
 		}
 	}
 
-	private void SelectVertex()
+	private void SelectEdge()
 	{
-		var vertex = GetClosestVertex( 8 );
-		if ( vertex.IsValid() )
+		var edge = GetClosestEdge( 8 );
+		if ( edge.IsValid() )
 		{
-			using ( Gizmo.ObjectScope( vertex.Component.GameObject, vertex.Transform ) )
+			using ( Gizmo.ObjectScope( edge.Component.GameObject, edge.Transform ) )
 			{
-				using ( Gizmo.Scope( "Vertex Hover" ) )
+				using ( Gizmo.Scope( "Edge Hover" ) )
 				{
 					Gizmo.Draw.IgnoreDepth = true;
 					Gizmo.Draw.Color = Color.Green;
-
-					var position = vertex.Component.GetVertexPosition( vertex.Index );
-					Gizmo.Draw.Sprite( position, 12, null, false );
+					Gizmo.Draw.LineThickness = 4;
+					var line = edge.Component.GetEdge( edge.Index );
+					Gizmo.Draw.Line( line );
 				}
 
 				if ( Gizmo.HasClicked )
 				{
-					Select( vertex );
+					Select( edge );
 				}
 			}
 		}
