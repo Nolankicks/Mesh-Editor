@@ -147,6 +147,8 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 	{
 		Mesh = new();
 
+		TextureOrigin = Transform.Position;
+
 		foreach ( var v in vertices )
 		{
 			Mesh.Vertices.Add( v );
@@ -154,7 +156,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 		var faceData = new FaceData
 		{
-			TextureOrigin = Transform.Position,
 			TextureScale = 0.25f,
 			TextureUAxis = Vector3.Right,
 			TextureVAxis = Vector3.Forward
@@ -191,6 +192,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		var position = box.Center;
 		box = BBox.FromPositionAndSize( 0, box.Size );
 		Transform.Position = position;
+		TextureOrigin = position;
 
 		Mesh.Vertices.Add( new Vector3( box.Mins.x, box.Mins.y, box.Mins.z ) );
 		Mesh.Vertices.Add( new Vector3( box.Maxs.x, box.Mins.y, box.Mins.z ) );
@@ -203,7 +205,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 		var faceData = new FaceData
 		{
-			TextureOrigin = position,
 			TextureScale = 0.25f,
 			TextureUAxis = Vector3.Right,
 			TextureVAxis = Vector3.Forward
