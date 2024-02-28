@@ -161,6 +161,9 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		{
 			RebuildMesh();
 		}
+
+		if ( _sceneObject.IsValid() && !_sceneObject.Tags.Has( "PolygonMesh" ) )
+			_sceneObject.Tags.Add( "PolygonMesh" );
 	}
 
 	protected override void OnPreRender()
@@ -383,6 +386,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		if ( !_sceneObject.IsValid() )
 		{
 			_sceneObject = new SceneObject( Scene.SceneWorld, Model, Transform.World );
+			_sceneObject.Tags.Add( "PolygonMesh" );
 		}
 		else
 		{

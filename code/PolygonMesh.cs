@@ -18,12 +18,10 @@ public sealed class PolygonMesh
 
 	private struct FaceMesh
 	{
-		public int VertexStart { get; set; }
-		public int IndexStart { get; set; }
-		public int VertexCount { get; set; }
-		public int IndexCount { get; set; }
-		public Vector3 Normal { get; set; }
-		public Vector3 Tangent { get; set; }
+		public int VertexStart;
+		public int IndexStart;
+		public int VertexCount;
+		public int IndexCount;
 	}
 
 	public Vertex[] CreateFace( int face, Transform transform, Color color )
@@ -341,8 +339,6 @@ public sealed class PolygonMesh
 			IndexCount = _meshIndices.Count - startIndex,
 			VertexStart = startCollisionVertex,
 			IndexStart = startIndex,
-			Normal = normal,
-			Tangent = faceData.TextureUAxis,
 		} );
 	}
 

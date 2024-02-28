@@ -351,7 +351,7 @@ public abstract class BaseMeshTool : EditorTool
 	{
 		distance = default;
 
-		var result = MeshTrace.Run();
+		var result = MeshTrace.WithTag( "PolygonMesh" ).Run();
 		if ( !result.Hit || result.Component is not EditorMeshComponent component )
 			return default;
 
@@ -362,7 +362,7 @@ public abstract class BaseMeshTool : EditorTool
 
 	public MeshFace TraceFace()
 	{
-		var result = MeshTrace.Run();
+		var result = MeshTrace.WithTag( "PolygonMesh" ).Run();
 		if ( !result.Hit || result.Component is not EditorMeshComponent component )
 			return default;
 
@@ -391,7 +391,7 @@ public abstract class BaseMeshTool : EditorTool
 		var faceHash = new HashSet<MeshFace>();
 		foreach ( var ray in rays )
 		{
-			var result = MeshTrace.Ray( ray, 5000 ).Run();
+			var result = MeshTrace.Ray( ray, 5000 ).WithTag( "PolygonMesh" ).Run();
 			if ( !result.Hit )
 				continue;
 
