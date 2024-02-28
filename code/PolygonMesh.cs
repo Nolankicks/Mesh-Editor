@@ -14,7 +14,7 @@ public sealed class PolygonMesh
 	private readonly List<int> _meshIndices = new();
 	private readonly List<Vector3> _meshVertices = new();
 
-	private static readonly Material DefaultMaterial = Material.Load( "materials/dev/simple/simple_blend.vmat" );
+	private static readonly Material DefaultMaterial = Material.Load( "materials/dev/reflectivity_30.vmat" );
 
 	/// <summary>
 	/// Whether to merge overlapping vertices.
