@@ -9,6 +9,7 @@ public sealed class PolygonMesh
 	public HalfEdgeMesh Mesh { get; private set; }
 	public Model Model { get; private set; }
 	public Vector3 TextureOrigin { get; set; }
+	public bool UseCollision { get; set; }
 
 	private readonly List<int> _triangleFaces = new();
 	private readonly List<int> _meshIndices = new();
@@ -195,7 +196,9 @@ public sealed class PolygonMesh
 			builder.AddMesh( mesh );
 		}
 
-		builder.AddCollisionMesh( _meshVertices.ToArray(), _meshIndices.ToArray() );
+		if ( UseCollision )
+			builder.AddCollisionMesh( _meshVertices.ToArray(), _meshIndices.ToArray() );
+
 		Model = builder.Create();
 	}
 

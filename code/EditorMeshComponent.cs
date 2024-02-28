@@ -364,6 +364,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 	public void RebuildMesh()
 	{
+		PolygonMesh.UseCollision = true;
 		PolygonMesh.TextureOrigin = TextureOrigin;
 		PolygonMesh.Rebuild();
 

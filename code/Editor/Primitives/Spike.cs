@@ -11,7 +11,7 @@ internal class SpikePrimitive : PrimitiveBuilder
 	public int NumberOfSides { get; set; } = 16;
 
 	[Hide] public Vector3 Center { get; set; }
-	[Hide]  public Vector3 Size { get; set; }
+	[Hide] public Vector3 Size { get; set; }
 
 	public override void SetFromBox( BBox box )
 	{
