@@ -504,6 +504,13 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		{
 			var vertices = submesh.Vertices;
 			var indices = submesh.Indices;
+
+			if ( vertices.Count < 3 )
+				continue;
+
+			if ( indices.Count < 3 )
+				continue;
+
 			var bounds = BBox.FromPoints( vertices.Select( x => x.position ) );
 			var material = submesh.Material ?? DefaultMaterial;
 			var mesh = new Mesh( material );
