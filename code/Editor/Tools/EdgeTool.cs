@@ -57,13 +57,9 @@ public class EdgeTool : BaseMeshTool
 					Select( edge );
 			}
 		}
-		else if ( !Gizmo.HasPressed && Gizmo.HasClicked )
+		else if ( !Gizmo.HasPressed && Gizmo.HasClicked && !IsMultiSelecting )
 		{
-			var multiSelect = Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Ctrl ) ||
-				Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Shift );
-
-			if ( !multiSelect )
-				MeshSelection.Clear();
+			MeshSelection.Clear();
 		}
 	}
 }

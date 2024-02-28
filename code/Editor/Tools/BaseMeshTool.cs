@@ -14,6 +14,9 @@ public abstract class BaseMeshTool : EditorTool
 
 	public static Vector2 RayScreenPosition => Application.CursorPosition - SceneViewWidget.Current.Overlay.Position;
 
+	public static bool IsMultiSelecting => Application.KeyboardModifiers.HasFlag(KeyboardModifiers.Ctrl ) ||
+				Application.KeyboardModifiers.HasFlag(KeyboardModifiers.Shift );
+
 	private bool _meshSelectionDirty;
 	private bool _nudge;
 
@@ -355,6 +358,16 @@ public abstract class BaseMeshTool : EditorTool
 			return default;
 
 		distance = result.Distance;
+		var face = component.TriangleToFace( result.Triangle );
+		return new MeshFace( component, face );
+	}
+
+	public MeshFace TraceFace()
+	{
+		var result = MeshTrace.Run();
+		if ( !result.Hit || result.Component is not EditorMeshComponent component )
+			return default;
+
 		var face = component.TriangleToFace( result.Triangle );
 		return new MeshFace( component, face );
 	}

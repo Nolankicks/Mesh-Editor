@@ -12,7 +12,9 @@ public readonly struct MeshFace : IValid
 	[Hide] public int Index { get; private init; }
 
 	[Hide] public readonly bool IsValid => Component.IsValid() && Index >= 0;
-	[Hide] public readonly Transform Transform => Component.IsValid() ? Component.Transform.World : Transform.Zero;
+	[Hide] public readonly Transform Transform => IsValid ? Component.Transform.World : Transform.Zero;
+
+	[Hide] public Vector3 Center => IsValid ? Component.GetFaceCenter( Index ) : Vector3.Zero;
 
 	public MeshFace( EditorMeshComponent component, int index )
 	{
@@ -21,39 +23,39 @@ public readonly struct MeshFace : IValid
 	}
 
 	public readonly override int GetHashCode() => HashCode.Combine( Component, nameof( MeshFace ), Index );
-	public override readonly string ToString() => $"{Component.GameObject.Name} Face {Index}";
+	public override readonly string ToString() => IsValid ? $"{Component.GameObject.Name} Face {Index}" : "Invalid Face";
 
 	[Range( -180.0f, 180.0f )]
 	public float TextureAngle
 	{
-		get => Component.IsValid() ? Component.GetTextureAngle( Index ) : default;
+		get => IsValid ? Component.GetTextureAngle( Index ) : default;
 		set => Component?.SetTextureAngle( Index, value );
 	}
 
 	public Vector2 TextureOffset
 	{
-		get => Component.IsValid() ? Component.GetTextureOffset( Index ) : default;
+		get => IsValid ? Component.GetTextureOffset( Index ) : default;
 		set => Component?.SetTextureOffset( Index, value );
 	}
 
 	public Vector2 TextureScale
 	{
-		get => Component.IsValid() ? Component.GetTextureScale( Index ) : default;
+		get => IsValid ? Component.GetTextureScale( Index ) : default;
 		set => Component?.SetTextureScale( Index, value );
 	}
 
 	public Material Material
 	{
-		get => Component.IsValid() ? Component.GetFaceMaterial( Index ) : default;
+		get => IsValid ? Component.GetFaceMaterial( Index ) : default;
 		set => Component?.SetFaceMaterial( Index, value );
 	}
 
 	public MeshVertex GetClosestVertex( Vector2 point, float maxDistance )
 	{
-		if ( !this.IsValid() )
+		if ( !IsValid )
 			return default;
 
-		var transform = Component.Transform.World;
+		var transform = Transform;
 		var minDistance = maxDistance;
 		var closestVertex = -1;
 
@@ -74,7 +76,7 @@ public readonly struct MeshFace : IValid
 
 	public MeshEdge GetClosestEdge( Vector3 position, Vector2 point, float maxDistance )
 	{
-		if ( !this.IsValid() )
+		if ( !IsValid )
 			return default;
 
 		var transform = Transform;

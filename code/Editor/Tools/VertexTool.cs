@@ -36,7 +36,7 @@ public class VertexTool : BaseMeshTool
 		var vertex = GetClosestVertex( 8 );
 		if ( vertex.IsValid() )
 		{
-			using ( Gizmo.ObjectScope( vertex.GameObject, vertex.Transform ) )
+			using ( Gizmo.ObjectScope( vertex.Component.GameObject, vertex.Transform ) )
 			{
 				using ( Gizmo.Scope( "Vertex Hover" ) )
 				{
@@ -49,13 +49,9 @@ public class VertexTool : BaseMeshTool
 					Select( vertex );
 			}
 		}
-		else if ( !Gizmo.HasPressed && Gizmo.HasClicked )
+		else if ( !Gizmo.HasPressed && Gizmo.HasClicked && !IsMultiSelecting )
 		{
-			var multiSelect = Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Ctrl ) ||
-				Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Shift );
-
-			if ( !multiSelect )
-				MeshSelection.Clear();
+			MeshSelection.Clear();
 		}
 	}
 }
