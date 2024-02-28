@@ -43,6 +43,13 @@ public partial class FaceTool : BaseMeshTool
 	{
 		base.OnUpdate();
 
+		if ( Application.IsKeyDown( KeyCode.Delete ) && Application.FocusWidget is not null )
+		{
+			DeleteSelection();
+
+			return;
+		}
+
 		if ( !Gizmo.HasHovered )
 			SelectFace();
 
@@ -81,5 +88,18 @@ public partial class FaceTool : BaseMeshTool
 		{
 			MeshSelection.Clear();
 		}
+	}
+
+	private void DeleteSelection()
+	{
+		var groups = MeshSelection.OfType<MeshFace>()
+			.GroupBy( face => face.Component );
+
+		foreach ( var group in groups )
+		{
+			group.Key.RemoveFaces( group.Select( x => x.Index ).ToArray() );
+		}
+
+		MeshSelection.Clear();
 	}
 }

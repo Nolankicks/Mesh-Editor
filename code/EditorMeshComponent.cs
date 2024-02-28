@@ -362,6 +362,18 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		return Material.Load( Mesh.Faces[f].Traits.TextureName );
 	}
 
+	public void RemoveFaces( IEnumerable<int> faces )
+	{
+		foreach ( var i in faces )
+		{
+			Mesh.Faces.RemoveFace( i );
+		}
+
+		Mesh.Compact();
+
+		_dirty = true;
+	}
+
 	public void RebuildMesh()
 	{
 		PolygonMesh.UseCollision = true;

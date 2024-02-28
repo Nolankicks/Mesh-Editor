@@ -36,6 +36,7 @@ public partial class FaceTool
 	protected override void OnMeshSelectionChanged()
 	{
 		BuildControlSheet();
+		SceneOverlay.Update();
 	}
 
 	private void BuildControlSheet()
