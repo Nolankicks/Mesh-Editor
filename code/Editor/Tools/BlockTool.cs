@@ -274,12 +274,16 @@ public partial class BlockTool : EditorTool
 				Gizmo.Draw.LineThickness = 2;
 				Gizmo.Draw.Color = Gizmo.Colors.Active.WithAlpha( 0.5f );
 				Gizmo.Draw.LineBBox( _box );
+				Gizmo.Draw.LineThickness = 3;
 				Gizmo.Draw.Color = Gizmo.Colors.Left;
 				Gizmo.Draw.ScreenText( $"L: {_box.Size.y:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithY( _box.Center.y ) ) + Vector2.Down * 32, size: textSize );
+				Gizmo.Draw.Line( _box.Maxs.WithY( _box.Mins.y ), _box.Maxs.WithY( _box.Maxs.y ) );
 				Gizmo.Draw.Color = Gizmo.Colors.Forward;
 				Gizmo.Draw.ScreenText( $"W: {_box.Size.x:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithX( _box.Center.x ) ) + Vector2.Down * 32, size: textSize );
+				Gizmo.Draw.Line( _box.Maxs.WithX( _box.Mins.x ), _box.Maxs.WithX( _box.Maxs.x ) );
 				Gizmo.Draw.Color = Gizmo.Colors.Up;
 				Gizmo.Draw.ScreenText( $"H: {_box.Size.z:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithZ( _box.Center.z ) ) + Vector2.Down * 32, size: textSize );
+				Gizmo.Draw.Line( _box.Maxs.WithZ( _box.Mins.z ), _box.Maxs.WithZ( _box.Maxs.z ) );
 			}
 
 			if ( Application.FocusWidget is not null && Application.IsKeyDown( KeyCode.Enter ) )
