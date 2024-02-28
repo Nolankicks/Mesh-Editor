@@ -64,6 +64,9 @@ public abstract class BaseMeshTool : EditorTool
 		if ( _meshSelectionDirty )
 		{
 			CalculateSelectionVertices();
+			OnMeshSelectionChanged();
+
+			_meshSelectionDirty = false;
 		}
 	}
 
@@ -98,6 +101,8 @@ public abstract class BaseMeshTool : EditorTool
 				var transform = faceElement.Transform;
 				faceElement.Component.ExtrudeFace( faceElement.Index, transform.Rotation.Inverse * delta );
 			}
+
+			CalculateSelectionVertices();
 		}
 		else
 		{
@@ -111,8 +116,6 @@ public abstract class BaseMeshTool : EditorTool
 		}
 
 		EditLog( "Moved", null );
-
-		CalculateSelectionVertices();
 
 		_nudge = true;
 	}
@@ -193,8 +196,6 @@ public abstract class BaseMeshTool : EditorTool
 				VertexSelection.Add( vertexElement );
 			}
 		}
-
-		_meshSelectionDirty = false;
 	}
 
 	private HashSet<GameObject> GetSelectedObjects()
@@ -249,8 +250,6 @@ public abstract class BaseMeshTool : EditorTool
 	private void OnMeshSelectionChanged( object o )
 	{
 		_meshSelectionDirty = true;
-
-		OnMeshSelectionChanged();
 	}
 
 	protected virtual void OnMeshSelectionChanged()

@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System.Linq;
 
 namespace Editor.MeshEditor;
 
@@ -12,7 +13,7 @@ public partial class FaceTool
 		widget.Layout = Layout.Column();
 
 		ControlLayout = widget.Layout.AddRow();
-		RebuildControlSheet();
+		BuildControlSheet();
 
 		widget.Layout.AddStretchCell();
 
@@ -30,5 +31,30 @@ public partial class FaceTool
 		window.AdjustSize();
 
 		AddOverlay( window, TextFlag.LeftBottom, 10 );
+	}
+
+	protected override void OnMeshSelectionChanged()
+	{
+		BuildControlSheet();
+	}
+
+	private void BuildControlSheet()
+	{
+		if ( !ControlLayout.IsValid() )
+			return;
+
+		ControlLayout.Clear( true );
+		var sheet = new ControlSheet();
+		ControlLayout.Add( sheet );
+
+		var mso = new MultiSerializedObject();
+		foreach ( var face in MeshSelection.Where( x => x is MeshFace ) )
+		{
+			var serialized = EditorTypeLibrary.GetSerializedObject( face );
+			mso.Add( serialized );
+		}
+
+		mso.Rebuild();
+		sheet.AddObject( mso );
 	}
 }

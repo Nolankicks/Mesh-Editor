@@ -115,25 +115,6 @@ public partial class BlockTool : EditorTool
 			.Where( x => !x.IsAbstract ).OrderBy( x => x.Name );
 	}
 
-	private void CreateOverlay()
-	{
-		var window = new WidgetWindow( SceneOverlay, "Block Tool" );
-		window.Layout = Layout.Column();
-		window.Layout.Margin = 4;
-		window.Layout.Add( BuildUI() );
-		window.FixedWidth = 300;
-		window.FixedHeight = 400;
-		window.AdjustSize();
-
-		AddOverlay( window, TextFlag.LeftTop, 10 );
-	}
-
-	private void UpdateGeometry()
-	{
-		if ( !InProgress )
-			return;
-	}
-
 	private GameObject CreateFromBox( BBox box )
 	{
 		if ( _primitive is null )

@@ -716,6 +716,8 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 			Mesh.Faces.AddFace( v1, v2, v3, v4, sideFaceData );
 		}
+
+		_dirty = true;
 	}
 
 	private static readonly Vector3[] FaceNormals =

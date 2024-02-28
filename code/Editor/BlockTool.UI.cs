@@ -50,6 +50,19 @@ public partial class BlockTool
 		return widget;
 	}
 
+	private void CreateOverlay()
+	{
+		var window = new WidgetWindow( SceneOverlay, "Block Tool" );
+		window.Layout = Layout.Column();
+		window.Layout.Margin = 4;
+		window.Layout.Add( BuildUI() );
+		window.FixedWidth = 300;
+		window.FixedHeight = 400;
+		window.AdjustSize();
+
+		AddOverlay( window, TextFlag.LeftTop, 10 );
+	}
+
 	private void UpdateStatus()
 	{
 		Header.Text = $"{(InProgress ? "Placing" : "Create")} Geometry";
