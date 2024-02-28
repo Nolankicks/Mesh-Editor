@@ -425,7 +425,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		FaceData faceData = Mesh.Faces[faceIndex];
 		var sideFaceData = faceData;
 
-		var newFaceIndices = Mesh.Vertices.AddVertices( faceVertices.Select( v => v.Position + extrudeOffset ) );
+		var newFaceIndices = Mesh.Vertices.AddVertices( faceVertices.Select( v => v.Position ) );
 		Mesh.Faces.ReplaceFace( faceIndex, newFaceIndices, faceData );
 
 		int numVertices = newFaceIndices.Length;
@@ -437,7 +437,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			var v3 = faceIndices[(i + 1) % numVertices];
 			var v4 = newFaceIndices[(i + 1) % numVertices];
 
-			var a = Mesh.Vertices[v1].Position;
+			var a = Mesh.Vertices[v1].Position + extrudeOffset;
 			var b = Mesh.Vertices[v2].Position;
 			var c = Mesh.Vertices[v3].Position;
 
@@ -472,9 +472,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		var b = Mesh.Vertices[edgeVertices[1]].Position + extrudeOffset;
 		var c = Mesh.Vertices[edgeVertices[0]].Position;
 
-		var v1 = Mesh.Vertices.Add( a );
-		var v2 = Mesh.Vertices.Add( b );
-
 		var normal = Vector3.Cross( b - a, c - a ).Normal;
 		if ( !normal.IsNearZeroLength && extrudeOffset.Length > 0.0 )
 		{
@@ -483,9 +480,14 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			faceData.TextureVAxis = vAxis;
 		}
 
+		var v1 = Mesh.Vertices.Add( a - extrudeOffset );
+		var v2 = Mesh.Vertices.Add( b - extrudeOffset );
+
 		var face = Mesh.Faces.AddFace( v1, v2, edgeVertices[1], edgeVertices[0], faceData );
 		if ( face < 0 )
 			return -1;
+
+
 
 		var halfEdges = Mesh.Faces.GetHalfedges( face );
 		return halfEdges[0];

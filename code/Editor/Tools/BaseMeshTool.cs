@@ -142,9 +142,7 @@ public abstract class BaseMeshTool : EditorTool
 	public Rotation CalculateSelectionBasis()
 	{
 		if ( Gizmo.Settings.GlobalSpace )
-		{
 			return Rotation.Identity;
-		}
 
 		var faceElement = MeshSelection.OfType<MeshFace>().FirstOrDefault();
 		if ( !faceElement.Component.IsValid() )
