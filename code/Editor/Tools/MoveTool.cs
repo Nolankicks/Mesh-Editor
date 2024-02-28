@@ -78,7 +78,7 @@ public class MoveTool : EditorTool
 		{
 			foreach ( var face in _meshTool.MeshSelection.OfType<MeshFace>() )
 			{
-				face.Component.ExtrudeFace( face.Index, _moveDelta * (face.Transform.Rotation * _basis.Inverse ).Inverse );
+				face.Component.ExtrudeFace( face.Index, _moveDelta * (face.Transform.Rotation * _basis).Inverse );
 			}
 
 			var edge = _meshTool.MeshSelection.OfType<MeshEdge>().FirstOrDefault();
@@ -91,8 +91,6 @@ public class MoveTool : EditorTool
 
 			_meshTool.CalculateSelectionVertices();
 		}
-
-
 
 		foreach ( var vertex in _meshTool.VertexSelection )
 		{
