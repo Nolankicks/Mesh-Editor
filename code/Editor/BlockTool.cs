@@ -1,6 +1,5 @@
 using Sandbox;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 
 namespace Editor.MeshEditor;
@@ -25,6 +24,7 @@ public partial class BlockTool : EditorTool
 
 	private readonly HashSet<PrimitiveBuilder> _primitives = new();
 	private PrimitiveBuilder _primitive;
+	private SceneObject _sceneObject;
 
 	private PrimitiveBuilder Current
 	{
@@ -36,14 +36,8 @@ public partial class BlockTool : EditorTool
 
 			_primitive = value;
 
-			if ( ControlLayout.IsValid() )
-			{
-				var so = EditorTypeLibrary.GetSerializedObject( Current );
-				var sheet = new ControlSheet();
-				sheet.AddObject( so );
-				ControlLayout.Clear( true );
-				ControlLayout.Add( sheet );
-			}
+			BuildControlSheet();
+			RebuildMesh();
 		}
 	}
 
@@ -67,8 +61,6 @@ public partial class BlockTool : EditorTool
 	{
 		base.OnEnabled();
 
-		EditorEvent.Register( this );
-
 		AllowGameObjectSelection = false;
 		Selection.Clear();
 
@@ -91,10 +83,44 @@ public partial class BlockTool : EditorTool
 		}
 	}
 
-	[EditorEvent.Hotload]
-	protected void OnHotload()
+	private void RebuildMesh()
 	{
-		//CreatePrimitiveBuilders();
+		if ( !InProgress )
+			return;
+
+		if ( Current.Is2D )
+		{
+			_box.Maxs.z = _box.Mins.z;
+		}
+		else
+		{
+			_box.Maxs.z = _box.Mins.z + LastHeight;
+		}
+
+		var box = _box;
+		var position = box.Center;
+		box = BBox.FromPositionAndSize( 0, box.Size );
+
+		var polygonMesh = new PolygonMesh();
+		_primitive.SetFromBox( box );
+		_primitive.Build( polygonMesh );
+
+		polygonMesh.TextureOrigin = position;
+		polygonMesh.ApplyPlanarMapping();
+		polygonMesh.Rebuild();
+
+		var model = polygonMesh.Model;
+		var transform = new Transform( position );
+
+		if ( !_sceneObject.IsValid() )
+		{
+			_sceneObject = new SceneObject( Scene.SceneWorld, model, transform );
+		}
+		else
+		{
+			_sceneObject.Model = model;
+			_sceneObject.Transform = transform;
+		}
 	}
 
 	private void CreatePrimitiveBuilders()
@@ -120,6 +146,12 @@ public partial class BlockTool : EditorTool
 		if ( _primitive is null )
 			return null;
 
+		if ( _sceneObject.IsValid() )
+		{
+			_sceneObject.RenderingEnabled = false;
+			_sceneObject.Delete();
+		}
+
 		var go = new GameObject( true, "Box" );
 		var mc = go.Components.Create<EditorMeshComponent>( false );
 
@@ -130,19 +162,8 @@ public partial class BlockTool : EditorTool
 		_primitive.SetFromBox( box );
 		_primitive.Build( polygonMesh );
 
-		var vertexPositions = polygonMesh.Vertices;
-		var faceIndices = new List<int>( polygonMesh.Faces.Sum( f => f.Indices.Count ) );
-		var faceVertexCounts = new List<int>( polygonMesh.Faces.Count );
-		var faceMaterials = new List<IntPtr>( polygonMesh.Faces.Count );
-
-		foreach ( var face in polygonMesh.Faces )
-		{
-			faceIndices.AddRange( face.Indices );
-			faceVertexCounts.Add( face.Indices.Count );
-		}
-
 		mc.Transform.Position = position;
-		mc.ConstructFromData( vertexPositions, faceIndices, faceVertexCounts );
+		mc.ConstructPolygonMesh( polygonMesh );
 
 		mc.Enabled = true;
 
@@ -235,6 +256,8 @@ public partial class BlockTool : EditorTool
 					{
 						LastHeight = System.MathF.Abs( _box.Size.z );
 					}
+
+					RebuildMesh();
 				}
 
 				Gizmo.Draw.Color = Color.Red.WithAlpha( 0.5f );
@@ -245,7 +268,7 @@ public partial class BlockTool : EditorTool
 			{
 				Gizmo.Draw.IgnoreDepth = true;
 				Gizmo.Draw.LineThickness = 2;
-				Gizmo.Draw.Color = Gizmo.Colors.Active;
+				Gizmo.Draw.Color = Gizmo.Colors.Active.WithAlpha( 0.5f );
 				Gizmo.Draw.LineBBox( _box );
 				Gizmo.Draw.Color = Gizmo.Colors.Left;
 				Gizmo.Draw.ScreenText( $"L: {_box.Size.y:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithY( _box.Center.y ) ) + Vector2.Down * 32, size: textSize );
@@ -333,6 +356,8 @@ public partial class BlockTool : EditorTool
 				var position = box.Center.WithZ( box.Center.z + (height * 0.5f) );
 				_box = BBox.FromPositionAndSize( position, size );
 				InProgress = true;
+
+				RebuildMesh();
 			}
 
 			_dragging = false;
@@ -347,7 +372,7 @@ public partial class BlockTool : EditorTool
 
 				Gizmo.Draw.IgnoreDepth = true;
 				Gizmo.Draw.LineThickness = 2;
-				Gizmo.Draw.Color = Gizmo.Colors.Active;
+				Gizmo.Draw.Color = Gizmo.Colors.Active.WithAlpha( 0.5f );
 				Gizmo.Draw.LineBBox( box );
 				Gizmo.Draw.Color = Gizmo.Colors.Left;
 				Gizmo.Draw.ScreenText( $"L: {box.Size.y:0.#}", Gizmo.Camera.ToScreen( box.Mins.WithY( box.Center.y ) ) + Vector2.Down * 32, size: textSize );

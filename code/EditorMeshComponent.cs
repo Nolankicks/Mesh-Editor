@@ -1,4 +1,3 @@
-using System;
 using Sandbox.Diagnostics;
 
 using static Sandbox.Component;
@@ -8,8 +7,9 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 	[Property, Hide]
 	private HalfEdgeMesh Mesh { get; set; }
 
-	public Model Model { get; private set; }
-	public Vector3 TextureOrigin { get; set; }
+	public Model Model => PolygonMesh?.Model;
+	private PolygonMesh PolygonMesh { get; set; }
+	public Vector3 TextureOrigin { get => PolygonMesh.TextureOrigin; set => PolygonMesh.TextureOrigin = value; }
 
 	[Property, Title( "Tint" )]
 	public Color Color
@@ -29,15 +29,10 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 	private Color _color = Color.White;
 	private SceneObject _sceneObject;
-	private readonly List<int> _triangleFaces = new();
-	private readonly List<int> _meshIndices = new();
-	private readonly List<Vector3> _meshVertices = new();
 	private bool _dirty;
 
 	public IEnumerable<int> Vertices => Mesh != null ? Enumerable.Range( 0, Mesh.Vertices.Count )
 		.Where( x => !Mesh.Vertices[x].IsUnused ) : Enumerable.Empty<int>();
-
-	private static readonly Material DefaultMaterial = Material.Load( "materials/dev/simple/simple_tile.vmat" );
 
 	protected override void OnValidate()
 	{
@@ -102,6 +97,8 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			Mesh.Faces.AddFace( 0, 1, 2, 3, faceData );
 		}
 
+		PolygonMesh = new PolygonMesh( Mesh );
+
 		RebuildMesh();
 	}
 
@@ -145,16 +142,11 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		}
 	}
 
-	public void ConstructFromData( IList<Vector3> vertices, IList<int> faceIndices, IList<int> faceIndexCounts )
+	public void ConstructPolygonMesh( PolygonMesh mesh )
 	{
-		Mesh = new();
-
-		TextureOrigin = Transform.Position;
-
-		foreach ( var v in vertices )
-		{
-			Mesh.Vertices.Add( v );
-		}
+		PolygonMesh = mesh;
+		Mesh = PolygonMesh.Mesh;
+		PolygonMesh.TextureOrigin = Transform.Position;
 
 		var faceData = new FaceData
 		{
@@ -163,76 +155,17 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			TextureVAxis = Vector3.Forward
 		};
 
-		int indexCount = 0;
-		foreach ( var faceIndexCount in faceIndexCounts )
+		for ( var i = 0; i < Mesh.Faces.Count; i++ )
 		{
-			var a = Mesh.Vertices[faceIndices[indexCount]].Position;
-			var b = Mesh.Vertices[faceIndices[indexCount + 1]].Position;
-			var c = Mesh.Vertices[faceIndices[indexCount + 2]].Position;
-
-			var normal = Vector3.Cross( b - a, c - a ).Normal;
+			var normal = GetAverageFaceNormal( i );
 			if ( !normal.IsNearZeroLength )
 			{
 				ComputeTextureAxes( normal, out var uAxis, out var vAxis );
 				faceData.TextureUAxis = uAxis;
 				faceData.TextureVAxis = vAxis;
+				Mesh.Faces[i].Traits = faceData;
 			}
-
-			Mesh.Faces.AddFace( Enumerable.Range( indexCount, faceIndexCount )
-				.Select( x => faceIndices[x] ), faceData );
-
-			indexCount += faceIndexCount;
 		}
-
-		RebuildMesh();
-	}
-
-	public void FromBox( BBox box )
-	{
-		Mesh = new();
-
-		var position = box.Center;
-		box = BBox.FromPositionAndSize( 0, box.Size );
-		Transform.Position = position;
-		TextureOrigin = position;
-
-		Mesh.Vertices.Add( new Vector3( box.Mins.x, box.Mins.y, box.Mins.z ) );
-		Mesh.Vertices.Add( new Vector3( box.Maxs.x, box.Mins.y, box.Mins.z ) );
-		Mesh.Vertices.Add( new Vector3( box.Maxs.x, box.Maxs.y, box.Mins.z ) );
-		Mesh.Vertices.Add( new Vector3( box.Mins.x, box.Maxs.y, box.Mins.z ) );
-		Mesh.Vertices.Add( new Vector3( box.Mins.x, box.Mins.y, box.Maxs.z ) );
-		Mesh.Vertices.Add( new Vector3( box.Maxs.x, box.Mins.y, box.Maxs.z ) );
-		Mesh.Vertices.Add( new Vector3( box.Maxs.x, box.Maxs.y, box.Maxs.z ) );
-		Mesh.Vertices.Add( new Vector3( box.Mins.x, box.Maxs.y, box.Maxs.z ) );
-
-		var faceData = new FaceData
-		{
-			TextureScale = 0.25f,
-			TextureUAxis = Vector3.Right,
-			TextureVAxis = Vector3.Forward
-		};
-
-		Mesh.Faces.AddFace( 0, 3, 2, 1, faceData );
-
-		faceData.TextureUAxis = Vector3.Forward;
-		faceData.TextureVAxis = Vector3.Right;
-		Mesh.Faces.AddFace( 4, 5, 6, 7, faceData );
-
-		faceData.TextureUAxis = Vector3.Right;
-		faceData.TextureVAxis = Vector3.Down;
-		Mesh.Faces.AddFace( 4, 7, 3, 0, faceData );
-
-		faceData.TextureUAxis = Vector3.Left;
-		faceData.TextureVAxis = Vector3.Down;
-		Mesh.Faces.AddFace( 1, 2, 6, 5, faceData );
-
-		faceData.TextureUAxis = Vector3.Forward;
-		faceData.TextureVAxis = Vector3.Down;
-		Mesh.Faces.AddFace( 0, 1, 5, 4, faceData );
-
-		faceData.TextureUAxis = Vector3.Backward;
-		faceData.TextureVAxis = Vector3.Down;
-		Mesh.Faces.AddFace( 3, 7, 6, 2, faceData );
 
 		RebuildMesh();
 	}
@@ -446,82 +379,9 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		return Material.Load( Mesh.Faces[f].Traits.TextureName );
 	}
 
-	private class Submesh
-	{
-		public List<SimpleVertex> Vertices { get; init; } = new();
-		public List<int> Indices { get; init; } = new();
-		public Material Material { get; set; }
-		public Vector2 TextureSize { get; set; }
-	}
-
 	public void RebuildMesh()
 	{
-		var submeshes = new Dictionary<string, Submesh>();
-
-		_triangleFaces.Clear();
-		_meshIndices.Clear();
-		_meshVertices.Clear();
-
-		var builder = Model.Builder;
-
-		for ( var i = 0; i < Mesh.Faces.Count; ++i )
-		{
-			var face = Mesh.Faces[i];
-			if ( face.IsUnused )
-				continue;
-
-			FaceData faceData = face;
-			var textureName = faceData.TextureName ?? "";
-
-			if ( !submeshes.TryGetValue( textureName, out var submesh ) )
-			{
-				var material = Material.Load( textureName );
-				submesh = new();
-				submesh.Material = material;
-				submeshes.Add( textureName, submesh );
-
-				Vector2 textureSize = 512;
-				if ( material != null )
-				{
-					var width = material.Attributes.GetInt( "WorldMappingWidth" );
-					var height = material.Attributes.GetInt( "WorldMappingHeight" );
-					var texture = material.FirstTexture;
-					if ( texture != null )
-					{
-						textureSize = texture.Size;
-						if ( width > 0 ) textureSize.x = width / 0.25f;
-						if ( height > 0 ) textureSize.y = height / 0.25f;
-					}
-				}
-
-				submesh.TextureSize = textureSize;
-			}
-
-			TriangulateFace( i, submesh );
-		}
-
-		foreach ( var submesh in submeshes.Values )
-		{
-			var vertices = submesh.Vertices;
-			var indices = submesh.Indices;
-
-			if ( vertices.Count < 3 )
-				continue;
-
-			if ( indices.Count < 3 )
-				continue;
-
-			var bounds = BBox.FromPoints( vertices.Select( x => x.position ) );
-			var material = submesh.Material ?? DefaultMaterial;
-			var mesh = new Mesh( material );
-			mesh.CreateVertexBuffer( vertices.Count, SimpleVertex.Layout, vertices );
-			mesh.CreateIndexBuffer( indices.Count, indices );
-			mesh.Bounds = bounds;
-			builder.AddMesh( mesh );
-		}
-
-		builder.AddCollisionMesh( _meshVertices.ToArray(), _meshIndices.ToArray() );
-		Model = builder.Create();
+		PolygonMesh.Rebuild();
 
 		if ( !_sceneObject.IsValid() )
 		{
@@ -544,133 +404,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 	public int TriangleToFace( int triangle )
 	{
-		if ( triangle < 0 || triangle >= _triangleFaces.Count )
-			return -1;
-
-		var face = _triangleFaces[triangle];
-		if ( Mesh.Faces[face].IsUnused )
-			return -1;
-
-		return face;
-	}
-
-	private Vector2 PlanarUV( Vector3 vertexPosition, FaceData faceData, Vector2 textureSize )
-	{
-		var uv = Vector2.Zero;
-		var scale = 1.0f / textureSize;
-
-		uv.x = Vector3.Dot( faceData.TextureUAxis, TextureOrigin + vertexPosition );
-		uv.y = Vector3.Dot( faceData.TextureVAxis, TextureOrigin + vertexPosition );
-
-		uv *= scale;
-
-		var xScale = faceData.TextureScale.x;
-		var yScale = faceData.TextureScale.y;
-		uv.x /= xScale.AlmostEqual( 0.0f ) ? 0.25f : xScale;
-		uv.y /= yScale.AlmostEqual( 0.0f ) ? 0.25f : yScale;
-
-		var cosAngle = MathF.Cos( faceData.TextureAngle.DegreeToRadian() );
-		var sinAngle = MathF.Sin( faceData.TextureAngle.DegreeToRadian() );
-		uv = new Vector2( uv.x * cosAngle - uv.y * sinAngle, uv.y * cosAngle + uv.x * sinAngle );
-
-		uv += faceData.TextureOffset * scale;
-
-		return uv;
-	}
-
-	private static LibTessDotNet.Vec3 ConvertToTessVertex( Vector3 p ) => new() { X = p.x, Y = p.y, Z = p.z };
-
-	private void TriangulateFace( int faceIndex, Submesh submesh )
-	{
-		var face = Mesh.Faces[faceIndex];
-		if ( face.IsUnused )
-			return;
-
-		var faceVertexIndices = Mesh.Faces.GetFaceVertices( faceIndex );
-
-		var tess = new LibTessDotNet.Tess();
-		tess.AddContour( faceVertexIndices
-			.Select( v => new LibTessDotNet.ContourVertex
-			{
-				Position = ConvertToTessVertex( Mesh.Vertices[v].Position ),
-				Data = v
-			} )
-			.ToArray() );
-
-		tess.Tessellate( LibTessDotNet.WindingRule.EvenOdd, LibTessDotNet.ElementType.Polygons, 3 );
-
-		var elems = tess.Elements;
-		var numElems = tess.ElementCount;
-
-		if ( numElems == 0 )
-			return;
-
-		var normal = Mesh.Faces.GetAverageFaceNormal( faceIndex ).Normal;
-
-		var vertices = submesh.Vertices;
-		var triangles = submesh.Indices;
-		var textureSize = submesh.TextureSize;
-
-		FaceData faceData = face;
-		int startVertex = vertices.Count;
-		int startCollisionVertex = _meshVertices.Count;
-		vertices.AddRange( tess.Vertices
-			.Where( v => v.Data is not null )
-			.Select( v => new SimpleVertex
-			{
-				position = Mesh.Vertices[(int)v.Data].Position,
-				normal = normal,
-				tangent = faceData.TextureUAxis,
-				texcoord = PlanarUV( Mesh.Vertices[(int)v.Data].Position, faceData, textureSize ),
-			} ) );
-
-		_meshVertices.AddRange( tess.Vertices
-			.Where( v => v.Data is not null )
-			.Select( v => Mesh.Vertices[(int)v.Data].Position ) );
-
-		if ( startVertex == vertices.Count )
-			return;
-
-		for ( int index = 0; index < numElems; ++index )
-		{
-			var triangle = index * 3;
-
-			var a = startVertex + elems[triangle];
-			var b = startVertex + elems[triangle + 1];
-			var c = startVertex + elems[triangle + 2];
-
-			if ( a < 0 || a >= vertices.Count )
-			{
-				return;
-			}
-
-			if ( b < 0 || b >= vertices.Count )
-			{
-				return;
-			}
-
-			if ( c < 0 || c >= vertices.Count )
-			{
-				return;
-			}
-
-			Vector3 ab = vertices[b].position - vertices[a].position;
-			Vector3 ac = vertices[c].position - vertices[a].position;
-			float area = Vector3.Cross( ab, ac ).Length * 0.5f;
-
-			if ( area.AlmostEqual( 0.0f ) )
-				continue;
-
-			triangles.Add( a );
-			triangles.Add( b );
-			triangles.Add( c );
-
-			_triangleFaces.Add( faceIndex );
-
-			_meshIndices.Add( startCollisionVertex + elems[triangle] );
-			_meshIndices.Add( startCollisionVertex + elems[triangle + 1] );
-			_meshIndices.Add( startCollisionVertex + elems[triangle + 2] );
-		}
+		return PolygonMesh.TriangleToFace( triangle );
 	}
 
 	public void OffsetFaces( IEnumerable<int> faces, Vector3 offset )

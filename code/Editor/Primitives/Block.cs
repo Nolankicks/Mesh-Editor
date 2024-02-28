@@ -48,53 +48,44 @@ public class BlockPrimitive : PrimitiveBuilder
 		{
 			// y planes - left
 			mesh.AddFace(
-			new Vector3( mins.x, maxs.y, mins.z ),
-			new Vector3( mins.x, mins.y, mins.z ),
-			new Vector3( mins.x, mins.y, maxs.z ),
-			new Vector3( mins.x, maxs.y, maxs.z )
-		);
+				new Vector3( mins.x, maxs.y, mins.z ),
+				new Vector3( mins.x, mins.y, mins.z ),
+				new Vector3( mins.x, mins.y, maxs.z ),
+				new Vector3( mins.x, maxs.y, maxs.z )
+			);
 		}
 
 		if ( Right )
 		{
 			// y planes - right
 			mesh.AddFace(
-			new Vector3( maxs.x, maxs.y, maxs.z ),
-			new Vector3( maxs.x, mins.y, maxs.z ),
-			new Vector3( maxs.x, mins.y, mins.z ),
-			new Vector3( maxs.x, maxs.y, mins.z )
-		);
+				new Vector3( maxs.x, maxs.y, maxs.z ),
+				new Vector3( maxs.x, mins.y, maxs.z ),
+				new Vector3( maxs.x, mins.y, mins.z ),
+				new Vector3( maxs.x, maxs.y, mins.z )
+			);
 		}
 
 		if ( Front )
 		{
 			// x planes - farthest
 			mesh.AddFace(
-			new Vector3( maxs.x, maxs.y, mins.z ),
-			new Vector3( mins.x, maxs.y, mins.z ),
-			new Vector3( mins.x, maxs.y, maxs.z ),
-			new Vector3( maxs.x, maxs.y, maxs.z )
-		);
+				new Vector3( maxs.x, maxs.y, mins.z ),
+				new Vector3( mins.x, maxs.y, mins.z ),
+				new Vector3( mins.x, maxs.y, maxs.z ),
+				new Vector3( maxs.x, maxs.y, maxs.z )
+			);
 		}
 
 		if ( Back )
 		{
 			// x planes - nearest
 			mesh.AddFace(
-			new Vector3( maxs.x, mins.y, maxs.z ),
-			new Vector3( mins.x, mins.y, maxs.z ),
-			new Vector3( mins.x, mins.y, mins.z ),
-			new Vector3( maxs.x, mins.y, mins.z )
-		);
-		}
-
-		// If we want a hollow cube, simply reverse the winding order of all our faces
-		if ( Hollow )
-		{
-			foreach ( var face in mesh.Faces )
-			{
-				face.Indices.Reverse();
-			}
+				new Vector3( maxs.x, mins.y, maxs.z ),
+				new Vector3( mins.x, mins.y, maxs.z ),
+				new Vector3( mins.x, mins.y, mins.z ),
+				new Vector3( maxs.x, mins.y, mins.z )
+			);
 		}
 	}
 }

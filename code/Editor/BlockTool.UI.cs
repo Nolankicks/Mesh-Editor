@@ -36,18 +36,31 @@ public partial class BlockTool
 
 		widget.Layout.AddSpacingCell( 8 );
 
-		{
-			var so = EditorTypeLibrary.GetSerializedObject( Current );
-			var sheet = new ControlSheet();
-			sheet.AddObject( so );
-			ControlLayout = widget.Layout.AddRow();
-			ControlLayout.Add( sheet );
-		}
+		ControlLayout = widget.Layout.AddRow();
+		BuildControlSheet();
 
 		widget.Layout.AddSpacingCell( 8 );
 		widget.Layout.AddStretchCell();
 
 		return widget;
+	}
+
+	public void OnEdited( SerializedProperty property )
+	{
+		RebuildMesh();
+	}
+
+	private void BuildControlSheet()
+	{
+		if ( !ControlLayout.IsValid() )
+			return;
+
+		var so = EditorTypeLibrary.GetSerializedObject( Current );
+		so.OnPropertyChanged += OnEdited;
+		var sheet = new ControlSheet();
+		sheet.AddObject( so );
+		ControlLayout.Clear( true );
+		ControlLayout.Add( sheet );
 	}
 
 	private void CreateOverlay()
@@ -56,8 +69,8 @@ public partial class BlockTool
 		window.Layout = Layout.Column();
 		window.Layout.Margin = 4;
 		window.Layout.Add( BuildUI() );
-		window.FixedWidth = 300;
-		window.FixedHeight = 400;
+		window.FixedWidth = 400;
+		window.FixedHeight = 300;
 		window.AdjustSize();
 
 		AddOverlay( window, TextFlag.LeftTop, 10 );

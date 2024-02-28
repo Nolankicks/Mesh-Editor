@@ -6,7 +6,7 @@ namespace Editor.MeshEditor;
 [Title( "Stairs (Experimental)" ), Icon( "stairs" )]
 public class StairsPrimitive : PrimitiveBuilder
 {
-	[Title( "Number of steps" )]
+	[Title( "Number of steps" ), Range( 2, 64 )]
 	public int NumberOfSteps { get; set; } = 16;
 
 	[Hide] private Vector3 Center;
