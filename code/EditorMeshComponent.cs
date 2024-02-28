@@ -460,6 +460,37 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		_dirty = true;
 	}
 
+	public int ExtrudeEdge( int edgeIndex, Vector3 extrudeOffset )
+	{
+		var pairEdge = Mesh.Halfedges.GetPairHalfedge( edgeIndex );
+		if ( Mesh.Halfedges[pairEdge].AdjacentFace >= 0 )
+			return -1;
+
+		var faceData = Mesh.Faces[Mesh.Halfedges[edgeIndex].AdjacentFace].Traits;
+		var edgeVertices = Mesh.Halfedges.GetVertices( edgeIndex );
+		var a = Mesh.Vertices[edgeVertices[0]].Position + extrudeOffset;
+		var b = Mesh.Vertices[edgeVertices[1]].Position + extrudeOffset;
+		var c = Mesh.Vertices[edgeVertices[0]].Position;
+
+		var v1 = Mesh.Vertices.Add( a );
+		var v2 = Mesh.Vertices.Add( b );
+
+		var normal = Vector3.Cross( b - a, c - a ).Normal;
+		if ( !normal.IsNearZeroLength && extrudeOffset.Length > 0.0 )
+		{
+			PolygonMesh.ComputeTextureAxes( normal, out var uAxis, out var vAxis );
+			faceData.TextureUAxis = uAxis;
+			faceData.TextureVAxis = vAxis;
+		}
+
+		var face = Mesh.Faces.AddFace( v1, v2, edgeVertices[1], edgeVertices[0], faceData );
+		if ( face < 0 )
+			return -1;
+
+		var halfEdges = Mesh.Faces.GetHalfedges( face );
+		return halfEdges[0];
+	}
+
 	public void SetMaterial( Material material, int triangle )
 	{
 		if ( Mesh is null )

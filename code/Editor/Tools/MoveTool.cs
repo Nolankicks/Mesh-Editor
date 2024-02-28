@@ -49,9 +49,9 @@ public class MoveTool : EditorTool
 
 			if ( Gizmo.Control.Position( "position", Vector3.Zero, out var delta, _basis ) )
 			{
-				StartDrag();
-
 				_moveDelta += delta;
+
+				StartDrag();
 
 				var moveDelta = _moveDelta;
 				moveDelta *= _basis.Inverse;
@@ -78,7 +78,16 @@ public class MoveTool : EditorTool
 		{
 			foreach ( var face in _meshTool.MeshSelection.OfType<MeshFace>() )
 			{
-				face.Component.ExtrudeFace( face.Index, face.Component.GetAverageFaceNormal( face.Index ) * 0.01f );
+				face.Component.ExtrudeFace( face.Index, _moveDelta * _basis.Inverse );
+			}
+
+			var edge = _meshTool.MeshSelection.OfType<MeshEdge>().FirstOrDefault();
+			if ( edge.IsValid() )
+			{
+				Log.Info( _moveDelta );
+				edge = new MeshEdge( edge.Component, edge.Component.ExtrudeEdge( edge.Index, _moveDelta * _basis.Inverse ) );
+				if ( edge.IsValid() )
+					_meshTool.MeshSelection.Set( edge );
 			}
 
 			_meshTool.CalculateSelectionVertices();
