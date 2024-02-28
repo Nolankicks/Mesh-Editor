@@ -51,6 +51,11 @@ public class EdgeTool : BaseMeshTool
 					Gizmo.Draw.LineThickness = 4;
 					var line = edge.Component.GetEdge( edge.Index );
 					Gizmo.Draw.Line( line );
+
+					var textSize = 22 * Gizmo.Settings.GizmoScale * Application.DpiScale;
+					var distance = line.Start.Distance( line.End );
+					Gizmo.Draw.Color = Color.White;
+					Gizmo.Draw.ScreenText( $"{distance:0.##}", Gizmo.Camera.ToScreen(edge.Transform.PointToWorld( line.Center )), size: textSize );
 				}
 
 				if ( Gizmo.HasClicked )
