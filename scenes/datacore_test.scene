@@ -1,0 +1,592 @@
+{
+  "Id": "f4a10bfc-50be-464f-b57d-a33cc8568a5a",
+  "GameObjects": [
+    {
+      "Id": "c11e6e08-a4de-4e88-a621-59a9496c04e0",
+      "Name": "Camera",
+      "Position": "1040,-416,1016",
+      "Rotation": "-0.05738983,0.04055912,0.8146225,0.5757182",
+      "Tags": "maincamera",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "CameraComponent",
+          "BackgroundColor": "0.33333,0.46275,0.52157,1",
+          "ClearFlags": "All",
+          "FieldOfView": 65,
+          "IsMainCamera": true,
+          "Orthographic": false,
+          "OrthographicHeight": 1204,
+          "Priority": 1,
+          "RenderExcludeTags": "",
+          "RenderTags": "",
+          "TargetEye": "None",
+          "Viewport": "0,0,1,1",
+          "ZFar": 10000,
+          "ZNear": 10
+        }
+      ]
+    },
+    {
+      "Id": "e22600cd-7e65-4330-a627-eabccc90ca2d",
+      "Name": "Box",
+      "Position": "-15.99993,-880,1032.018",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACq2YB3QVRRSGZ0WKIkgMGikJKAGkJSIlQIQ8eGCwF1REEIyCCNIERLFix94L2HvvFbESe1fE3hXBjr2g4nw7/5u3u0c9e47vnTPk3n/\u002B/07ZKXeYbYwZHhjTx/415sMl9h\u002BKaez8ITm/KO9TTIM8P/SPj\u002Bkz2WYxfSa7PKbPZIsT8UpCf342V98q5htTmvdtyWTbxXxjOoT\u002By1mHZbIdY74xXUJ/la/vFvON6ex9SibbPeYb09PHc/XDgqhvTJXvT9uh1PeP\u002BcYM9P7QsL4m5htTHfotfH0m5hszzPn1uframK9JMPN9/fCYb8z23nf92ySI\u002BsaMCOufrs\u002BNr00Q9Y0ZFdav9PWjY74xI71/Zlg/JuYbU\u002Bfju/oNfXxXP9H3z33fSTHfmKl5P1wf02O\u002BMbNsCfx6zGQPivnGzM374Xo8LOYbc3B\u002BPYbtneX8JTn/kkR/Lki0f6z/ns4/Le\u002BH/JMS6/Ec357zr/LtuflYEJsvY85L8C9L8O/x8d33uMHznf9YYr3f5H1Xf12Cf4eP7/ylvj/OfyHRv8WJ9fCQ9139Ij8fbr3V\u002B/ac/5Svd\u002Bv1GV/v/Cd8fxz/JT//zn8rEW9Zgv\u002BB9128d7ze\u002BW8k2vsowX/P\u002B259rfB85/\u002BSrw/X7zpBdD1lsg38fnP8H3z7rv5bP37n/5n3Q/5P/jzYKaxfkzjvVrv6\u002Blx9wyDOD2L7LZNtGsT5jYP4/i6K7X97nnv\u002Br6FfktAXe9\u002BdL6UJfivvu/OpQ4Lfw/fX1Xfxvs5T77t4lYn43dz8en0f7zt9z9h5nclWJ\u002BJVBfH7YbDnO39gYj5rE/ps6LvfWrbgUtbTX35rq26N/RXJ5tdI9yl34jzZ0R/846Un1rq2NLSl3JbPZOfaCxR3A2nxm0hLnMZqD04LWxqrvY1lgzeVDn6J4oM3lxZ8ueKi3ciWddRGmWzw9RUTfmlknC2lBS/WeNC2Vdu5sTUVvqFiwu8QGU9racFbaa7RbmpLM7XXVTZ4G8WE3yUyj\u002B2lBW8XGedmGgN4N9ngmygmeGdpwTtJC95R84tN7lCkudhC3wZ7c31zxtNPNngP8dFWRb5ThbS9bMkE\u002BXnsG5mjQbLBKxWTOAOlBe\u002BtbwBOHpP7flvaUiK8RjZ4H8UEr5YWfIC\u002BPXh/raEwpv3bSvO7VeQ7DdU3gFMrG3yw\u002BOBZxQEfIi14RusDm1ymVN9yB6057O1saafvsats8K3FRzsiss62kZZ53TTIr4NdIt94T9ng2yomcUZJC76T1hDfrW2QX3972NJB/NGywXdWTPCR0oLvTj\u002BEk3\u002BVyyZ36qi1tU9kne1tS2ety/1lg\u002B8lPlryqnLhY6VlLbcI8ut7P1u6aJ1Nkw0\u002BTjGJM1Va8PHGacHJ47pKO0WxWbuzc\u002B3YMkEx4c\u002BSFnyycVpw8r3u0s7UXLJeD5UNfoBiwp8rLfgMacGnR/bJIdoD4IfJBj9QMcEPlhZ8jrTgB0X255G29NS6vFR2sc6O3Hl2gs5I8MOlZc\u002Bcqj0P5zjtXeJfIBv8KMUBP1bxwY\u002BRln14ofYtMU/WnoR/WmR/Hq122ZNnqz/g86WF30DnBZwzbanS3rtaNvgpigP/KsUHP11a8JN0ZtG3823pL3yBbPAT1X/w8zQu8HOlBb9E5whze7Et1ToXbpcNfoS08O9R38AXSgt\u002Bls4vxnKlLQO1P5fIBj9DY4T/mMYCfrm0nDU36gzFvt6WGvFvkg1\u002Bjfjg1ykO\u002BLXSgpPfZzSWW3XGsedfkw1\u002BkcbIeXSvxgJ\u002Bs7TEuUznIJy7bcnqLHtQNvhtigN/seKD3ykt58uLOn/RPmDLMPEfkg1\u002Bl2KCL5IW/H5pwV/Qmc7cPmpLrc7Ep2WDX6E5h/\u002BU5gr8YWnBeZ8Ml/ZJndHgz8gGf0QxwZ\u002BQFvxxacHrdY4zxud1RnOGvi0b/D6NBf5bmh/wZ6UFX6r7g2/0qi3b67z\u002BUDb4LdLC/0DfCPxlacHv0J1EH960ZUfh78gGf059A39DfQB/XVrwl3Sv0If3dWeAfyQb/BX1Dfw99QH8XWnBl\u002Bk\u002B4w741JYRuhu\u002Bkl2uu7yh\u002BL8otwL/WFrwZrpT0X5hy24609cOnA3\u002BiWJyZ/wqLfhKabk/vtc9h73KlpGK/4Ns8K/F53xfN3BxwL\u002BRFv4K3a\u002B09bMto4T/KRv8S/UHnPfTbsJ/lJZ76C/d8dh/2DJa/DWywX8TH3i14oD/Lm14rtp\u002BjtGcrBW4Oxi8oWzwz6UF5z22a\u002B7/paQF5904VmNvErg7GLypbPDvND/gvNtGCm8kLfi3yg\u002B4L5tbvE54kWzwfTWv3H8bKd8AXy9wWvhjlHPAaRk4DXiJbPD1AxcHvFjxwzs1cNpw/QQub\u002BDebR24nAC8VHYPzU174bwXy4RvLC04/2\u002B1n\u002B7p9taeqHt9M9kV2mdl4vOubCu8TFrw4cqZ0Hay\u002BCTdMb1lg7dTTO6bCmnBywOnJQ7v2MnidA9cjgJeKRu8s\u002BKAd1N88K7SgvO\u002BnaI\u002BbGHtqcL7yAbvKC136gD1AXxzaeHzbp4mTj9rTxdeLRu8l\u002BKAVyk\u002BeF9pwXkvz1COMihwORP4YNngvZQ3kVtsFbicDmxLaeF3Vz4HZ6jFZwmvlQ1eE7g44FnFBx8SOC24e3\u002B789G\u002Bkt1/n/rfPK4K/trrd96gsql1syfMnFQ3ZVbl\u002BAlzKifOrJs7buLMSePH9a6YY6uaKB3Oy5KhXJjmnvdP3DyvZcp4rVPGYwuk4XVK2W5FnlfzX7zeKdslTUnDG5Ky3W3i8Wr\u002BjceVloa3e8p2x6acP46eNLzJKfs3I2W8OSnjHV6YbXHM/w3TLwzDY6MAYXhrFCAMT40ChFlYmCm\u002BvDC94Z1RgDA3F2ZQdxamN/f/666Nh3m4MM3xhihAGJ4QBQjDC6IAYXIPiP8ZhvdDAcJ8nPKL8jxIwyP9T8MjvU/DI31PwyM9T8Mj/U7DI71OwyN9TsMjPU7DI/1NwyO9TcMjfU3DIz1NwyP9TMMjvUzDI31Mw/sb84WGiAMhAAA=",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "-15.99993,-880,1032.018"
+        }
+      ]
+    },
+    {
+      "Id": "088f2156-104e-4b91-9f3a-14b6584d403e",
+      "Name": "Box",
+      "Position": "-495.9999,-576,1100.011",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2TV1LDQBBEhQGTwQaTs8nZ5JzWpFvhTx/Ft6DQSTiG/8y29CQ8FFRJVVPMjHvftFbDVBAEbz6GfARB7TOOuqN\u002BTOqZn9pH3eV\u002B9FG9YOswb/Vhr\u002BWFRTsv7Dd1w00ZfdOVDK/pNsy8hpvwVSHKC1X9fmzquiv7\u002Bqv1/pnUZ6ZuuL1UX4nO75u67h5TfVxXTN1wl1YfXtn54Y2dH95ZXvjq6w4fnT7mfOSoC\u002BS6z21\u002BVz1G3uVjOrqL\u002BBmm1/KP7rwb/Qi5\u002BkV44o/66KGf56yeQfoB5wI0/czVM4A\u002BR088RR986Wc4n/wmbQ52Hxp9y4Q7C1d97UAvMxbJ1Y93M\u002B5PwlW/BDPxl/gahy8fm/Q0f7ftHbp4Z8048TGEfp1cuifuV\u002B\u002B2Ra55F9yvmDtwdHaeufJ2jB/1l2Hm2zwqX4EpzgIzla/BFyfe8zjXThbxfMS3VP\u002BS/ZC3c/TSLOFNmn08qH8AR14dHqR7gSnOKh6UH8IXR/83JfKbtrt\u002BIFdfuz7B\u002B1TJ1X/l\u002B2nWMxydPcWPNFf4VP8apjhlfCq/hSnOGZ6V38MXp4JWZ\u002BKn9pGmaV3zVmt3HVZ3/5\u002BuJ9X9ZlndbEbeYkZ/6xl5yY7\u002BrYn\u002BRjrtbJa52rEsc7VzWXjakSw87czf72F12qEsc78BnH\u002BP6fQGAAA=",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "-495.9999,-576,1100.011"
+        }
+      ]
+    },
+    {
+      "Id": "f96ccf96-97ba-4a44-bf95-2dd3206e7b7a",
+      "Name": "Box (1)",
+      "Position": "479.9998,-416.0002,1100",
+      "Rotation": "0,0,1,0.0000001947072",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2U3VITQRCFhxghQcVEI2IQUFT8QfEHRUHkZxAQEV\u002BJXOZR8gCWtxZb5QP4Bj6B19zFPrvfhrSFVbNVXelz9szpnpnetEMIXy0mLELonHxr/PoeQjdeKfC2OOH2Gbboxgr6Es96nB16fVbzflnT18vGHe7FKac/jS3ndxofunq9OGmokeeNHb1fdrgb5w3/7h\u002BflHjF4V58Zrie67fy9UsOd6Ml4U\u002BuL/ALh3tx1euzNV8/W/f1sw3vl\u002B0b/tk/HuiPDM/k\u002ByvwgeERiwsWty0q4Ab5qMUT3gtfJ69a3MrPqngm4HS/Xywuor9K3reniZ/8r1mMwR\u002ByVs9l\u002BMC6gGacunouoa/AyU9Rx1/6NuvLd9JW8K6j0V2XvtP4iteM1KgxRy6\u002BmN2Cv4mv\u002BBaeZX9lXzfwVx\u002BP4FT/6dAequxZNV5zftIvkEv3kfPV3h6Tq947zleei/ho7Qx11dsy/Yi/i\u002BfoUI/K7\u002BEpn1lqKn\u002BAv3yK76DINbNNen7FXYpfZT7U21v00tyhN2mW6EH8c3zUa6QH6fbwlM99elD\u002BEn/56Ltqka8PnfUWuXh9C5PsZ4dc/D73p1q7\u002BGjtG/qRZo0\u002Bxb/HUz7z9Kn8A57yWaFn5Zv4y0ff8xRen/lmxB\u002BRl/dRhT/grsR/Yq34GjWL/1M9nR\u002BDdIA7tuXOxojXbf5PN3b2//yPl9dNJ/rNJfa3kOhXzvr5mvw31y0m1tWsptTV7Kb4adZS/DR75\u002B/D6zSLKXU1Fynn8heDeLnghAcAAA==",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "-495.9999,-576,1100.011"
+        }
+      ]
+    },
+    {
+      "Id": "3bc1929c-97fc-4665-9fee-a58691348be0",
+      "Name": "Box (2)",
+      "Position": "511.9998,-399.9999,1100",
+      "Rotation": "0,0,0.7071069,-0.7071066",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo1SW04CQRAckZcgCIoIPlAUH6iIL0T80LAeQG4En3sUEg\u002BB7iG8gD8m/kmiXzJ2LbWwY0zcTTrbVVNdM90zOaXUjURCQqleW\u002BJZKdvKCBrqbnuoB8J1rJDgqKwl1ZOL4wa2nbCht52o6eckBYUFf\u002Bmu4L6VNvR9qyg4JesjHbsHLhu4Y\u002BUFv0rtN/GG4E\u002BpH\u002BkHV18ysG1VTexUDD/bOTP8bKcm\u002BFHwO8/fFFwVvddPXfCH1hN9S/CL4DeuN9x\u002BlcKcFiVmiBPMMZ91rgOnJGYltHxRroOfYw4eM4vQZ5614MOshR5/74tRDw3uDzpFnRdYj1JTZA18s9SCT1MT8tUjX6Aee65KxOm3zXODLzCH7pj94xxr1EOzxHXsVfb1sezrH/uFmK/QB3p4JJlXORecYYs88hz3gqZET/Cb1KO3Q94BNHgLXs8HzFF/7uv5iHpoduiD2gr9we\u002ByFvo8z4x8nz7Q491m6H/KuYNvMge/Rx/wddaCP2Et9rvmO0N\u002BxZlC32IO/oJ68A36gL9kLfga54/9xl/vbpKO8UDiFhGZ6MD9/qa67FT3h5f7d3WFgH54O0H88AaC\u002BHl3/J8f7jyIDvcSRIe5B9H9AE3CCBSUBQAA",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "-495.9999,-576,1100.011"
+        }
+      ]
+    },
+    {
+      "Id": "b6fc32f9-6efa-490a-a7d6-908195fae8e1",
+      "Name": "Box",
+      "Position": "608,-512,1031.987",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo1RWw6CQAwcUETxifhYPYwmcjFupvEk3kQ7dAgu8cMmk7bDtN2WAsDZMDYAryfwMAC557cun/e5ASh7fZtnUX2ol1F9qI\u002BDvIr6hXod9Qv1afB93\u002BZuqSERFvLQDvxGbOVpE8PI8DYrFX8b\u002BUz17FVoH\u002BqC4m5eIr3v4/lUteRzzePsje5IvlKcqm8qnnuzB/OVasnz3uxL7cEwE8\u002B7MCZPz7eR5334BvI71ZL3/\u002BC9geYab97c5S8Ea6QTP9S6jhrX/dL2Or7jn7kf7SuoaYQCAAA=",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "608,-512,1031.987"
+        }
+      ]
+    },
+    {
+      "Id": "00bddeb7-98fe-4dd9-9d59-5ddb9d3687a1",
+      "Name": "Box",
+      "Position": "592,-352,1023.995",
+      "Rotation": "0,0,-0.7071067,0.7071068",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo1RSQ7CMAw0lLWl7KXAC/gBN1D4CPyE/oojCm/iTPDUg5TcsGRlPJ5O7DQXkb1mT1Pk8Ajh\u002BgIaWn3U\u002BgJUa77D3Yvc2jrT7EvjP9SXad\u002BP074vrO\u002B0j9pV1nfah97N0vvcIp3H7draoqvZ4QxbYuEO6AWNmhgxoBa6EXEc0JeRb04v8Bkx\u002BEk7s/G2n/E4M/IF74PXnO8IviIGv\u002BQc4LE3MPi1JnzhtSEGP6Un9HiH3w64Gwne3sv4Fb8Fb//RPESac7p58\u002BR5QmIP08W9uDYdNP/4YY5//L7JSOwKhAIAAA==",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "592,-352,1023.995"
+        }
+      ]
+    },
+    {
+      "Id": "c0b4d682-8062-44ee-9f35-4331dcfbefda",
+      "Name": "Box",
+      "Position": "524,-368,1032.009",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo1S21LCMBTcCqiAgoiIioDI5TMU82X5Myd/1EffNJssbY/DQzOz07PbPcnZtCMAh4jLCOD4BfgAlG5rOFDUPALoGF66YcXhWE0ML93c9oep9Ydx4v546l8aXrqZ8fuwNu99WCT\u002B407z7Gue8mwSz\u002BtCeX7j2lbZgK7eUS9UQ3fDvNRuquz16kXs1E/PQBp9T6qLhsb95405rhtn3\u002Bs81ncRV/JPVVO/lZ/6WBoxUi/1jvbl8zGiL32pmnpfM1GfaU/qD42ZVsrD\u002BjViKP9aNfVn\u002BakvpBEv6qU\u002B0d3xvHdloL5X3VM\u002BSN9oFupv6qWe/7OcNS//ab\u002BG/474IDhTGx89bXy8l\u002Byj9n/VPuZu42Mu\u002Bc6cmZ7J9wc0bJm\u002BpAMAAA==",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "524,-368,1032.009"
+        }
+      ]
+    },
+    {
+      "Id": "ea28c84b-a9eb-4e33-9827-f3d62f9b306e",
+      "Name": "Box",
+      "Position": "656,-368,1032.006",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2RUVICQQxEg4qgCCiIiIiIiMfQkpPNzajhRNxA83Z7YaM/O1WpTXe6k8nswMw\u002BPC49/GSz5GHWCfiwbZ3wN/g8YLPFEduW\u002Bjpgs2mJraqPAzYbBpzyLPhTnsR\u002BeRnn53kBD/vqfpsjLuetTv3tzIN9fvywp3azC9XgW8pNb8O\u002BcDfK6wf9Qn401x5t\u002BUfK4dvyonup3aMrjvq75lG79eio/1g5/FWt12Pt3gN50a/VF82DPPAz5fB36gM/UX/4e3nhh9qHGc8ePfFL5fA9\u002BeDn6gn/JC/8VG9H7c2jL36jHL4vH/xKO8G/ygtfvT27lift4t8Ap0\u002BCHZro0JS6v5qo412a6Ni7yVz2Ur\u002Bv/5riW\u002Bh\u002BAQ9/21akAwAA",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "656,-368,1032.006"
+        }
+      ]
+    },
+    {
+      "Id": "c6476e0a-c3b1-4387-b2e5-44ff510fc1eb",
+      "Name": "Box",
+      "Position": "592,-296,1015.996",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2RSw7CMAxEXX6Fln\u002BBAgvEOViAhDhYb4bESbgJ\u002BNXGLbtaGsUzGSeOk4nIUTFQiFQvkbNCJDV\u002B//Gk4QqRfuOveR77pwfZKvaNlzV/R30R3PYXUX\u002Bp\u002BSHqjW9rbtHzfj4aafRmb\u002Bi5nnhOjLxftGn03gT\u002B3OvxZIqh\u002B/aeJy0Nf9nqY9y6e\u002B33kS99jvgLz9Fn7kfn3Whg7rXo3MO5rDvFxHXmQo7OSk/ozIcz0Tdei27/YGfrPG//L6\u002Bevl4BNV18eLr46KOL7wv0dBJzhAIAAA==",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "592,-296,1015.996"
+        }
+      ]
+    },
+    {
+      "Id": "05ed1688-18ff-4f9f-9884-49f21febd492",
+      "Name": "Box",
+      "Position": "672,-296,1016.003",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2UW1ITYRCF/wQl8RIkhqhRQxIQFREVFRGUixMQAfGOiIoRV5Jl\u002BWapC9AluAQffbAq/l/mZOiZosqZqq7qc/qcnv/SMyPOuU8\u002BBn041/7qXP0bWS6GfwaZfRyAx2PYuc2YPt8sxOr5ZrGLB79T/9vJNUv7OABXTd37PldMHVyO8PAyuGYw/p0Iz3XrYwZTb0TrCfUTBv/p/AimIxzqpwymPmnw704rmDF\u002B8Kqp8/55UwfPdrELerhpMP5Fg3nfWmJ9K1G9HqBvGUyykdBvJfo/T\u002BzvXeI8trv4V6Tfi3D4vt2wX/fJ\u002BmAeOv5hTsLZcO6QqR1XztPvo0/cE\u002BX2oc\u002Bm/HiP\u002Bjgs/0nlGfmy6ndFHJGXlz4Z1bOa6Zx8Z5TDH1FP9FWz7gF54Qvqi/eUPPAV5fAn1BP/sNnnkLzoS9oPmvM\u002BjundF5TDn1Yf9DvqD39WXviyzg/viI\u002BC\u002BDHl8OfUk328NedYlxd9zezzstnDDeX96pGVflo94C/KC18053vNR1H8lHL4S\u002BrJWdyRF/6qvOgndMdobvsoaf/3lcNfVx/0q\u002BoPf1Ne\u002BEmdO945H2Xx88rhb6kn5xLIC39XXvQzum80S7ob\u002BKZy\u002BHvqwzk9Un/4BXnRz2rm0Dz0URG/phz\u002BgfrAr6g//LK88IuaA\u002B7vse4YvqW8NxN94jd0d/Dr8jIfrzR/5C98VKXfUg7/VHrO\u002BqP6wD\u002BTF/24Zp27fOOjJp7/SW\u002B2RrUP\u002BG31gH8tL3xDc8m7PvhoiN9TDv9S64Hf1Trh38sLH/7Xwv7h0/4SpRFu\u002B6tpLzAzaXQDka6t33LSE\u002BqG4v0O0IY69pBGV0\u002B5vt53\u002BD8d31kaHd9RGh3fSRod38HB5xfXMedpdMyxdIl3xnXMaZr1MYdp7pc5S6P7B9Q4bsJECQAA",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "672,-296,1016.003"
+        }
+      ]
+    },
+    {
+      "Id": "425af024-0d06-4c13-b789-612cf130b4c7",
+      "Name": "Box",
+      "Position": "591.9999,316,1151.999",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2Sa1LCQBCEN0hURAzBB6JiQHwrKh5ASy9mjuJNLC0P5A1ge/fLZv\u002BZrZpkuqdnMpnZgTHm2dqmtb9l8WPM55t1Te7xe4WTGn8Lj2u9w6nDH0Hfq7GLdzwO\u002BmGNnT4L9dJf4VGIezwL9TwuQj8eH4f8zOGbkO/x1FrfTIL\u002BLmAff3QzKEN8EbCPz/XgtJjH0p4cX6cdxbbxddatraEf48dHugH5yt1intL38BPyWuhO4RJ210af8D3p\u002BtY24If44vU28FlUdyfq9ZC68g/Yn/o4xxe/i151ZnCyPXLFp/yP\u002Bjux1oUv8MV3\u002Bb547TGFPyJXfIeZKnZmrQevPVcz2qc38VN6ED8hV73eRv95bS1jHk/44i/Qq46/F56/JFf8KJrvg7UcfoEv/oqa4ufkir8nV7zuoSFmTPla3Ql/yi/eLzL10UQnTROd9tREpz000WnOTXTVHP/TaU5NdCuQxXEWxAQAAA==",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "591.9999,316,1151.999"
+        }
+      ]
+    },
+    {
+      "Id": "a86bf2f9-b7bc-4aca-afd3-235ad88f5849",
+      "Name": "Box",
+      "Position": "591.9999,416,1135.995",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACm2PCw7CMAxDy3/8BgzOAxoXYzdD5UTcYPitrkYRkawmrhMnVQjhIsyEd/946RG6NqT6nuvjWAtdOx31Q12XddyW\u002BtiU8\u002BKq9Is7DBW9Aq\u002BJgMfeL3ztPfk7C3P3LIWF\u002BYNzovIfvY1zYiPgz9yTc4J5AD37wJP7e9CvvQM8N6LHN\u002B8FTx9e6OHYB576m6OXm3T/LXuk6J5\u002BrwCtdeZ/tUnH3P/zSt0HU1HV2PQBAAA=",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "591.9999,416,1135.995"
+        }
+      ]
+    },
+    {
+      "Id": "978b83aa-f727-453e-bc32-0c4a75bc5fb2",
+      "Name": "Box",
+      "Position": "592,536,1016.003",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2QWQ6CQBBE2wUdwQ1RUQ\u002BjiVyMI3kDEzmYzmMKcT5MmKRDd1FVvaRmdvEx9WFWv8wePsyyUN\u002B7etTXPszKnt/WSVS7ahX5uSqP9K4qIn9XbeJ\u002BzTnu1xzaOryx5nn7l31nCzvwb\u002BLjpJw3Ewa/VP770C\u002BlJ0\u002B1D/qdcvC5\u002BPjk8gF30oIn6od2Kw14oRx8IU9w9u7mXksLzv3wpcdRGnDuQg5OoAPnPswCtpcWvLsN3v6et3jz\u002BqnvlUATeP\u002B4gQdniB9zDPH7ACzKGtiEAgAA",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "592,536,1016.003"
+        }
+      ]
+    },
+    {
+      "Id": "4d148341-6518-4cb2-96ac-e9321c93da99",
+      "Name": "Box",
+      "Position": "679.9999,536,1152.006",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2SXVICMRCEg4iAuuKiiKiIiP\u002BKiAfQUi/GEXz3CL54A0pPwklc82V7NyleTKqGTPd0TzYT2saYRxsNG4ts/mLM\u002B49NTT3H3wVOPX4FV73e4W5Z/3I4Kes5bnrs\u002BvW93uGWjd/s463Q90qc9\u002B947PQDr3d45PBnWb8ucV4fLvW79XqHJ0vnT73f4TE/Wis2Ktrbylmr4jK7UuWsNc0L3abycKHvyo9m3UZNfKIcviYvsR98R0Ne9FWdR21b7wjfV154KuJbwZ225KXXsfrSb0/vh76nHH5DO3wn\u002BL5deeGbug89j\u002BRBd6Ycfkfnoh8FszyQF76u2eE9tZGI552LGR2qJ/wwmOOJvJxxE9zzygb3p/eDcvhz6ekzUR/4C3nhB8F8722k4qfK4S/VE34sL/ydvPD8D41qxsyeBbVmc\u002B1PBDON0aGJ0fFOMTreIUbHnGN0xRz/0zGnGN0fxg/Xt8QEAAA=",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "679.9999,536,1152.006"
+        }
+      ]
+    },
+    {
+      "Id": "d1f18ad4-2f5e-4a0e-97b5-9636164139b6",
+      "Name": "Box",
+      "Position": "1072.002,484,1144",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAAClVM2w2AMBDCWh8fxjiKE2iri3UzExdTsFejJNxxHMED6MmKDC6cwLBTxi7fGzCTiPannphBrN98vhuOAmd9F6EeacHbT748aaEl1SdfW/xCfukfn5nWfyIdthfxBubJlBrUAAAA",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "1072.002,484,1144"
+        }
+      ]
+    },
+    {
+      "Id": "6d0e0007-4be9-49f3-852d-d3a993815167",
+      "Name": "Box",
+      "Position": "840,536,887.9945",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2QSw7CMAxEp/xaKJ8WOAwrkMjFuuiBuAESHAzyGqeVJRZYsmLPjONJKknnmPOY0uUtPV5UZepD7oupv8vrh772fNh5PrSO78PJ8X04DH2Kme37xCjH3dLCOPDCamJlfsC2o7cp0Nc2j2YTc2nzR6vBOZlFj9/so7JZcHj2wTX2T\u002BC8hxp8bXeB867se2\u002Bz4Ol/EiZ1N\u002B\u002B4e9p5Jdn/W5e1SYfmH90XUQDB9PQBAAA=",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "840,536,887.9945"
+        }
+      ]
+    },
+    {
+      "Id": "1398ff63-78de-4b19-87a8-df09d8679434",
+      "Name": "Box",
+      "Position": "1072,488,888.011",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2QWQ7CMAxEh7WBssMBOAkgcrF\u002B5F5IXKzkESdt\u002BMLSyPF4vMVJukTMIqTHW7pGSE2KnzmeDHGEdCx653m1VT74bZUPflX1C/78o99/42RTm9dHa8psaW45cDKPLW1/dJtyy2D0aa0ezTpiYTx78obHUwvPvnkPZ7Xw3M08cgf7J3ju4Q1PDzw8d9GDeGe18PkmOKm71xt3L/M3wPykG\u002BfGcdKh\u002BUf3AdLHoAv0AQAA",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "1072,488,888.011"
+        }
+      ]
+    },
+    {
+      "Id": "95d46e33-008c-4612-8245-d2b5a259234f",
+      "Name": "Box",
+      "Position": "951.9999,392,887.9989",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACm2RXVLCQBCEJ0iE8CMKAoIivHmFfdIq9yLeglfu4IGs0mtZxP1IAzsWUzVJd6fnZzcDM9ukLFP\u002B1i8/Zh/fCdqq4fHIizN/h/fP/gMvnT/EofOHWDl/iHM3L8RR4vv689Rv4XiI04N/e/KvHTd75KFoad86xUqYaGffBsLEdcor\u002BfvCeeAbq57ans6LfyhcqK4lvZJGdlWLXmgevtuUHelzYfROtu9z1vcm2/VBfcGzlJX6LITRJ/KjT6WR96pFL3UeZj3pv6Jzv2D0O\u002B2Dzj2zH/pStej8P4IdzXZv/gZ3X3q/ksxufPm3nDc\u002BPJnvQs/Gx3k0918v72Pfy/t53x8Nag4cFAMAAA==",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "951.9999,392,887.9989"
+        }
+      ]
+    },
+    {
+      "Id": "3e2075ce-3b4c-449a-8876-d71571083fd6",
+      "Name": "Box",
+      "Position": "951.9999,440,1111.999",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2YB5SdRRmG/5u6KZAACUmQwIUQFggBQoAkREN2F8EEMAaIiKFIUQRBQBBEKZciCkiT3kREOhoVUenujUgTEGnSpHcEERCkuMzzz7OT3P\u002BQ4\u002BScOff7nvneb\u002Bo/M5udiqJYvlYU64Tff/X0NMNPdyjFuqW/oLPXHxvKez3tXeGnoyjqnX2iv7DX37DVbw6J\u002BTp7/VGL/JCv3lyuluJLf1wl/5hWvzky6duCpt5cqtbbP/yimJ76P7X0x6f\u002B4Neba6b6s8v6Cakev95sT\u002BON\u002BkmVfBND\u002BbDntDS\u002BKa1\u002B5\u002BTUv9jeXZV809J4Yv\u002B7kh/j7yv9Kal\u002BVvJj/c6lv7n1je45yae\u002B0b19S33RMa\u002BlvuiYm/xy/B3zW/xG98kVf5fUfpyf4yr\u002BHqn/0b811b9d\u002Bvuk\u002Bug/keYn\u002Bg8nP\u002BoPTvNFfVEckvy4XoeF0lYUC3vrj0h\u002BrD\u002B69Newvt78IPkx/5FpfNQ3uk\u002Bo9Peilvqi49RK/BnJH/0n6s9q8Rvd5yV/1bL\u002Bgha/0X1OJf7i1D5\u002BvXlNJf6KVI9fb15SiV\u002BQ5jf6VyU/xl9bqX82zXesfzn5sf6WNN9l/4s3kl\u002BOt7ipsh63tax/uRCL7eeiuLuy/\u002B\u002BoxN9fib\u002B3Zb8UxSOV/fBgy3iK4slK/GOV/j5fiX86\u002BbPL8b6axh/9Fyv\u002BmynfzFL/TtpPsf7dtP9i/VvJj\u002B19lOLj/NZqrfEDa635eir9H5TOtxjfP56XXb3n5bDkx/NiSK1yXlbilwl\u002B2W4o64WCyxm\u002BlL894R9neF/rlgulX5QUA2hfPkybf23WcTaOqEWbf4Nth7zLaBfm62db4\u002BTkWs164gfZB3JvZHxtsX7hr2S7fWT9rR9dYW3y5c1Lu2MWa2NZ4\u002BAj1cJHqIX3cTy0u2IoQ9R/Whs\u002B3DaJn27f4CuoXTuUpUPAUNtb1Xknbi1t\u002BFDnhDzcV\u002BW6h1K3Ds69vLTaNVwP\u002BARt\u002BCrmhLerha\u002BuFj7eftPeOq4TfFJlzQr5RMc40PEMl491HpmvDdw38CnabbbZVz7ZuYGvrxY\u002BxHlnbjcOZaT8Lm34p5xz\u002BDTnFj5VLX6n6409M5RRaj6nDf\u002BM8czTX2SUGWrJz/titNrNQhnjPH5eG76JOZmLr6mFb1pELXm63Adot3QMrM222vDPmpP1\u002B4pa\u002BGy15Jnl/kO7dShj5fO04VuYk/n\u002Bslr4F9QSP8fvh5gvhbKyYzhFG76NeYg/2fzwL6qFz3Vf0uednEvGf7w2fCvHRfxx5oTvoBa\u002Bvd8Dc7h7KOPcf3trwze3j8T9zZzwXWXk2dlzBO1eoYx3zL/Uhu9mTvbct9TCv66WPHv4nRCzXyjt7uPvaMO/YR7G8Gfzw7\u002Bplrq/\u002B32iPSiUNd1zh2vD9zUn7R6mFn6gWvjDnhFoDw1lgt/DMdrwb5uT\u002BKPVwr\u002BrFn6I3y3ao0KZKP9AG/49c8KPVAtvqKWNDz0vWOsfhrKu\u002B\u002Bxn2vAd3QPkuch5gh\u002BrFr6L9xDrelIok9z3Z2rDt3NPEn\u002BGew/\u002BI7Xw\u002BZ4jaE8PZbL743xt\u002BInmJP48tfAfq4Wf6vmF9txQNpRfoA0/zZzwc9TCz1YLP8t7izn5aShT3PeXa8N/4FwRf41zAv\u002BJWvgJnmtoLw1lmvwKbfiF5uT7/K1a\u002BM/VEn\u002Bx5ynfwtWhTJcv0Ibv6R7mG/iHv/Ar1RK/j3cebf3GM5T1uF4bfpn9If5Z\u002Bwn/lVr4JZ6zaP/gGcoa/1Eb/mtz0qfn1MJ/p5bv5BXPd7Q3x0dPmf8NbfjvzQm/SS38RrXl33zeGexRHlpdxt\u002BmDd/fbxq\u002BUB28qRZ\u002BsOc\u002B\u002B/5Oz3T43dqr2K8R8jvcy/Db1cLv877hbPqrZx/8fm34V9XC77Vv8HvUwm/1zqPuoVBmyR/Rhh/gXMIfdL7hD6iFP\u002BE9xJ543DsG/qQ2/Bdq4Y\u002B5r\u002BCPqoVf5f1H3DPeDfDnteHXue7wp107\u002BFNq4bd4B9Pvl0KZI39VG36Daw1/0f0Df0Et/FrvRdby9VDmem7\u002BR7vd//iYafw75oS/phb\u002Bsvcx2re9O\u002BHvasP/aU74W2rh/1YLf9M3AWfs\u002B6HM8/ztU4s2/Puew8Tz98Ra8vfUwo/wnqaOB9t28oHa8P\u002BaH96jFv4/tdwBbbX4PsAeEGzuacIHacP71mI8nL9PtpX3Uwv/yLcI/R4a\u002BHz5MO21/SYHy/k7ZoB8cC1q4fx/0Q7eVcvW4h0DH6k90bfpADl/7/SXD1cLH\u002BX7k/dMuNnYYov9a7C9\u002BA1L3ZjRf1GcvBob42pLzNcaNyIz3wop7pNiF8XVW\u002BM2WVJc77v//8WVf6csMab8LePWzxzH1MxxzMhslzMyJ2525nj5DnPi2OM5ceyxnLhdM8fBuzQnjndnThzvypw43o05cbwLc\u002BKOzZwX3nU5cbzbcuJ4l\u002BXE8e7KieNdlRN3Zea88C7KiePdkxPHuyYnrpn5/d6eea7dk/mdP5CZ79HMfE9ljuOFzHl5LbNd7u2cdrmXc/YL925OHPdqzji4N3PiuBdz4j4GW/vhqCQaAAA=",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "951.9999,440,1111.999"
+        }
+      ]
+    },
+    {
+      "Id": "3f94fb25-8adc-46bb-958e-ca5fe701b569",
+      "Name": "Box",
+      "Position": "691.9997,39.99994,995.9999",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2US1MTQRSFO8EYE42I8UlAUERBxRciIgJ5gICI\u002BJOyZO\u002BGZX6CS3c449K9Nb\u002BGeM/km8x0qtDpqlu55/S5p\u002Bf27cqUc\u002B6rRc3i59lWcNb/9su5Xqs8wK0EF1LcEa6n\u002BhiXDH/vj4cDfBxO\u002B/qg4vsFE6ne8HFY83AUznl\u002BUdgy3Cw08YvCGQ/3gkaKY/95D0fhouEF96Od7K94OArXPf1J\u002B5W3f9JeGuLfMV71cC9YHsEbHo7CtZHzOimO\u002B9k1XHV/Osn\u002BYYrj/Z0Rv6Ph/gAfGE5W0ULz6tsqk2tdYE9xjV\u002BtixZj6Ovk2SW\u002BRL28qhYl\u002BGly8Vfwku91cvFXLcroNffkmy7hqfPuwKn2MrXSF/AvoivCV6gXd8uiwne1ycWP46\u002B4x7nib1Ar34fUSTPF2fKfIRd/m1/xDfyFJ6kV36J/eT6wqNHDE3LxdzlX\u002BkW\u002BR/wsteJr3JdqF\u002BhB530gF38fT\u002BnXM/f\u002BKHPXL5mx8ucWE\u002Bj1rpMZPEWvb3qLj/hn1Eo/zyyleWNRh18lF/8CH/HL\u002BIt/Ta34Je5dvby3uAm/QS7\u002BMT2KX8NT/Dtqxa8wb917k9loTnvk1Yyf9Lt8i/hNasXP8eZU\u002B5HZiD8kF7\u002BFp/gdasVvU6v7\u002BsI7UP7ZooH\u002BiFz8PnrxB/iI/0SteP0fOHp2rqujM6t7yq\u002B10N1UP3l0Y0PdedqBTnebRzd57rm\u002BbjbVnf5Ll7zX/\u002Bn0HvPo9N7y9KH3lEen95LnnvUe8ug07zy6v6Kwe/qUBwAA",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "691.9997,39.99994,995.9999"
+        }
+      ]
+    },
+    {
+      "Id": "20633248-3320-4acf-9cb8-ea73144ee9cb",
+      "Name": "Box",
+      "Position": "1192,48,887.9919",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2W63JURRSFDwIBjMELxIgxmohBYsQYAxJFgswBL3hhEAFREQXRQQRFVEREAog3RKKI8DZUyV9/\u002BCjzBtrfmS8zfY5FVZ\u002BqXdl77bV2d\u002B\u002B\u002BTFZnWXYt2LJgWTbzV5YN3sBb0Iprs/HuTpzjze3wi7i7lG/Wekr5Zq2vnZ8u4nXtfCseKcVZNlCp39uOZwr\u002B8lKcZf2Rfl42mQ9HeeKhaHzi0Qp/rJSv5\u002BNFPGi\u002Bnq8p5Rv52lK\u002BkU9E6ydeX\u002BFvbPNb\u002Bbyi31Dqf7O2vdT/Zm1zZ77Ffmwtxc3apc54RXy0ot9W2Z\u002B9lf3cFfGZz6HKeg505l/kz1XWs78y/uEoJn8wmi/9PlbKT\u002BbHO/0IcT0/UcrX81OlfCM/Xal/shKfr/DPtMf/p\u002BjfhVLcrP0QxcznSmW\u002BF4v47xuz/KtRTP5yEbe\u002BW4LN8U68oM83z9y/4dutz9flfYJ3m378we9WD\u002BfWYPPV36UPPl8t/L5oHgvVgs91PHJ3eM\u002BJH9EHXxTVuiea92K55J\u002BxLpy7xag/oA9\u002Bp3XAe60PvjSa0/2uB/8\u002Bewaf\u002Bz275mXywfutA35v1IuH7B3\u002Bg8F65A/rgz8gH3zIOuCDasFHonWuDHa7vMf1uyIM/pgYtkIt\u002BLqov4/ZC9bwpD74w9aCv0Yt\u002BKNqwUfdY7Srgy0RX6sPvsqa4BNqwZ9QCz5u39mbp4P12oua/iLrdcnfaI/BJ9WC97jfaJ8N1iee64M/ZU3wDWrBp9SCr/dsscfPucfg2/W7Pbtz7MubwTLxTWrZs1c9B/gvB\u002Bt3jJ/1wV\u002BUz9xftw74FrWMu8DzB\u002Be1YAPiR/XBX7EO\u002BDbrg9fV0uvPPNPM\u002BQ3PHPy9\u002BuDPuy7wXa4XfKdazsS7nkv8d4INua8f6IO/JZ86B6wD/rZazsTH3ge07wdbLv\u002BcPvgea4LvVwu\u002BTy17\u002BZ13jJofBRuWf1gf/D214AedD3hDLfhm7wm9\u002BtQ7wLn7Sh98h/2Ef9w\u002Bgx9RC37J\u002B4n2y2AjnrNv9cE/sSb8U2rBP1cLfsy3D\u002B03wUbFT\u002BuDf2FN8JNqwb9WC37Ce0uvznonwc/rg39oP8HP2CvwabXgh3wvOMM/BhsTv6AP/pI94b7NeIbBv1cLf6tvFpxfg42LX9EH/8k64BetD/6LWs76n74j\u002BH8Em5B/VR/8N/ngl60D/rta8Nbva\u002BuchxW3/t1pf9PX/RueiOmphTflzXJbvMWJ9Za2eXHu//XoYwqPfUvhrUhcB3ufwqOXKbzJxPlNJfZvU4dXqVWutyVx3HriuDsT6/HepfD2JY7bSKx3JLEvvDcpPN6TFB7vRco6eA9S1sF9T\u002BFxn1Pm9x9M\u002Bpn/VA4AAA==",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "1192,48,887.9919"
+        }
+      ]
+    },
+    {
+      "Id": "80b59ac8-2d9d-4209-9b8d-0465b8ccef57",
+      "Name": "Box",
+      "Position": "1072,-424,887.9982",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2U61JTMRSFUxREa1uLVC0qFxUUUREREZFbUBG5KCL\u002B9lH6CL6RM\u002BqD\u002BAh5A8065\u002BtpkvFHzsye7r2y1kp2sqeTxpivPpo\u002BjNn\u002Bacw3H8bMl7Xt17VB7cOY\u002BoBf1MMR39lGxHe2Hfk7uxLpnW0l\u002B3WT83SK\u002Bo\u002B0RT0V1c6uF/X3X/312ah2dqbil\u002BddSPwWK365vpT47UR6Z1eT8y9Hemc3Ev5aUZ//3fffq\u002BrSfyvR70d8Z4\u002BSfj5GemdPk/OeJf4nRV1\u002BQ7znX//NV2/r2cHaZXJ9Iz7Owa\u002BTh5/WH6KX9hLzIP0YeQ3dED5tMMUoWuE1/MS74uMC\u002BAq58It4Cm8F524GZ72Br/JraMTvkgu/Cl/6SX6Fj6MVv0E/Wrvlo87e98iFX8dHmhf4C59AK58OdyrtHR8N8Fly4TfxlP51cI/TaMWfCvp84KPFvTwlH6E28BfpSfgcWuHDwf0\u002B8dFmP0su/D6e4u\u002BgFf4IrfAF3li9P\u002BdOha\u002BSC7/N/sKX6VH4M7TC17l39f7KRwd8g1z4XbTC17g34S/RCp/hvdXLNm8jfI9c\u002BGN6FL5FL8I30WqP98yQ8nc\u002BurzBMbnwXfjyOcJH\u002BBu0wpeYA2kPeWOd\u002Bwu58Ld4in\u002BKVvgHtML3mT9pP3Onws/IhR/gKfwErfBPaIWX/xv9//te\u002BbdTfb0f/Pqr6G2OVrxwLaxLXjPTb3zAS7xiv4nMfacz/eYyz6e5zuFpbnN4msscnuYuh6e5\u002Bj8v7ldzk\u002BOnuci5v39Uj8TNJAgAAA==",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "1072,-424,887.9982"
+        }
+      ]
+    },
+    {
+      "Id": "7dd58f79-a1bc-4c14-8a38-7c33cd7a7757",
+      "Name": "Box",
+      "Position": "464,-536,948.0002",
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACo2RfVbCMBDEV6mAUhQRFISCJ\u002BGjXogjcBRvwjMXg/yaSSF9/YO8t\u002BzOZGbZbHMz\u002B/Hx5MPsr/Q//2YHcsR78GPALuKvFLss1btu2s8Nan3/F/yR4rKo9QHPG/8/rfAu3rt1istFGNjO/jDrg/CLanhmjndDHx3xzJqJf1YNP6j3YpbLS4zlRU\u002BOpyc9XnDYSdDF4L6rPiN50K1Uw/eV6T1TBr/KS/9MOu4\u002BNTf8XDX8u3zwU/WHn8gLX2hH9Fv64M3w7Jca/k1eePYc9/UtLzzfk/cxYzjH7c1qwCcfG4IdBB1c81x1aO7px3vUr0VT5UrHvO26tN8FcCyjzxQDAAA=",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "464,-536,948.0002"
+        }
+      ]
+    },
+    {
+      "Id": "90505885-63e3-4ad9-bea5-2e27aa936dee",
+      "Name": "Box",
+      "Position": "528,-384,948.0026",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "EditorMeshComponent",
+          "Color": "1,1,1,1",
+          "IsTrigger": false,
+          "Mesh": "H4sIAAAAAAAACnWQCw7CIBBEx1\u002Bt/\u002B95NPZEPQI3M3Ix3QeLLSZuMoEdZpiFVtLVMDNI4ZXRd6lVeJR\u002BOvSGvrsM\u002BtTP6z4ean1s6vtiW\u002BfFdQ7U24qsiYF153t4MsvZ0WeGd2uqvWHhPBmN68\u002B\u002Bhydr6XedfA/PzPkd0tZ5ivso9KvvX0kb1\u002BNlJQfgI6vMip8VHxx6zvEzr//1c/yO3IcbwDfS3f/pyMi6X02t\u002BwBib5Ud9AEAAA==",
+          "Static": true,
+          "Surface": null,
+          "TextureOrigin": "528,-384,948.0026"
+        }
+      ]
+    },
+    {
+      "Id": "76ab4ff8-a71d-498d-9d85-f56546648250",
+      "Name": "Point Light",
+      "Position": "976,-176,1024",
+      "Tags": "light_point,light",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "PointLight",
+          "Attenuation": 1,
+          "FogMode": "Enabled",
+          "FogStrength": 1,
+          "LightColor": "0.91373,0.98039,1,1",
+          "Radius": 400,
+          "Shadows": true
+        }
+      ]
+    },
+    {
+      "Id": "022f558a-a5e2-4601-af74-6d1cabbf7c3b",
+      "Name": "Point Light (1)",
+      "Position": "976,248,1032",
+      "Tags": "light_point,light",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "PointLight",
+          "Attenuation": 1,
+          "FogMode": "Enabled",
+          "FogStrength": 1,
+          "LightColor": "0.91373,0.98039,1,1",
+          "Radius": 400,
+          "Shadows": true
+        }
+      ]
+    },
+    {
+      "Id": "7b2204b8-ae55-4f48-a10c-d519267b2762",
+      "Name": "Point Light (2)",
+      "Position": "608,392,1088",
+      "Tags": "light_point,light",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "PointLight",
+          "Attenuation": 1,
+          "FogMode": "Enabled",
+          "FogStrength": 1,
+          "LightColor": "0.91373,0.98039,1,1",
+          "Radius": 400,
+          "Shadows": true
+        }
+      ]
+    },
+    {
+      "Id": "b023614a-df3b-4161-80cd-4eb9a788f0a0",
+      "Name": "Point Light (3)",
+      "Position": "608,-208,1088",
+      "Tags": "light_point,light",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "PointLight",
+          "Attenuation": 1,
+          "FogMode": "Enabled",
+          "FogStrength": 1,
+          "LightColor": "0.91373,0.98039,1,1",
+          "Radius": 400,
+          "Shadows": true
+        }
+      ]
+    },
+    {
+      "Id": "823544f4-aeb1-40f7-b7e3-6bc48ab4b169",
+      "Name": "Point Light (4)",
+      "Position": "552,-504,1088",
+      "Tags": "light_point,light",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "PointLight",
+          "Attenuation": 1,
+          "FogMode": "Enabled",
+          "FogStrength": 1,
+          "LightColor": "0.91373,0.98039,1,1",
+          "Radius": 400,
+          "Shadows": true
+        }
+      ]
+    },
+    {
+      "Id": "6a63a1af-d79e-41a6-806d-eb8d74adc891",
+      "Name": "Point Light (5)",
+      "Position": "200,-504,1088",
+      "Tags": "light_point,light",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "PointLight",
+          "Attenuation": 1,
+          "FogMode": "Enabled",
+          "FogStrength": 1,
+          "LightColor": "0.91373,0.98039,1,1",
+          "Radius": 400,
+          "Shadows": true
+        }
+      ]
+    },
+    {
+      "Id": "d11fb449-77a8-43fc-9eca-da8409ae7549",
+      "Name": "Point Light (6)",
+      "Position": "-184,-504,1088",
+      "Tags": "light_point,light",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "PointLight",
+          "Attenuation": 1,
+          "FogMode": "Enabled",
+          "FogStrength": 1,
+          "LightColor": "0.91373,0.98039,1,1",
+          "Radius": 400,
+          "Shadows": true
+        }
+      ]
+    }
+  ],
+  "SceneProperties": {
+    "FixedUpdateFrequency": 50,
+    "Lerping": true,
+    "MaxFixedUpdates": 5,
+    "NetworkFrequency": 30,
+    "ThreadedAnimation": true,
+    "TimeScale": 1,
+    "UseFixedUpdate": true,
+    "NavMesh": {
+      "Enabled": false,
+      "IncludeStaticBodies": true,
+      "IncludeKeyframedBodies": true,
+      "EditorAutoUpdate": true,
+      "AgentHeight": 64,
+      "AgentRadius": 16,
+      "AgentStepSize": 18,
+      "AgentMaxSlope": 40,
+      "ExcludedBodies": "",
+      "IncludedBodies": ""
+    }
+  },
+  "Title": "datacore_test",
+  "Description": "",
+  "LastSaved": "2024-02-28T16:41:22.3846825\u002B00:00",
+  "__references": []
+}
