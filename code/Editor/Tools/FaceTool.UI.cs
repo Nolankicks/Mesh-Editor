@@ -17,7 +17,20 @@ public partial class FaceTool
 
 		widget.Layout.AddStretchCell();
 
+		var button = widget.Layout.Add( new Button( "Align to Grid", widget ) );
+		button.ButtonType = "clear";
+		button.Clicked += AlignToGrid;
+
 		return widget;
+	}
+
+	private void AlignToGrid()
+	{
+		foreach ( var group in MeshSelection.OfType<MeshFace>()
+			.GroupBy( x => x.Component ) )
+		{
+			group.Key.ApplyPlanarMapping();
+		}
 	}
 
 	private void CreateOverlay()

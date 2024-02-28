@@ -493,6 +493,13 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		return halfEdges[0];
 	}
 
+	public void ApplyPlanarMapping()
+	{
+		PolygonMesh.ApplyPlanarMapping();
+
+		_dirty = true;
+	}
+
 	public void SetMaterial( Material material, int triangle )
 	{
 		if ( Mesh is null )
