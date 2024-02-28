@@ -1,3 +1,4 @@
+using Sandbox;
 using System;
 
 namespace Editor.MeshEditor;
@@ -8,11 +9,11 @@ public class StairsPrimitive : PrimitiveBuilder
 	[Title( "Number of steps" )]
 	public int NumberOfSteps { get; set; } = 16;
 
-	private Vector3 Center;
-	private Vector3 Size { get; set; }
-	private float StepWidth;
-	private float StepDepth;
-	private float StepHeight;
+	[Hide] private Vector3 Center;
+	[Hide] private Vector3 Size;
+	[Hide] private float StepWidth;
+	[Hide] private float StepDepth;
+	[Hide] private float StepHeight;
 
 	public override void SetFromBox( BBox box )
 	{

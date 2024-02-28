@@ -5,8 +5,8 @@ namespace Editor.MeshEditor;
 
 public partial class BlockTool
 {
-	private PropertySheet Properties { get; set; }
 	private StatusWidget Header { get; set; }
+	private Layout ControlLayout { get; set; }
 
 	protected Widget BuildUI()
 	{
@@ -23,9 +23,7 @@ public partial class BlockTool
 			var layout = widget.Layout.AddRow();
 			layout.Spacing = 4;
 
-			var label = new Label( "Geometry Type" );
 			var geometryComboBox = new ComboBox();
-
 			foreach ( var builder in GetBuilderTypes() )
 			{
 				var displayInfo = DisplayInfo.ForType( builder.TargetType );
@@ -33,18 +31,17 @@ public partial class BlockTool
 					Current = _primitives.FirstOrDefault( x => x.GetType() == builder.TargetType ) );
 			}
 
-			layout.Add( label );
 			layout.Add( geometryComboBox, 1 );
 		}
 
 		widget.Layout.AddSpacingCell( 8 );
 
 		{
-			Properties = new PropertySheet( widget );
-			Properties.IncludeHeader = false;
-			Properties.Target = Current;
-			//Properties.OnChildValuesChanged += ( Widget _ ) => IBlockTool.UpdateTool();
-			widget.Layout.Add( Properties, 1 );
+			var so = EditorTypeLibrary.GetSerializedObject( Current );
+			var sheet = new ControlSheet();
+			sheet.AddObject( so );
+			ControlLayout = widget.Layout.AddRow();
+			ControlLayout.Add( sheet );
 		}
 
 		widget.Layout.AddSpacingCell( 8 );

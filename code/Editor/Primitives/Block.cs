@@ -1,4 +1,5 @@
-﻿
+﻿using Sandbox;
+
 namespace Editor.MeshEditor;
 
 [Title( "Block" ), Icon( "rectangle" )]
@@ -12,7 +13,7 @@ public class BlockPrimitive : PrimitiveBuilder
 	public bool Back { get; set; } = true;
 	public bool Hollow { get; set; } = false;
 
-	private BBox _box;
+	[Hide] private BBox _box;
 
 	public override void SetFromBox( BBox box ) => _box = box;
 

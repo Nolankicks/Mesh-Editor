@@ -36,8 +36,14 @@ public partial class BlockTool : EditorTool
 
 			_primitive = value;
 
-			if ( Properties.IsValid() )
-				Properties.Target = _primitive;
+			if ( ControlLayout.IsValid() )
+			{
+				var so = EditorTypeLibrary.GetSerializedObject( Current );
+				var sheet = new ControlSheet();
+				sheet.AddObject( so );
+				ControlLayout.Clear( true );
+				ControlLayout.Add( sheet );
+			}
 		}
 	}
 
@@ -88,7 +94,7 @@ public partial class BlockTool : EditorTool
 	[EditorEvent.Hotload]
 	protected void OnHotload()
 	{
-		CreatePrimitiveBuilders();
+		//CreatePrimitiveBuilders();
 	}
 
 	private void CreatePrimitiveBuilders()
@@ -119,7 +125,7 @@ public partial class BlockTool : EditorTool
 		window.FixedHeight = 400;
 		window.AdjustSize();
 
-		AddOverlay( window, TextFlag.RightTop, 10 );
+		AddOverlay( window, TextFlag.LeftTop, 10 );
 	}
 
 	private void UpdateGeometry()

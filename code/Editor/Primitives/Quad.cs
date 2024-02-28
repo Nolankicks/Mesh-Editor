@@ -1,12 +1,12 @@
-﻿
+﻿using Sandbox;
+
 namespace Editor.MeshEditor;
 
 [Title( "Quad" ), Icon( "rectangle" )]
 public class QuadPrimitive : PrimitiveBuilder
 {
-	public override bool Is2D => true;
-
-	private BBox _box;
+	[Hide] public override bool Is2D => true;
+	[Hide] private BBox _box;
 
 	public override void SetFromBox( BBox box ) => _box = box;
 
