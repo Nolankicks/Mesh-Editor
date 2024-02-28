@@ -12,8 +12,40 @@ namespace Editor.MeshEditor;
 [Alias( "Face" )]
 [Group( "3" )]
 [Shortcut( "mesh.face", "3" )]
-public class FaceTool : BaseMeshTool
+public partial class FaceTool : BaseMeshTool
 {
+	public override void OnEnabled()
+	{
+		base.OnEnabled();
+
+		CreateOverlay();
+	}
+
+	protected override void OnMeshSelectionChanged()
+	{
+		RebuildControlSheet();
+	}
+
+	private void RebuildControlSheet()
+	{
+		if ( !ControlLayout.IsValid() )
+			return;
+
+		ControlLayout.Clear( true );
+		var sheet = new ControlSheet();
+		ControlLayout.Add( sheet );
+
+		var mso = new MultiSerializedObject();
+		foreach ( var face in MeshSelection.Where( x => x is MeshFace ) )
+		{
+			var serialized = EditorTypeLibrary.GetSerializedObject( face );
+			mso.Add( serialized );
+		}
+
+		mso.Rebuild();
+		sheet.AddObject( mso );
+	}
+
 	public override void OnUpdate()
 	{
 		base.OnUpdate();
@@ -47,7 +79,7 @@ public class FaceTool : BaseMeshTool
 				Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Shift );
 
 			if ( !multiSelect )
-				MeshSelection.Clear();
+				MeshSelection.Set( null );
 		}
 
 		using ( Gizmo.Scope( "Face Selection" ) )

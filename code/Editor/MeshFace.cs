@@ -8,11 +8,11 @@ namespace Editor.MeshEditor;
 /// </summary>
 public readonly struct MeshFace : IValid
 {
-	public EditorMeshComponent Component { get; private init; }
-	public int Index { get; private init; }
+	[Hide] public EditorMeshComponent Component { get; private init; }
+	[Hide] public int Index { get; private init; }
 
-	public readonly bool IsValid => Component.IsValid() && Index >= 0;
-	public readonly Transform Transform => Component.IsValid() ? Component.Transform.World : Transform.Zero;
+	[Hide] public readonly bool IsValid => Component.IsValid() && Index >= 0;
+	[Hide] public readonly Transform Transform => Component.IsValid() ? Component.Transform.World : Transform.Zero;
 
 	public MeshFace( EditorMeshComponent component, int index )
 	{
@@ -22,6 +22,31 @@ public readonly struct MeshFace : IValid
 
 	public readonly override int GetHashCode() => HashCode.Combine( Component, nameof( MeshFace ), Index );
 	public override readonly string ToString() => $"{Component.GameObject.Name} Face {Index}";
+
+	[Range( -180.0f, 180.0f )]
+	public float TextureAngle
+	{
+		get => Component.IsValid() ? Component.GetTextureAngle( Index ) : default;
+		set => Component?.SetTextureAngle( Index, value );
+	}
+
+	public Vector2 TextureOffset
+	{
+		get => Component.IsValid() ? Component.GetTextureOffset( Index ) : default;
+		set => Component?.SetTextureOffset( Index, value );
+	}
+
+	public Vector2 TextureScale
+	{
+		get => Component.IsValid() ? Component.GetTextureScale( Index ) : default;
+		set => Component?.SetTextureScale( Index, value );
+	}
+
+	public Material Material
+	{
+		get => Component.IsValid() ? Component.GetFaceMaterial( Index ) : default;
+		set => Component?.SetFaceMaterial( Index, value );
+	}
 
 	public MeshVertex GetClosestVertex( Vector2 point, float maxDistance )
 	{

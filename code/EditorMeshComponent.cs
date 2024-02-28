@@ -361,6 +361,89 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		return Mesh.Faces.GetHalfedges( f );
 	}
 
+	public float GetTextureAngle( int f )
+	{
+		if ( f < 0 || Mesh.Faces[f].IsUnused )
+			return default;
+
+		return Mesh.Faces[f].Traits.TextureAngle;
+	}
+
+	public void SetTextureAngle( int f, float angle )
+	{
+		if ( f < 0 || Mesh.Faces[f].IsUnused )
+			return;
+
+		var traits = Mesh.Faces[f].Traits;
+		traits.TextureAngle = angle;
+		Mesh.Faces[f].Traits = traits;
+
+		_dirty = true;
+	}
+
+	public Vector2 GetTextureOffset( int f )
+	{
+		if ( f < 0 || Mesh.Faces[f].IsUnused )
+			return default;
+
+		return Mesh.Faces[f].Traits.TextureOffset;
+	}
+
+	public void SetTextureOffset( int f, Vector2 offset )
+	{
+		if ( f < 0 || Mesh.Faces[f].IsUnused )
+			return;
+
+		var traits = Mesh.Faces[f].Traits;
+		traits.TextureOffset = offset;
+		Mesh.Faces[f].Traits = traits;
+
+		_dirty = true;
+	}
+
+	public Vector2 GetTextureScale( int f )
+	{
+		if ( f < 0 || Mesh.Faces[f].IsUnused )
+			return default;
+
+		return Mesh.Faces[f].Traits.TextureScale;
+	}
+
+	public void SetTextureScale( int f, Vector2 scale )
+	{
+		if ( f < 0 || Mesh.Faces[f].IsUnused )
+			return;
+
+		var traits = Mesh.Faces[f].Traits;
+		traits.TextureScale = scale;
+		Mesh.Faces[f].Traits = traits;
+
+		_dirty = true;
+	}
+
+	public void SetFaceMaterial( int f, Material material )
+	{
+		if ( material is null )
+			return;
+
+		if ( f < 0 || Mesh.Faces[f].IsUnused )
+			return;
+
+		var traits = Mesh.Faces[f].Traits;
+		traits.TextureName = material.Name;
+		Mesh.Faces[f].Traits = traits;
+
+		_dirty = true;
+	}
+
+	public Material GetFaceMaterial( int f )
+	{
+		if ( f < 0 || Mesh.Faces[f].IsUnused )
+			return default;
+
+		return Material.Load( Mesh.Faces[f].Traits.TextureName );
+	}
+
 	private class Submesh
 	{
 		public List<SimpleVertex> Vertices { get; init; } = new();

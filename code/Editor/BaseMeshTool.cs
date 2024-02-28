@@ -249,6 +249,13 @@ public abstract class BaseMeshTool : EditorTool
 	private void OnMeshSelectionChanged( object o )
 	{
 		_meshSelectionDirty = true;
+
+		OnMeshSelectionChanged();
+	}
+
+	protected virtual void OnMeshSelectionChanged()
+	{
+
 	}
 
 	protected void Select( object element )
