@@ -14,6 +14,25 @@ public sealed class PolygonMesh
 	private readonly List<int> _triangleFaces = new();
 	private readonly List<int> _meshIndices = new();
 	private readonly List<Vector3> _meshVertices = new();
+	private readonly List<FaceMesh> _meshFaces = new();
+
+	private struct FaceMesh
+	{
+		public int VertexStart { get; set; }
+		public int IndexStart { get; set; }
+		public int VertexCount { get; set; }
+		public int IndexCount { get; set; }
+		public Vector3 Normal { get; set; }
+		public Vector3 Tangent { get; set; }
+	}
+
+	public Vertex[] CreateFace( int face, Transform transform, Color color )
+	{
+		var meshFace = _meshFaces[face];
+		return Enumerable.Range( meshFace.IndexStart, meshFace.IndexCount )
+					.Select( x => new Vertex( transform.PointToWorld( _meshVertices[_meshIndices[x]] ), color ) )
+					.ToArray();
+	}
 
 	private static readonly Material DefaultMaterial = Material.Load( "materials/dev/reflectivity_30.vmat" );
 
@@ -77,7 +96,7 @@ public sealed class PolygonMesh
 	public void AddFace( params Vector3[] vertices )
 	{
 		// Don't allow degenerate faces
-		if ( vertices.Length < 3 ) 
+		if ( vertices.Length < 3 )
 			return;
 
 		AddFace( vertices.Select( AddVertex ).ToArray() );
@@ -137,6 +156,7 @@ public sealed class PolygonMesh
 		_triangleFaces.Clear();
 		_meshIndices.Clear();
 		_meshVertices.Clear();
+		_meshFaces.Clear();
 
 		var builder = Model.Builder;
 
@@ -279,6 +299,7 @@ public sealed class PolygonMesh
 		if ( startVertex == vertices.Count )
 			return;
 
+		var startIndex = _meshIndices.Count;
 		for ( int index = 0; index < numElems; ++index )
 		{
 			var triangle = index * 3;
@@ -313,6 +334,16 @@ public sealed class PolygonMesh
 			_meshIndices.Add( startCollisionVertex + elems[triangle + 1] );
 			_meshIndices.Add( startCollisionVertex + elems[triangle + 2] );
 		}
+
+		_meshFaces.Add( new FaceMesh
+		{
+			VertexCount = _meshVertices.Count - startCollisionVertex,
+			IndexCount = _meshIndices.Count - startIndex,
+			VertexStart = startCollisionVertex,
+			IndexStart = startIndex,
+			Normal = normal,
+			Tangent = faceData.TextureUAxis,
+		} );
 	}
 
 	private static readonly Vector3[] FaceNormals =

@@ -14,11 +14,29 @@ namespace Editor.MeshEditor;
 [Shortcut( "mesh.face", "3" )]
 public partial class FaceTool : BaseMeshTool
 {
+	private MeshFace HoverFace;
+	private SceneDynamicObject FaceObject;
+
 	public override void OnEnabled()
 	{
 		base.OnEnabled();
 
 		CreateOverlay();
+
+		FaceObject = new SceneDynamicObject( Scene.SceneWorld );
+		FaceObject.Material = Material.Load( "materials/tools/vertex_color_translucent.vmat" );
+		FaceObject.Attributes.SetCombo( "D_DEPTH_BIAS", 1 );
+		FaceObject.Flags.CastShadows = false;
+	}
+
+	public override void OnDisabled()
+	{
+		base.OnDisabled();
+
+		FaceObject?.Delete();
+		FaceObject = null;
+
+		HoverFace = default;
 	}
 
 	public override void OnUpdate()
@@ -28,34 +46,36 @@ public partial class FaceTool : BaseMeshTool
 		if ( !Gizmo.HasHovered )
 			SelectFace();
 
-		using ( Gizmo.Scope( "Face Selection" ) )
+		FaceObject.Init( Graphics.PrimitiveType.Triangles );
+
+		if ( HoverFace.IsValid() )
 		{
-			foreach ( var face in MeshSelection.OfType<MeshFace>() )
-			{
-				Gizmo.Draw.Color = Color.Yellow;
-				var position = face.Transform.PointToWorld( face.Center );
-				Gizmo.Draw.SolidSphere( position, 4 );
-			}
+			var hoverColor = Color.Green.WithAlpha( 0.2f );
+			var mesh = HoverFace.Component.PolygonMesh;
+			var vertices = mesh.CreateFace( HoverFace.Index, HoverFace.Transform, hoverColor );
+			foreach ( var vertex in vertices )
+				FaceObject.AddVertex( vertex );
+
+			HoverFace = default;
+		}
+
+		var selectionColor = Color.Yellow.WithAlpha( 0.2f );
+		foreach ( var face in MeshSelection.OfType<MeshFace>() )
+		{
+			var mesh = face.Component.PolygonMesh;
+			var vertices = mesh.CreateFace( face.Index, face.Transform, selectionColor );
+			foreach ( var vertex in vertices )
+				FaceObject.AddVertex( vertex );
 		}
 	}
 
 	private void SelectFace()
 	{
-		var face = TraceFace();
-		if ( face.IsValid() )
-		{
-			using ( Gizmo.ObjectScope( face.Component.GameObject, face.Transform ) )
-			{
-				using ( Gizmo.Scope( "Face Hover" ) )
-				{
-					Gizmo.Draw.IgnoreDepth = true;
-					Gizmo.Draw.Color = Color.Green;
-					Gizmo.Draw.SolidSphere( face.Center, 4 );
-				}
+		HoverFace = TraceFace();
 
-				if ( Gizmo.HasClicked )
-					Select( face );
-			}
+		if ( HoverFace.IsValid() && Gizmo.HasClicked )
+		{
+			Select( HoverFace );
 		}
 		else if ( !Gizmo.HasPressed && Gizmo.HasClicked && !IsMultiSelecting )
 		{
