@@ -12,7 +12,7 @@ public abstract class BaseMeshTool : EditorTool
 	public SelectionSystem MeshSelection { get; init; } = new();
 	public HashSet<MeshVertex> VertexSelection { get; init; } = new();
 
-	public static Vector2 RayScreenPosition => Application.CursorPosition - SceneViewWidget.Current.Overlay.Position;
+	public static Vector2 RayScreenPosition => (Application.CursorPosition - SceneViewWidget.Current.Overlay.Position) * SceneViewWidget.Current.Overlay.DpiScale;
 
 	public static bool IsMultiSelecting => Application.KeyboardModifiers.HasFlag(KeyboardModifiers.Ctrl ) ||
 				Application.KeyboardModifiers.HasFlag(KeyboardModifiers.Shift );
