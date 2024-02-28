@@ -37,6 +37,8 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 	public IEnumerable<int> Vertices => Mesh != null ? Enumerable.Range( 0, Mesh.Vertices.Count )
 		.Where( x => !Mesh.Vertices[x].IsUnused ) : Enumerable.Empty<int>();
 
+	private static readonly Material DefaultMaterial = Material.Load( "materials/dev/simple/simple_tile.vmat" );
+
 	protected override void OnValidate()
 	{
 		Static = true;
@@ -503,7 +505,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			var vertices = submesh.Vertices;
 			var indices = submesh.Indices;
 			var bounds = BBox.FromPoints( vertices.Select( x => x.position ) );
-			var material = submesh.Material ?? Material.Load( "materials/dev/reflectivity_30.vmat" );
+			var material = submesh.Material ?? DefaultMaterial;
 			var mesh = new Mesh( material );
 			mesh.CreateVertexBuffer( vertices.Count, SimpleVertex.Layout, vertices );
 			mesh.CreateIndexBuffer( indices.Count, indices );

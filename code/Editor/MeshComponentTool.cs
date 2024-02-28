@@ -97,7 +97,12 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 				_box.Maxs = _startBox.Maxs + Gizmo.Snap( _deltaBox.Maxs, _deltaBox.Maxs );
 				_box.Mins = _startBox.Mins + Gizmo.Snap( _deltaBox.Mins, _deltaBox.Mins );
 
-				var scale = _box.Size / _startBox.Size;
+				var scale = new Vector3(
+					_startBox.Size.x != 0 ? _box.Size.x / _startBox.Size.x : 1,
+					_startBox.Size.y != 0 ? _box.Size.y / _startBox.Size.y : 1,
+					_startBox.Size.z != 0 ? _box.Size.z / _startBox.Size.z : 1
+				);
+
 				foreach ( var i in _vertices )
 				{
 					_component.SetVertexPosition( i.Key, (_startBox.Center + i.Value) * scale );
