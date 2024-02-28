@@ -7,9 +7,11 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 	[Property, Hide]
 	private HalfEdgeMesh Mesh { get; set; }
 
+	[Property, Hide]
+	public Vector3 TextureOrigin { get; set; }
+
 	public Model Model => PolygonMesh?.Model;
-	private PolygonMesh PolygonMesh { get; set; }
-	public Vector3 TextureOrigin { get => PolygonMesh.TextureOrigin; set => PolygonMesh.TextureOrigin = value; }
+	public PolygonMesh PolygonMesh { get; private set; }
 
 	[Property, Title( "Tint" )]
 	public Color Color
@@ -78,7 +80,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 		Transform.OnTransformChanged += TransformChanged;
 
-		if ( Mesh == null )
+		if ( Mesh is null )
 		{
 			Mesh = new();
 
@@ -97,7 +99,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			Mesh.Faces.AddFace( 0, 1, 2, 3, faceData );
 		}
 
-		PolygonMesh = new PolygonMesh( Mesh );
+		PolygonMesh ??= new PolygonMesh( Mesh );
 
 		RebuildMesh();
 	}
@@ -142,30 +144,11 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		}
 	}
 
-	public void ConstructPolygonMesh( PolygonMesh mesh )
+	public void CreateFromPolygonMesh( PolygonMesh mesh )
 	{
 		PolygonMesh = mesh;
 		Mesh = PolygonMesh.Mesh;
-		PolygonMesh.TextureOrigin = Transform.Position;
-
-		var faceData = new FaceData
-		{
-			TextureScale = 0.25f,
-			TextureUAxis = Vector3.Right,
-			TextureVAxis = Vector3.Forward
-		};
-
-		for ( var i = 0; i < Mesh.Faces.Count; i++ )
-		{
-			var normal = GetAverageFaceNormal( i );
-			if ( !normal.IsNearZeroLength )
-			{
-				ComputeTextureAxes( normal, out var uAxis, out var vAxis );
-				faceData.TextureUAxis = uAxis;
-				faceData.TextureVAxis = vAxis;
-				Mesh.Faces[i].Traits = faceData;
-			}
-		}
+		TextureOrigin = PolygonMesh.TextureOrigin;
 
 		RebuildMesh();
 	}
@@ -381,6 +364,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 	public void RebuildMesh()
 	{
+		PolygonMesh.TextureOrigin = TextureOrigin;
 		PolygonMesh.Rebuild();
 
 		if ( !_sceneObject.IsValid() )
@@ -448,7 +432,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 			if ( !normal.IsNearZeroLength && extrudeOffset.Length > 0.0 )
 			{
-				ComputeTextureAxes( normal, out var uAxis, out var vAxis );
+				PolygonMesh.ComputeTextureAxes( normal, out var uAxis, out var vAxis );
 				sideFaceData.TextureUAxis = uAxis;
 				sideFaceData.TextureVAxis = vAxis;
 			}
@@ -461,67 +445,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		}
 
 		_dirty = true;
-	}
-
-	private static readonly Vector3[] FaceNormals =
-{
-		new( 0, 0, 1 ),
-		new( 0, 0, -1 ),
-		new( 0, -1, 0 ),
-		new( 0, 1, 0 ),
-		new( -1, 0, 0 ),
-		new( 1, 0, 0 ),
-	};
-
-	private static readonly Vector3[] FaceRightVectors =
-	{
-		new( 1, 0, 0 ),
-		new( 1, 0, 0 ),
-		new( 1, 0, 0 ),
-		new( -1, 0, 0 ),
-		new( 0, -1, 0 ),
-		new( 0, 1, 0 ),
-	};
-
-	private static readonly Vector3[] FaceDownVectors =
-	{
-		new( 0, -1, 0 ),
-		new( 0, -1, 0 ),
-		new( 0, 0, -1 ),
-		new( 0, 0, -1 ),
-		new( 0, 0, -1 ),
-		new( 0, 0, -1 ),
-	};
-
-	public static void ComputeTextureAxes( Vector3 normal, out Vector3 uAxis, out Vector3 vAxis )
-	{
-		var orientation = GetOrientationForPlane( normal );
-		uAxis = FaceRightVectors[orientation];
-		vAxis = FaceDownVectors[orientation];
-	}
-
-	public static Vector3 ComputeTextureUAxis( Vector3 normal ) => FaceRightVectors[GetOrientationForPlane( normal )];
-	public static Vector3 ComputeTextureVAxis( Vector3 normal ) => FaceDownVectors[GetOrientationForPlane( normal )];
-
-	private static int GetOrientationForPlane( Vector3 plane )
-	{
-		plane = plane.Normal;
-
-		var maxDot = 0.0f;
-		int orientation = 0;
-
-		for ( int i = 0; i < 6; i++ )
-		{
-			var dot = Vector3.Dot( plane, FaceNormals[i] );
-
-			if ( dot >= maxDot )
-			{
-				maxDot = dot;
-				orientation = i;
-			}
-		}
-
-		return orientation;
 	}
 
 	public void SetMaterial( Material material, int triangle )

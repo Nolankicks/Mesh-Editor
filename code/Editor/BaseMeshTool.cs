@@ -148,7 +148,7 @@ public abstract class BaseMeshTool : EditorTool
 			return Rotation.Identity;
 
 		var normal = faceElement.Component.GetAverageFaceNormal( faceElement.Index );
-		var vAxis = EditorMeshComponent.ComputeTextureVAxis( normal );
+		var vAxis = PolygonMesh.ComputeTextureVAxis( normal );
 		var transform = faceElement.Transform;
 		var basis = Rotation.LookAt( normal, vAxis * -1.0f );
 		return transform.RotationToWorld( basis );

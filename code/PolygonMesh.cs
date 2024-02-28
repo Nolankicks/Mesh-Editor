@@ -6,7 +6,7 @@ using System;
 /// </summary>
 public sealed class PolygonMesh
 {
-	public HalfEdgeMesh Mesh { get; set; }
+	public HalfEdgeMesh Mesh { get; private set; }
 	public Model Model { get; private set; }
 	public Vector3 TextureOrigin { get; set; }
 

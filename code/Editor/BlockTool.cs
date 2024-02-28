@@ -159,11 +159,15 @@ public partial class BlockTool : EditorTool
 		box = BBox.FromPositionAndSize( 0, box.Size );
 
 		var polygonMesh = new PolygonMesh();
+
 		_primitive.SetFromBox( box );
 		_primitive.Build( polygonMesh );
 
+		polygonMesh.TextureOrigin = position;
+		polygonMesh.ApplyPlanarMapping();
+
 		mc.Transform.Position = position;
-		mc.ConstructPolygonMesh( polygonMesh );
+		mc.CreateFromPolygonMesh( polygonMesh );
 
 		mc.Enabled = true;
 
