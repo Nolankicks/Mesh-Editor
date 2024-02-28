@@ -54,7 +54,7 @@ public partial class FaceTool : BaseMeshTool
 				Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Shift );
 
 			if ( !multiSelect )
-				MeshSelection.Set( null );
+				MeshSelection.Clear();
 		}
 
 		using ( Gizmo.Scope( "Face Selection" ) )
