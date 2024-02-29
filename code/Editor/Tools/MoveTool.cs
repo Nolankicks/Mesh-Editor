@@ -15,6 +15,7 @@ namespace Editor.MeshEditor;
 public class MoveTool : BaseTransformTool
 {
 	private Vector3 _moveDelta;
+	private Vector3 _origin;
 	private Rotation _basis;
 
 	public MoveTool( BaseMeshTool meshTool ) : base( meshTool )
@@ -28,15 +29,16 @@ public class MoveTool : BaseTransformTool
 		if ( !MeshTool.MeshSelection.Any() )
 			return;
 
+		var bounds = MeshTool.CalculateSelectionBounds();
+		var origin = bounds.Center;
+
 		if ( !Gizmo.HasPressed )
 		{
 			StartVertices.Clear();
 			_moveDelta = default;
 			_basis = MeshTool.CalculateSelectionBasis();
+			_origin = bounds.Center;
 		}
-
-		var bounds = MeshTool.CalculateSelectionBounds();
-		var origin = bounds.Center;
 
 		using ( Gizmo.Scope( "Tool", new Transform( origin ) ) )
 		{
@@ -48,9 +50,9 @@ public class MoveTool : BaseTransformTool
 
 				StartDrag();
 
-				var moveDelta = _moveDelta;
-				moveDelta *= _basis.Inverse;
-				moveDelta = _basis * Gizmo.Snap( moveDelta, moveDelta );
+				var moveDelta = _moveDelta * _basis.Inverse;
+				moveDelta = Gizmo.Snap( (_origin * _basis.Inverse) + moveDelta, moveDelta ) - _origin;
+				moveDelta *= _basis;
 
 				foreach ( var entry in StartVertices )
 				{
