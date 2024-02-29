@@ -14,8 +14,8 @@ public abstract class BaseMeshTool : EditorTool
 
 	public static Vector2 RayScreenPosition => (Application.CursorPosition - SceneViewWidget.Current.Overlay.Position) * SceneViewWidget.Current.Overlay.DpiScale;
 
-	public static bool IsMultiSelecting => Application.KeyboardModifiers.HasFlag(KeyboardModifiers.Ctrl ) ||
-				Application.KeyboardModifiers.HasFlag(KeyboardModifiers.Shift );
+	public static bool IsMultiSelecting => Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Ctrl ) ||
+				Application.KeyboardModifiers.HasFlag( KeyboardModifiers.Shift );
 
 	private bool _meshSelectionDirty;
 	private bool _nudge;
@@ -101,8 +101,8 @@ public abstract class BaseMeshTool : EditorTool
 		{
 			foreach ( var faceElement in MeshSelection.OfType<MeshFace>() )
 			{
-				var transform = faceElement.Transform;
-				faceElement.Component.ExtrudeFace( faceElement.Index, transform.Rotation.Inverse * delta );
+				var offset = faceElement.Transform.Rotation.Inverse * delta;
+				faceElement.Component.ExtrudeFace( faceElement.Index, offset );
 			}
 
 			CalculateSelectionVertices();
@@ -351,7 +351,7 @@ public abstract class BaseMeshTool : EditorTool
 	{
 		distance = default;
 
-		var result = MeshTrace.WithTag( "PolygonMesh" ).Run();
+		var result = MeshTrace.Run();
 		if ( !result.Hit || result.Component is not EditorMeshComponent component )
 			return default;
 
@@ -362,7 +362,7 @@ public abstract class BaseMeshTool : EditorTool
 
 	public MeshFace TraceFace()
 	{
-		var result = MeshTrace.WithTag( "PolygonMesh" ).Run();
+		var result = MeshTrace.Run();
 		if ( !result.Hit || result.Component is not EditorMeshComponent component )
 			return default;
 
@@ -391,7 +391,7 @@ public abstract class BaseMeshTool : EditorTool
 		var faceHash = new HashSet<MeshFace>();
 		foreach ( var ray in rays )
 		{
-			var result = MeshTrace.Ray( ray, 5000 ).WithTag( "PolygonMesh" ).Run();
+			var result = MeshTrace.Ray( ray, 5000 ).Run();
 			if ( !result.Hit )
 				continue;
 

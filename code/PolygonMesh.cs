@@ -271,13 +271,21 @@ public sealed class PolygonMesh
 		if ( numElems == 0 )
 			return;
 
-		var normal = Mesh.Faces.GetAverageFaceNormal( faceIndex ).Normal;
+		var normal = Mesh.Faces.GetAverageFaceNormal( faceIndex );
 
 		var vertices = submesh.Vertices;
 		var triangles = submesh.Indices;
 		var textureSize = submesh.TextureSize;
 
 		FaceData faceData = face;
+		if ( faceData.TextureUAxis.IsNearlyZero() || faceData.TextureVAxis.IsNearlyZero() )
+		{
+			ComputeTextureAxes( normal, out var uAxis, out var vAxis );
+			faceData.TextureUAxis = uAxis;
+			faceData.TextureVAxis = vAxis;
+			Mesh.Faces[faceIndex].Traits = faceData;
+		}
+
 		int startVertex = vertices.Count;
 		int startCollisionVertex = _meshVertices.Count;
 		vertices.AddRange( tess.Vertices
@@ -315,9 +323,9 @@ public sealed class PolygonMesh
 			if ( c < 0 || c >= vertices.Count )
 				return;
 
-			Vector3 ab = vertices[b].position - vertices[a].position;
-			Vector3 ac = vertices[c].position - vertices[a].position;
-			float area = Vector3.Cross( ab, ac ).Length * 0.5f;
+			var ab = vertices[b].position - vertices[a].position;
+			var ac = vertices[c].position - vertices[a].position;
+			var area = Vector3.Cross( ab, ac ).Length * 0.5f;
 
 			if ( area.AlmostEqual( 0.0f ) )
 				continue;

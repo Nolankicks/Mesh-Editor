@@ -78,13 +78,13 @@ public class MoveTool : EditorTool
 		{
 			foreach ( var face in _meshTool.MeshSelection.OfType<MeshFace>() )
 			{
-				face.Component.ExtrudeFace( face.Index, _moveDelta * (face.Transform.Rotation * _basis).Inverse );
+				face.Component.ExtrudeFace( face.Index );
 			}
 
 			var edge = _meshTool.MeshSelection.OfType<MeshEdge>().FirstOrDefault();
 			if ( edge.IsValid() )
 			{
-				edge = new MeshEdge( edge.Component, edge.Component.ExtrudeEdge( edge.Index, _moveDelta ) );
+				edge = new MeshEdge( edge.Component, edge.Component.ExtrudeEdge( edge.Index ) );
 				if ( edge.IsValid() )
 					_meshTool.MeshSelection.Set( edge );
 			}

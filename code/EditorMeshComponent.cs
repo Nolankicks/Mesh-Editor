@@ -161,9 +161,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		{
 			RebuildMesh();
 		}
-
-		if ( _sceneObject.IsValid() && !_sceneObject.Tags.Has( "PolygonMesh" ) )
-			_sceneObject.Tags.Add( "PolygonMesh" );
 	}
 
 	protected override void OnPreRender()
@@ -386,7 +383,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		if ( !_sceneObject.IsValid() )
 		{
 			_sceneObject = new SceneObject( Scene.SceneWorld, Model, Transform.World );
-			_sceneObject.Tags.Add( "PolygonMesh" );
 		}
 		else
 		{
@@ -421,15 +417,17 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		_dirty = true;
 	}
 
-	public void ExtrudeFace( int faceIndex, Vector3 extrudeOffset )
+	public void ExtrudeFace( int faceIndex, Vector3 offset = default )
 	{
 		var faceIndices = Mesh.Faces.GetFaceVertices( faceIndex );
 		var faceVertices = faceIndices.Select( v => Mesh.Vertices[v] );
 
 		FaceData faceData = Mesh.Faces[faceIndex];
 		var sideFaceData = faceData;
+		sideFaceData.TextureUAxis = 0;
+		sideFaceData.TextureVAxis = 0;
 
-		var newFaceIndices = Mesh.Vertices.AddVertices( faceVertices.Select( v => v.Position ) );
+		var newFaceIndices = Mesh.Vertices.AddVertices( faceVertices.Select( v => v.Position + offset ) );
 		Mesh.Faces.ReplaceFace( faceIndex, newFaceIndices, faceData );
 
 		int numVertices = newFaceIndices.Length;
@@ -441,60 +439,35 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			var v3 = faceIndices[(i + 1) % numVertices];
 			var v4 = newFaceIndices[(i + 1) % numVertices];
 
-			var a = Mesh.Vertices[v1].Position + extrudeOffset;
-			var b = Mesh.Vertices[v2].Position;
-			var c = Mesh.Vertices[v3].Position;
-
-			var normal = Vector3.Cross( b - a, c - a ).Normal;
-
-			if ( !normal.IsNearZeroLength && extrudeOffset.Length > 0.0 )
-			{
-				PolygonMesh.ComputeTextureAxes( normal, out var uAxis, out var vAxis );
-				sideFaceData.TextureUAxis = uAxis;
-				sideFaceData.TextureVAxis = vAxis;
-			}
-			else
-			{
-				sideFaceData = faceData;
-			}
-
 			Mesh.Faces.AddFace( v1, v2, v3, v4, sideFaceData );
 		}
 
 		_dirty = true;
 	}
 
-	public int ExtrudeEdge( int edgeIndex, Vector3 extrudeOffset )
+	public int ExtrudeEdge( int edgeIndex )
 	{
 		var pairEdge = Mesh.Halfedges.GetPairHalfedge( edgeIndex );
 		if ( Mesh.Halfedges[pairEdge].AdjacentFace >= 0 )
 			return -1;
 
 		var faceData = Mesh.Faces[Mesh.Halfedges[edgeIndex].AdjacentFace].Traits;
+		faceData.TextureUAxis = 0;
+		faceData.TextureVAxis = 0;
+
 		var edgeVertices = Mesh.Halfedges.GetVertices( edgeIndex );
-		var a = Mesh.Vertices[edgeVertices[0]].Position + extrudeOffset;
-		var b = Mesh.Vertices[edgeVertices[1]].Position + extrudeOffset;
-		var c = Mesh.Vertices[edgeVertices[0]].Position;
 
-		var normal = Vector3.Cross( b - a, c - a ).Normal;
-		if ( !normal.IsNearZeroLength && extrudeOffset.Length > 0.0 )
-		{
-			PolygonMesh.ComputeTextureAxes( normal, out var uAxis, out var vAxis );
-			faceData.TextureUAxis = uAxis;
-			faceData.TextureVAxis = vAxis;
-		}
+		var a = Mesh.Vertices[edgeVertices[0]].Position;
+		var b = Mesh.Vertices[edgeVertices[1]].Position;
 
-		var v1 = Mesh.Vertices.Add( a - extrudeOffset );
-		var v2 = Mesh.Vertices.Add( b - extrudeOffset );
+		var v1 = Mesh.Vertices.Add( a );
+		var v2 = Mesh.Vertices.Add( b );
 
 		var face = Mesh.Faces.AddFace( v1, v2, edgeVertices[1], edgeVertices[0], faceData );
 		if ( face < 0 )
 			return -1;
 
-
-
-		var halfEdges = Mesh.Faces.GetHalfedges( face );
-		return halfEdges[0];
+		return Mesh.Faces.GetHalfedges( face ).FirstOrDefault();
 	}
 
 	public void ApplyPlanarMapping()

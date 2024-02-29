@@ -75,6 +75,38 @@ public partial class FaceTool : BaseMeshTool
 				FaceObject.AddVertex( vertex );
 		}
 
+		DrawBounds();
+	}
+
+	private void SelectFace()
+	{
+		HoverFace = TraceFace();
+
+		if ( HoverFace.IsValid() && Gizmo.HasClicked )
+		{
+			Select( HoverFace );
+		}
+		else if ( !Gizmo.HasPressed && Gizmo.HasClicked && !IsMultiSelecting )
+		{
+			MeshSelection.Clear();
+		}
+	}
+
+	private void DeleteSelection()
+	{
+		var groups = MeshSelection.OfType<MeshFace>()
+			.GroupBy( face => face.Component );
+
+		foreach ( var group in groups )
+		{
+			group.Key.RemoveFaces( group.Select( x => x.Index ).ToArray() );
+		}
+
+		MeshSelection.Clear();
+	}
+
+	private void DrawBounds()
+	{
 		using ( Gizmo.Scope( "Face Size" ) )
 		{
 			Gizmo.Draw.IgnoreDepth = true;
@@ -103,32 +135,5 @@ public partial class FaceTool : BaseMeshTool
 				Gizmo.Draw.ScreenText( $"H: {_box.Size.z:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithZ( _box.Center.z ) ) + Vector2.Down * 32, size: textSize );
 			Gizmo.Draw.Line( _box.Maxs.WithZ( _box.Mins.z ), _box.Maxs.WithZ( _box.Maxs.z ) );
 		}
-	}
-
-	private void SelectFace()
-	{
-		HoverFace = TraceFace();
-
-		if ( HoverFace.IsValid() && Gizmo.HasClicked )
-		{
-			Select( HoverFace );
-		}
-		else if ( !Gizmo.HasPressed && Gizmo.HasClicked && !IsMultiSelecting )
-		{
-			MeshSelection.Clear();
-		}
-	}
-
-	private void DeleteSelection()
-	{
-		var groups = MeshSelection.OfType<MeshFace>()
-			.GroupBy( face => face.Component );
-
-		foreach ( var group in groups )
-		{
-			group.Key.RemoveFaces( group.Select( x => x.Index ).ToArray() );
-		}
-
-		MeshSelection.Clear();
 	}
 }

@@ -79,7 +79,7 @@ public class ScaleTool : EditorTool
 		{
 			foreach ( var face in _meshTool.MeshSelection.OfType<MeshFace>() )
 			{
-				face.Component.ExtrudeFace( face.Index, face.Component.GetAverageFaceNormal( face.Index ) * 0.01f );
+				face.Component.ExtrudeFace( face.Index );
 			}
 
 			_meshTool.CalculateSelectionVertices();
