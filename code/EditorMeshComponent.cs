@@ -483,24 +483,30 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 			var faceEdges = Mesh.Faces.GetHalfedges( faceIndex );
 			var numEdges = faceEdges.Length;
 			var edgeSet = new HashSet<int>();
+			var edgeTraits = new FaceData[numEdges];
+			var traits = Mesh.Faces[faceIndex].Traits;
+
 			for ( int i = 0; i < numEdges; ++i )
 			{
 				var pairEdge = Mesh.Halfedges.GetPairHalfedge( faceEdges[i] );
 				var edge = Mesh.Halfedges[pairEdge];
 
 				if ( !faces.Contains( edge.AdjacentFace ) )
+				{
 					edgeSet.Add( i );
+					edgeTraits[i] = edge.AdjacentFace < 0 ? traits : Mesh.Faces[edge.AdjacentFace].Traits;
+				}
 			}
 
-			var traits = Mesh.Faces[faceIndex].Traits;
 			Mesh.Faces.ReplaceFace( faceIndex, newVertices, traits );
-
-			traits.TextureUAxis = 0;
-			traits.TextureVAxis = 0;
 
 			faceEdges = Mesh.Faces.GetHalfedges( faceIndex );
 			foreach ( var i in edgeSet )
 			{
+				traits = edgeTraits[i];
+				traits.TextureUAxis = 0;
+				traits.TextureVAxis = 0;
+
 				var v1 = newVertices[i];
 				var v2 = faceVertices[i];
 				var v3 = faceVertices[(i + 1) % numEdges];
