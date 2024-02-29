@@ -112,6 +112,23 @@ public partial class FaceTool : BaseMeshTool
 		VertexSelection.Clear();
 	}
 
+	public override Rotation CalculateSelectionBasis()
+	{
+		if ( Gizmo.Settings.GlobalSpace )
+			return Rotation.Identity;
+
+		var edge = MeshSelection.OfType<MeshFace>().FirstOrDefault();
+		if ( edge.Component.IsValid() )
+		{
+			var normal = edge.Component.GetAverageFaceNormal( edge.Index );
+			var vAxis = PolygonMesh.ComputeTextureVAxis( normal );
+			var basis = Rotation.LookAt( normal, vAxis * -1.0f );
+			return edge.Transform.RotationToWorld( basis );
+		}
+
+		return Rotation.Identity;
+	}
+
 	private void DrawBounds()
 	{
 		using ( Gizmo.Scope( "Face Size" ) )

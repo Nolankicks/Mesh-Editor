@@ -48,11 +48,12 @@ public class MoveTool : BaseTransformTool
 			{
 				_moveDelta += delta;
 
-				StartDrag();
-
-				var moveDelta = _moveDelta * _basis.Inverse;
-				moveDelta = Gizmo.Snap( (_origin * _basis.Inverse) + moveDelta, moveDelta ) - _origin;
+				var moveDelta = (_moveDelta + _origin) * _basis.Inverse;
+				moveDelta = Gizmo.Snap( moveDelta, _moveDelta * _basis.Inverse );
 				moveDelta *= _basis;
+				moveDelta -= _origin;
+
+				StartDrag();
 
 				foreach ( var entry in StartVertices )
 				{

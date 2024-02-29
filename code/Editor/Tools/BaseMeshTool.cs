@@ -156,20 +156,9 @@ public abstract class BaseMeshTool : EditorTool
 			.Select( x => x.Transform.PointToWorld( x.Component.GetVertexPosition( x.Index ) ) ) );
 	}
 
-	public Rotation CalculateSelectionBasis()
+	public virtual Rotation CalculateSelectionBasis()
 	{
-		if ( Gizmo.Settings.GlobalSpace )
-			return Rotation.Identity;
-
-		var faceElement = MeshSelection.OfType<MeshFace>().FirstOrDefault();
-		if ( !faceElement.Component.IsValid() )
-			return Rotation.Identity;
-
-		var normal = faceElement.Component.GetAverageFaceNormal( faceElement.Index );
-		var vAxis = PolygonMesh.ComputeTextureVAxis( normal );
-		var transform = faceElement.Transform;
-		var basis = Rotation.LookAt( normal, vAxis * -1.0f );
-		return transform.RotationToWorld( basis );
+		return Rotation.Identity;
 	}
 
 	public Vector3 CalculateSelectionOrigin()

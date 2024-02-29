@@ -55,7 +55,7 @@ public class EdgeTool : BaseMeshTool
 					var textSize = 22 * Gizmo.Settings.GizmoScale * Application.DpiScale;
 					var distance = line.Start.Distance( line.End );
 					Gizmo.Draw.Color = Color.White;
-					Gizmo.Draw.ScreenText( $"{distance:0.##}", Gizmo.Camera.ToScreen(edge.Transform.PointToWorld( line.Center )), size: textSize );
+					Gizmo.Draw.ScreenText( $"{distance:0.##}", Gizmo.Camera.ToScreen( edge.Transform.PointToWorld( line.Center ) ), size: textSize );
 				}
 
 				if ( Gizmo.HasClicked )
@@ -66,5 +66,23 @@ public class EdgeTool : BaseMeshTool
 		{
 			MeshSelection.Clear();
 		}
+	}
+
+	public override Rotation CalculateSelectionBasis()
+	{
+		if ( Gizmo.Settings.GlobalSpace )
+			return Rotation.Identity;
+
+		var edge = MeshSelection.OfType<MeshEdge>().FirstOrDefault();
+		if ( edge.Component.IsValid() )
+		{
+			var line = edge.Component.GetEdge( edge.Index );
+			var normal = (line.End - line.Start).Normal;
+			var vAxis = PolygonMesh.ComputeTextureVAxis( normal );
+			var basis = Rotation.LookAt( normal, vAxis * -1.0f );
+			return edge.Transform.RotationToWorld( basis );
+		}
+
+		return Rotation.Identity;
 	}
 }
