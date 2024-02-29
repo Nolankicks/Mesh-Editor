@@ -348,14 +348,16 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		traits.TextureAngle = 0;
 		traits.TextureOffset = 0;
 		traits.TextureScale = 0.25f;
-		traits.TextureOrigin = Transform.Position - PolygonMesh.TextureOrigin;
+
+		var rotation = Transform.Rotation.Inverse;
+		traits.TextureOrigin = (Transform.Position * rotation) - PolygonMesh.TextureOrigin;
 
 		var normal = GetAverageFaceNormal( f );
 		if ( !normal.IsNearZeroLength )
 		{
 			PolygonMesh.ComputeTextureAxes( normal, out var uAxis, out var vAxis );
-			traits.TextureUAxis = uAxis * Transform.Rotation.Inverse;
-			traits.TextureVAxis = vAxis * Transform.Rotation.Inverse;
+			traits.TextureUAxis = (uAxis * rotation).Normal;
+			traits.TextureVAxis = (vAxis * rotation).Normal;
 		}
 
 		Mesh.Faces[f].Traits = traits;
