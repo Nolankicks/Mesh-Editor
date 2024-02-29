@@ -1,7 +1,7 @@
 using System;
 
 /// <summary>
-/// Describes a set of n-gon polygons used to construct a Hammer mesh.
+/// Describes a set of n-gon polygons used to construct a mesh.
 /// Any overlapping vertices will be merged if <see cref="MergeVertices"/>.
 /// </summary>
 public sealed class PolygonMesh
@@ -14,7 +14,7 @@ public sealed class PolygonMesh
 	private readonly List<int> _triangleFaces = new();
 	private readonly List<int> _meshIndices = new();
 	private readonly List<Vector3> _meshVertices = new();
-	private readonly List<FaceMesh> _meshFaces = new();
+	private Dictionary<int, FaceMesh> _meshFaces;
 
 	private struct FaceMesh
 	{
@@ -26,8 +26,10 @@ public sealed class PolygonMesh
 
 	public Vertex[] CreateFace( int face, Transform transform, Color color )
 	{
-		var meshFace = _meshFaces[face];
-		return Enumerable.Range( meshFace.IndexStart, meshFace.IndexCount )
+		if ( _meshFaces == null || !_meshFaces.TryGetValue( face, out FaceMesh faceMesh ) )
+			return null;
+
+		return Enumerable.Range( faceMesh.IndexStart, faceMesh.IndexCount )
 					.Select( x => new Vertex( transform.PointToWorld( _meshVertices[_meshIndices[x]] ), color ) )
 					.ToArray();
 	}
@@ -154,7 +156,7 @@ public sealed class PolygonMesh
 		_triangleFaces.Clear();
 		_meshIndices.Clear();
 		_meshVertices.Clear();
-		_meshFaces.Clear();
+		_meshFaces = new();
 
 		var builder = Model.Builder;
 
@@ -341,7 +343,7 @@ public sealed class PolygonMesh
 			_meshIndices.Add( startCollisionVertex + elems[triangle + 2] );
 		}
 
-		_meshFaces.Add( new FaceMesh
+		_meshFaces.Add( faceIndex, new FaceMesh
 		{
 			VertexCount = _meshVertices.Count - startCollisionVertex,
 			IndexCount = _meshIndices.Count - startIndex,

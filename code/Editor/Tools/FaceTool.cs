@@ -60,8 +60,11 @@ public partial class FaceTool : BaseMeshTool
 			var hoverColor = Color.Green.WithAlpha( 0.2f );
 			var mesh = HoverFace.Component.PolygonMesh;
 			var vertices = mesh.CreateFace( HoverFace.Index, HoverFace.Transform, hoverColor );
-			foreach ( var vertex in vertices )
-				FaceObject.AddVertex( vertex );
+			if ( vertices is not null )
+			{
+				foreach ( var vertex in vertices )
+					FaceObject.AddVertex( vertex );
+			}
 
 			HoverFace = default;
 		}
@@ -71,8 +74,11 @@ public partial class FaceTool : BaseMeshTool
 		{
 			var mesh = face.Component.PolygonMesh;
 			var vertices = mesh.CreateFace( face.Index, face.Transform, selectionColor );
-			foreach ( var vertex in vertices )
-				FaceObject.AddVertex( vertex );
+			if ( vertices is not null )
+			{
+				foreach ( var vertex in vertices )
+					FaceObject.AddVertex( vertex );
+			}
 		}
 
 		DrawBounds();

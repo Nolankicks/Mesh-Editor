@@ -1,6 +1,4 @@
 ﻿using Sandbox;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Editor.MeshEditor;
 
@@ -22,7 +20,6 @@ public class ScaleTool : BaseTransformTool
 
 	public ScaleTool( BaseMeshTool meshTool ) : base( meshTool )
 	{
-
 	}
 
 	public override void OnUpdate()
