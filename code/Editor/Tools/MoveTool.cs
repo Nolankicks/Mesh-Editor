@@ -14,33 +14,32 @@ namespace Editor.MeshEditor;
 [Alias( "mesh.move" )]
 [Group( "0" )]
 [Shortcut( "mesh.move", "w" )]
-public class MoveTool : EditorTool
+public class MoveTool : BaseTransformTool
 {
-	private readonly BaseMeshTool _meshTool;
 	private readonly Dictionary<MeshVertex, Vector3> _startVertices = new();
 	private Vector3 _moveDelta;
 	private Rotation _basis;
 
-	public MoveTool( BaseMeshTool meshTool )
+	public MoveTool( BaseMeshTool meshTool ) : base( meshTool )
 	{
-		_meshTool = meshTool;
+
 	}
 
 	public override void OnUpdate()
 	{
 		base.OnUpdate();
 
-		if ( !_meshTool.MeshSelection.Any() )
+		if ( !MeshTool.MeshSelection.Any() )
 			return;
 
 		if ( !Gizmo.HasPressed )
 		{
 			_startVertices.Clear();
 			_moveDelta = default;
-			_basis = _meshTool.CalculateSelectionBasis();
+			_basis = MeshTool.CalculateSelectionBasis();
 		}
 
-		var bounds = _meshTool.CalculateSelectionBounds();
+		var bounds = MeshTool.CalculateSelectionBounds();
 		var origin = bounds.Center;
 
 		using ( Gizmo.Scope( "Tool", new Transform( origin ) ) )
@@ -76,23 +75,23 @@ public class MoveTool : EditorTool
 
 		if ( Gizmo.IsShiftPressed )
 		{
-			foreach ( var face in _meshTool.MeshSelection.OfType<MeshFace>() )
+			foreach ( var face in MeshTool.MeshSelection.OfType<MeshFace>() )
 			{
 				face.Component.ExtrudeFace( face.Index );
 			}
 
-			var edge = _meshTool.MeshSelection.OfType<MeshEdge>().FirstOrDefault();
+			var edge = MeshTool.MeshSelection.OfType<MeshEdge>().FirstOrDefault();
 			if ( edge.IsValid() )
 			{
 				edge = new MeshEdge( edge.Component, edge.Component.ExtrudeEdge( edge.Index ) );
 				if ( edge.IsValid() )
-					_meshTool.MeshSelection.Set( edge );
+					MeshTool.MeshSelection.Set( edge );
 			}
 
-			_meshTool.CalculateSelectionVertices();
+			MeshTool.CalculateSelectionVertices();
 		}
 
-		foreach ( var vertex in _meshTool.VertexSelection )
+		foreach ( var vertex in MeshTool.VertexSelection )
 		{
 			_startVertices[vertex] = vertex.PositionWorld;
 		}

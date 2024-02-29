@@ -13,32 +13,31 @@ namespace Editor.MeshEditor;
 [Alias( "mesh.rotate" )]
 [Group( "1" )]
 [Shortcut( "mesh.rotate", "e" )]
-public class RotateTool : EditorTool
+public class RotateTool : BaseTransformTool
 {
-	private readonly BaseMeshTool _meshTool;
 	private readonly Dictionary<MeshVertex, Vector3> _startVertices = new();
 	private Angles _moveDelta;
 	private Vector3 _origin;
 	private Rotation _basis;
 
-	public RotateTool( BaseMeshTool meshTool )
+	public RotateTool( BaseMeshTool meshTool ) : base( meshTool )
 	{
-		_meshTool = meshTool;
+
 	}
 
 	public override void OnUpdate()
 	{
 		base.OnUpdate();
 
-		if ( !_meshTool.MeshSelection.Any() )
+		if ( !MeshTool.MeshSelection.Any() )
 			return;
 
 		if ( !Gizmo.HasPressed )
 		{
 			_startVertices.Clear();
 			_moveDelta = default;
-			_basis = _meshTool.CalculateSelectionBasis();
-			_origin = _meshTool.CalculateSelectionOrigin();
+			_basis = MeshTool.CalculateSelectionBasis();
+			_origin = MeshTool.CalculateSelectionOrigin();
 		}
 
 		using ( Gizmo.Scope( "Tool", new Transform( _origin, _basis ) ) )
@@ -75,15 +74,15 @@ public class RotateTool : EditorTool
 
 		if ( Gizmo.IsShiftPressed )
 		{
-			foreach ( var face in _meshTool.MeshSelection.OfType<MeshFace>() )
+			foreach ( var face in MeshTool.MeshSelection.OfType<MeshFace>() )
 			{
 				face.Component.ExtrudeFace( face.Index );
 			}
 
-			_meshTool.CalculateSelectionVertices();
+			MeshTool.CalculateSelectionVertices();
 		}
 
-		foreach ( var vertex in _meshTool.VertexSelection )
+		foreach ( var vertex in MeshTool.VertexSelection )
 		{
 			_startVertices[vertex] = vertex.PositionWorld;
 		}

@@ -445,7 +445,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		_dirty = true;
 	}
 
-	public int ExtrudeEdge( int edgeIndex )
+	public int ExtrudeEdge( int edgeIndex, Vector3 offset = default )
 	{
 		var pairEdge = Mesh.Halfedges.GetPairHalfedge( edgeIndex );
 		if ( Mesh.Halfedges[pairEdge].AdjacentFace >= 0 )
@@ -456,9 +456,8 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		faceData.TextureVAxis = 0;
 
 		var edgeVertices = Mesh.Halfedges.GetVertices( edgeIndex );
-
-		var a = Mesh.Vertices[edgeVertices[0]].Position;
-		var b = Mesh.Vertices[edgeVertices[1]].Position;
+		var a = Mesh.Vertices[edgeVertices[0]].Position + offset;
+		var b = Mesh.Vertices[edgeVertices[1]].Position + offset;
 
 		var v1 = Mesh.Vertices.Add( a );
 		var v2 = Mesh.Vertices.Add( b );

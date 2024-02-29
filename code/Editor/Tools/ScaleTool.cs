@@ -14,33 +14,32 @@ namespace Editor.MeshEditor;
 [Alias( "mesh.scale" )]
 [Group( "2" )]
 [Shortcut( "mesh.scale", "r" )]
-public class ScaleTool : EditorTool
+public class ScaleTool : BaseTransformTool
 {
-	private readonly BaseMeshTool _meshTool;
 	private readonly Dictionary<MeshVertex, Vector3> _startVertices = new();
 	private Vector3 _moveDelta;
 	private Vector3 _origin;
 	private Rotation _basis;
 
-	public ScaleTool( BaseMeshTool meshTool )
+	public ScaleTool( BaseMeshTool meshTool ) : base( meshTool )
 	{
-		_meshTool = meshTool;
+
 	}
 
 	public override void OnUpdate()
 	{
 		base.OnUpdate();
 
-		if ( !_meshTool.MeshSelection.Any() )
+		if ( !MeshTool.MeshSelection.Any() )
 			return;
 
 		if ( !Gizmo.HasPressed )
 		{
 			_startVertices.Clear();
 			_moveDelta = default;
-			_basis = _meshTool.CalculateSelectionBasis();
+			_basis = MeshTool.CalculateSelectionBasis();
 
-			var bounds = _meshTool.CalculateSelectionBounds();
+			var bounds = MeshTool.CalculateSelectionBounds();
 			_origin = bounds.Center;
 		}
 
@@ -77,15 +76,15 @@ public class ScaleTool : EditorTool
 
 		if ( Gizmo.IsShiftPressed )
 		{
-			foreach ( var face in _meshTool.MeshSelection.OfType<MeshFace>() )
+			foreach ( var face in MeshTool.MeshSelection.OfType<MeshFace>() )
 			{
 				face.Component.ExtrudeFace( face.Index );
 			}
 
-			_meshTool.CalculateSelectionVertices();
+			MeshTool.CalculateSelectionVertices();
 		}
 
-		foreach ( var vertex in _meshTool.VertexSelection )
+		foreach ( var vertex in MeshTool.VertexSelection )
 		{
 			_startVertices[vertex] = vertex.PositionWorld;
 		}
