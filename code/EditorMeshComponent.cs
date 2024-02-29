@@ -458,7 +458,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		_dirty = true;
 	}
 
-	public void DetachFaces( IEnumerable<int> faces )
+	public void ExtrudeFaces( IEnumerable<int> faces, Vector3 offset = default )
 	{
 		var vertices = new Dictionary<int, int>();
 		foreach ( var faceIndex in faces )
@@ -474,7 +474,62 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 				else
 				{
 					var faceVertex = faceVertices[i];
-					newVertex = Mesh.Vertices.Add( Mesh.Vertices[faceVertex].Position );
+					newVertex = Mesh.Vertices.Add( Mesh.Vertices[faceVertex].Position + offset );
+					newVertices[i] = newVertex;
+					vertices[faceVertex] = newVertex;
+				}
+			}
+
+			var faceEdges = Mesh.Faces.GetHalfedges( faceIndex );
+			var numEdges = faceEdges.Length;
+			var edgeSet = new HashSet<int>();
+			for ( int i = 0; i < numEdges; ++i )
+			{
+				var pairEdge = Mesh.Halfedges.GetPairHalfedge( faceEdges[i] );
+				var edge = Mesh.Halfedges[pairEdge];
+
+				if ( !faces.Contains( edge.AdjacentFace ) )
+					edgeSet.Add( i );
+			}
+
+			var traits = Mesh.Faces[faceIndex].Traits;
+			Mesh.Faces.ReplaceFace( faceIndex, newVertices, traits );
+
+			traits.TextureUAxis = 0;
+			traits.TextureVAxis = 0;
+
+			faceEdges = Mesh.Faces.GetHalfedges( faceIndex );
+			foreach ( var i in edgeSet )
+			{
+				var v1 = newVertices[i];
+				var v2 = faceVertices[i];
+				var v3 = faceVertices[(i + 1) % numEdges];
+				var v4 = newVertices[(i + 1) % numEdges];
+
+				Mesh.Faces.AddFace( v1, v2, v3, v4, traits );
+			}
+		}
+
+		_dirty = true;
+	}
+
+	public void DetachFaces( IEnumerable<int> faces, Vector3 offset = default )
+	{
+		var vertices = new Dictionary<int, int>();
+		foreach ( var faceIndex in faces )
+		{
+			var faceVertices = Mesh.Faces.GetFaceVertices( faceIndex );
+			var newVertices = new int[faceVertices.Length];
+			for ( int i = 0; i < newVertices.Length; ++i )
+			{
+				if ( vertices.TryGetValue( faceVertices[i], out var newVertex ) )
+				{
+					newVertices[i] = newVertex;
+				}
+				else
+				{
+					var faceVertex = faceVertices[i];
+					newVertex = Mesh.Vertices.Add( Mesh.Vertices[faceVertex].Position + offset );
 					newVertices[i] = newVertex;
 					vertices[faceVertex] = newVertex;
 				}

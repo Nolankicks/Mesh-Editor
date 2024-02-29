@@ -119,10 +119,11 @@ public abstract class BaseMeshTool : EditorTool
 
 	public void ExtrudeSelection( Vector3 delta = default )
 	{
-		foreach ( var face in MeshSelection.OfType<MeshFace>() )
+		foreach ( var group in MeshSelection.OfType<MeshFace>()
+			.GroupBy( x => x.Component ) )
 		{
-			var offset = face.Transform.Rotation.Inverse * delta;
-			face.Component.ExtrudeFace( face.Index, offset );
+			var offset = group.Key.Transform.Rotation.Inverse * delta;
+			group.Key.ExtrudeFaces( group.Select( x => x.Index ), offset );
 		}
 
 		var edges = MeshSelection.OfType<MeshEdge>().ToArray();
