@@ -339,6 +339,30 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		_dirty = true;
 	}
 
+	public void TextureAlignToGrid( int f )
+	{
+		if ( f < 0 || Mesh.Faces[f].IsUnused )
+			return;
+
+		var traits = Mesh.Faces[f].Traits;
+		traits.TextureAngle = 0;
+		traits.TextureOffset = 0;
+		traits.TextureScale = 0.25f;
+		traits.TextureOrigin = Transform.Position - PolygonMesh.TextureOrigin;
+
+		var normal = GetAverageFaceNormal( f );
+		if ( !normal.IsNearZeroLength )
+		{
+			PolygonMesh.ComputeTextureAxes( normal, out var uAxis, out var vAxis );
+			traits.TextureUAxis = uAxis * Transform.Rotation.Inverse;
+			traits.TextureVAxis = vAxis * Transform.Rotation.Inverse;
+		}
+
+		Mesh.Faces[f].Traits = traits;
+
+		_dirty = true;
+	}
+
 	public void SetFaceMaterial( int f, Material material )
 	{
 		if ( material is null )
@@ -402,19 +426,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 	public int TriangleToFace( int triangle )
 	{
 		return PolygonMesh.TriangleToFace( triangle );
-	}
-
-	public void OffsetFaces( IEnumerable<int> faces, Vector3 offset )
-	{
-		var faceVertices = faces.SelectMany( Mesh.Faces.GetFaceVertices )
-			.Distinct();
-
-		foreach ( var i in faceVertices )
-		{
-			Mesh.Vertices.OffsetVertex( i, offset.x, offset.y, offset.z );
-		}
-
-		_dirty = true;
 	}
 
 	public void ExtrudeFace( int faceIndex, Vector3 offset = default )

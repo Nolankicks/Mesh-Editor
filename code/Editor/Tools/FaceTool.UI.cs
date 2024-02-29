@@ -26,10 +26,9 @@ public partial class FaceTool
 
 	private void AlignToGrid()
 	{
-		foreach ( var group in MeshSelection.OfType<MeshFace>()
-			.GroupBy( x => x.Component ) )
+		foreach ( var face in MeshSelection.OfType<MeshFace>() )
 		{
-			group.Key.ApplyPlanarMapping();
+			face.Component.TextureAlignToGrid( face.Index );
 		}
 	}
 

@@ -144,6 +144,7 @@ public sealed class PolygonMesh
 				ComputeTextureAxes( normal, out var uAxis, out var vAxis );
 				faceData.TextureUAxis = uAxis;
 				faceData.TextureVAxis = vAxis;
+				faceData.TextureName = Mesh.Faces[i].Traits.TextureName;
 				Mesh.Faces[i].Traits = faceData;
 			}
 		}
@@ -227,8 +228,8 @@ public sealed class PolygonMesh
 		var uv = Vector2.Zero;
 		var scale = 1.0f / textureSize;
 
-		uv.x = Vector3.Dot( faceData.TextureUAxis, TextureOrigin + vertexPosition );
-		uv.y = Vector3.Dot( faceData.TextureVAxis, TextureOrigin + vertexPosition );
+		uv.x = Vector3.Dot( faceData.TextureUAxis, TextureOrigin + faceData.TextureOrigin + vertexPosition );
+		uv.y = Vector3.Dot( faceData.TextureVAxis, TextureOrigin + faceData.TextureOrigin + vertexPosition );
 
 		uv *= scale;
 
