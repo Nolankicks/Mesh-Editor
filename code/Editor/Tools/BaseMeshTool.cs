@@ -99,13 +99,7 @@ public abstract class BaseMeshTool : EditorTool
 
 		if ( Gizmo.IsShiftPressed )
 		{
-			foreach ( var faceElement in MeshSelection.OfType<MeshFace>() )
-			{
-				var offset = faceElement.Transform.Rotation.Inverse * delta;
-				faceElement.Component.ExtrudeFace( faceElement.Index, offset );
-			}
-
-			CalculateSelectionVertices();
+			ExtrudeSelection( delta );
 		}
 		else
 		{
@@ -121,6 +115,26 @@ public abstract class BaseMeshTool : EditorTool
 		EditLog( "Moved", null );
 
 		_nudge = true;
+	}
+
+	public void ExtrudeSelection( Vector3 delta = default )
+	{
+		foreach ( var face in MeshSelection.OfType<MeshFace>() )
+		{
+			var offset = face.Transform.Rotation.Inverse * delta;
+			face.Component.ExtrudeFace( face.Index, offset );
+		}
+
+		var edge = MeshSelection.OfType<MeshEdge>().FirstOrDefault();
+		if ( edge.IsValid() )
+		{
+			var offset = edge.Transform.Rotation.Inverse * delta;
+			edge = new MeshEdge( edge.Component, edge.Component.ExtrudeEdge( edge.Index, offset ) );
+			if ( edge.IsValid() )
+				MeshSelection.Set( edge );
+		}
+
+		CalculateSelectionVertices();
 	}
 
 	public override void OnSelectionChanged()

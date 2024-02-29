@@ -16,7 +16,6 @@ namespace Editor.MeshEditor;
 [Shortcut( "mesh.move", "w" )]
 public class MoveTool : BaseTransformTool
 {
-	private readonly Dictionary<MeshVertex, Vector3> _startVertices = new();
 	private Vector3 _moveDelta;
 	private Rotation _basis;
 
@@ -34,7 +33,7 @@ public class MoveTool : BaseTransformTool
 
 		if ( !Gizmo.HasPressed )
 		{
-			_startVertices.Clear();
+			StartVertices.Clear();
 			_moveDelta = default;
 			_basis = MeshTool.CalculateSelectionBasis();
 		}
@@ -56,7 +55,7 @@ public class MoveTool : BaseTransformTool
 				moveDelta *= _basis.Inverse;
 				moveDelta = _basis * Gizmo.Snap( moveDelta, moveDelta );
 
-				foreach ( var entry in _startVertices )
+				foreach ( var entry in StartVertices )
 				{
 					var position = entry.Value + moveDelta;
 					var transform = entry.Key.Transform;
@@ -65,35 +64,6 @@ public class MoveTool : BaseTransformTool
 
 				EditLog( "Move Mesh Element", null );
 			}
-		}
-	}
-
-	private void StartDrag()
-	{
-		if ( _startVertices.Any() )
-			return;
-
-		if ( Gizmo.IsShiftPressed )
-		{
-			foreach ( var face in MeshTool.MeshSelection.OfType<MeshFace>() )
-			{
-				face.Component.ExtrudeFace( face.Index );
-			}
-
-			var edge = MeshTool.MeshSelection.OfType<MeshEdge>().FirstOrDefault();
-			if ( edge.IsValid() )
-			{
-				edge = new MeshEdge( edge.Component, edge.Component.ExtrudeEdge( edge.Index ) );
-				if ( edge.IsValid() )
-					MeshTool.MeshSelection.Set( edge );
-			}
-
-			MeshTool.CalculateSelectionVertices();
-		}
-
-		foreach ( var vertex in MeshTool.VertexSelection )
-		{
-			_startVertices[vertex] = vertex.PositionWorld;
 		}
 	}
 }

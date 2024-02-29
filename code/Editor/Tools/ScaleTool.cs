@@ -16,7 +16,6 @@ namespace Editor.MeshEditor;
 [Shortcut( "mesh.scale", "r" )]
 public class ScaleTool : BaseTransformTool
 {
-	private readonly Dictionary<MeshVertex, Vector3> _startVertices = new();
 	private Vector3 _moveDelta;
 	private Vector3 _origin;
 	private Rotation _basis;
@@ -35,7 +34,7 @@ public class ScaleTool : BaseTransformTool
 
 		if ( !Gizmo.HasPressed )
 		{
-			_startVertices.Clear();
+			StartVertices.Clear();
 			_moveDelta = default;
 			_basis = MeshTool.CalculateSelectionBasis();
 
@@ -49,11 +48,11 @@ public class ScaleTool : BaseTransformTool
 
 			if ( Gizmo.Control.Scale( "scale", Vector3.Zero, out var delta, _basis ) )
 			{
-				StartDrag();
-
 				_moveDelta += delta;
 
-				foreach ( var entry in _startVertices )
+				StartDrag();
+
+				foreach ( var entry in StartVertices )
 				{
 					var position = (entry.Value - _origin) * _basis.Inverse;
 					position += position * _moveDelta;
@@ -66,27 +65,6 @@ public class ScaleTool : BaseTransformTool
 
 				EditLog( "Scale Mesh Element", null );
 			}
-		}
-	}
-
-	private void StartDrag()
-	{
-		if ( _startVertices.Any() )
-			return;
-
-		if ( Gizmo.IsShiftPressed )
-		{
-			foreach ( var face in MeshTool.MeshSelection.OfType<MeshFace>() )
-			{
-				face.Component.ExtrudeFace( face.Index );
-			}
-
-			MeshTool.CalculateSelectionVertices();
-		}
-
-		foreach ( var vertex in MeshTool.VertexSelection )
-		{
-			_startVertices[vertex] = vertex.PositionWorld;
 		}
 	}
 }
