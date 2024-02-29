@@ -578,6 +578,10 @@ public partial class PlanktonMesh<TFaceTraits, THalfedgeTraits, TVertexTraits>
 			{
 				var u = _mesh.Vertices[faceVertices[i]].Position;
 				var v = _mesh.Vertices[faceVertices[(i + 1) % faceVertices.Length]].Position;
+
+				if ( u.Distance( v ).AlmostEqual( 0.0f ) )
+					return 0;
+
 				normal += Vector3.Cross( u, v );
 			}
 

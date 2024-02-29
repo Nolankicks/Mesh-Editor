@@ -282,10 +282,13 @@ public sealed class PolygonMesh
 		FaceData faceData = face;
 		if ( faceData.TextureUAxis.IsNearlyZero() || faceData.TextureVAxis.IsNearlyZero() )
 		{
-			ComputeTextureAxes( normal, out var uAxis, out var vAxis );
-			faceData.TextureUAxis = uAxis;
-			faceData.TextureVAxis = vAxis;
-			Mesh.Faces[faceIndex].Traits = faceData;
+			if ( !normal.IsNearlyZero() )
+			{
+				ComputeTextureAxes( normal, out var uAxis, out var vAxis );
+				faceData.TextureUAxis = uAxis;
+				faceData.TextureVAxis = vAxis;
+				Mesh.Faces[faceIndex].Traits = faceData;
+			}
 		}
 
 		int startVertex = vertices.Count;
