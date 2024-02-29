@@ -21,6 +21,10 @@ public partial class FaceTool
 		button.ButtonType = "clear";
 		button.Clicked += AlignToGrid;
 
+		button = widget.Layout.Add( new Button( "Detach Faces", widget ) );
+		button.ButtonType = "clear";
+		button.Clicked += DetachFaces;
+
 		return widget;
 	}
 
@@ -30,6 +34,17 @@ public partial class FaceTool
 		{
 			face.Component.TextureAlignToGrid( face.Index );
 		}
+	}
+
+	private void DetachFaces()
+	{
+		foreach ( var group in MeshSelection.OfType<MeshFace>()
+			.GroupBy( x => x.Component ) )
+		{
+			group.Key.DetachFaces( group.Select( x => x.Index ) );
+		}
+
+		CalculateSelectionVertices();
 	}
 
 	private void CreateOverlay()

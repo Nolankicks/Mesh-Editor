@@ -458,6 +458,35 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		_dirty = true;
 	}
 
+	public void DetachFaces( IEnumerable<int> faces )
+	{
+		var vertices = new Dictionary<int, int>();
+		foreach ( var faceIndex in faces )
+		{
+			var faceVertices = Mesh.Faces.GetFaceVertices( faceIndex );
+			var newVertices = new int[faceVertices.Length];
+			for ( int i = 0; i < newVertices.Length; ++i )
+			{
+				if ( vertices.TryGetValue( faceVertices[i], out var newVertex ) )
+				{
+					newVertices[i] = newVertex;
+				}
+				else
+				{
+					var faceVertex = faceVertices[i];
+					newVertex = Mesh.Vertices.Add( Mesh.Vertices[faceVertex].Position );
+					newVertices[i] = newVertex;
+					vertices[faceVertex] = newVertex;
+				}
+			}
+
+			var traits = Mesh.Faces[faceIndex].Traits;
+			Mesh.Faces.ReplaceFace( faceIndex, newVertices, traits );
+		}
+
+		_dirty = true;
+	}
+
 	public int ExtrudeEdge( int edgeIndex, Vector3 offset = default )
 	{
 		var pairEdge = Mesh.Halfedges.GetPairHalfedge( edgeIndex );
