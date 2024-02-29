@@ -109,6 +109,7 @@ public partial class FaceTool : BaseMeshTool
 		}
 
 		MeshSelection.Clear();
+		VertexSelection.Clear();
 	}
 
 	private void DrawBounds()
