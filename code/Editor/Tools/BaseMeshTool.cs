@@ -125,13 +125,16 @@ public abstract class BaseMeshTool : EditorTool
 			face.Component.ExtrudeFace( face.Index, offset );
 		}
 
-		var edge = MeshSelection.OfType<MeshEdge>().FirstOrDefault();
-		if ( edge.IsValid() )
+		var edges = MeshSelection.OfType<MeshEdge>().ToArray();
+		if ( edges.Length > 0 )
+			MeshSelection.Clear();
+
+		foreach ( var edge in edges )
 		{
 			var offset = edge.Transform.Rotation.Inverse * delta;
-			edge = new MeshEdge( edge.Component, edge.Component.ExtrudeEdge( edge.Index, offset ) );
-			if ( edge.IsValid() )
-				MeshSelection.Set( edge );
+			var newEdge = new MeshEdge( edge.Component, edge.Component.ExtrudeEdge( edge.Index, offset ) );
+			if ( newEdge.IsValid() )
+				MeshSelection.Add( newEdge );
 		}
 
 		CalculateSelectionVertices();
