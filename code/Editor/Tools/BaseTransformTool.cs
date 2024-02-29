@@ -24,20 +24,7 @@ public abstract class BaseTransformTool : EditorTool
 
 		if ( Gizmo.IsShiftPressed )
 		{
-			foreach ( var face in MeshTool.MeshSelection.OfType<MeshFace>() )
-			{
-				face.Component.ExtrudeFace( face.Index );
-			}
-
-			var edge = MeshTool.MeshSelection.OfType<MeshEdge>().FirstOrDefault();
-			if ( edge.IsValid() )
-			{
-				edge = new MeshEdge( edge.Component, edge.Component.ExtrudeEdge( edge.Index ) );
-				if ( edge.IsValid() )
-					MeshTool.MeshSelection.Set( edge );
-			}
-
-			MeshTool.CalculateSelectionVertices();
+			MeshTool.ExtrudeSelection();
 		}
 
 		foreach ( var vertex in MeshTool.VertexSelection )

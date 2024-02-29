@@ -466,6 +466,8 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		if ( face < 0 )
 			return -1;
 
+		_dirty = true;
+
 		return Mesh.Faces.GetHalfedges( face ).FirstOrDefault();
 	}
 
