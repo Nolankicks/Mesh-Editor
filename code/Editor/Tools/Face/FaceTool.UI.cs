@@ -7,7 +7,7 @@ public partial class FaceTool
 {
 	private Layout ControlLayout { get; set; }
 
-	protected Widget BuildUI()
+	private Widget BuildUI()
 	{
 		var widget = new Widget( null );
 		widget.Layout = Layout.Column();

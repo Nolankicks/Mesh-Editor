@@ -12,7 +12,7 @@ namespace Editor.MeshEditor;
 [Alias( "Face" )]
 [Group( "3" )]
 [Shortcut( "mesh.face", "3" )]
-public partial class FaceTool : BaseMeshTool
+public sealed partial class FaceTool : BaseMeshTool
 {
 	private MeshFace HoverFace;
 	private SceneDynamicObject FaceObject;
@@ -105,7 +105,7 @@ public partial class FaceTool : BaseMeshTool
 
 		foreach ( var group in groups )
 		{
-			group.Key.RemoveFaces( group.Select( x => x.Index ).ToArray() );
+			group.Key.RemoveFaces( group.Select( x => x.Index ) );
 		}
 
 		MeshSelection.Clear();
@@ -138,26 +138,26 @@ public partial class FaceTool : BaseMeshTool
 			Gizmo.Draw.LineThickness = 4;
 
 			//TODO: Draw Text for edges closest to the camera
-			var _box = CalculateSelectionBounds();
+			var box = CalculateSelectionBounds();
 			var textSize = 22 * Gizmo.Settings.GizmoScale * Application.DpiScale;
 
 			Gizmo.Draw.Color = Gizmo.Colors.Active.WithAlpha( 0.5f );
 			Gizmo.Draw.LineThickness = 1;
-			Gizmo.Draw.LineBBox( _box );
+			Gizmo.Draw.LineBBox( box );
 
 			Gizmo.Draw.LineThickness = 2;
 			Gizmo.Draw.Color = Gizmo.Colors.Left;
-			if ( _box.Size.y > 0.01f )
-				Gizmo.Draw.ScreenText( $"L: {_box.Size.y:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithY( _box.Center.y ) ) + Vector2.Down * 32, size: textSize );
-			Gizmo.Draw.Line( _box.Maxs.WithY( _box.Mins.y ), _box.Maxs.WithY( _box.Maxs.y ) );
+			if ( box.Size.y > 0.01f )
+				Gizmo.Draw.ScreenText( $"L: {box.Size.y:0.#}", Gizmo.Camera.ToScreen( box.Maxs.WithY( box.Center.y ) ) + Vector2.Down * 32, size: textSize );
+			Gizmo.Draw.Line( box.Maxs.WithY( box.Mins.y ), box.Maxs.WithY( box.Maxs.y ) );
 			Gizmo.Draw.Color = Gizmo.Colors.Forward;
-			if ( _box.Size.x > 0.01f )
-				Gizmo.Draw.ScreenText( $"W: {_box.Size.x:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithX( _box.Center.x ) ) + Vector2.Down * 32, size: textSize );
-			Gizmo.Draw.Line( _box.Maxs.WithX( _box.Mins.x ), _box.Maxs.WithX( _box.Maxs.x ) );
+			if ( box.Size.x > 0.01f )
+				Gizmo.Draw.ScreenText( $"W: {box.Size.x:0.#}", Gizmo.Camera.ToScreen( box.Maxs.WithX( box.Center.x ) ) + Vector2.Down * 32, size: textSize );
+			Gizmo.Draw.Line( box.Maxs.WithX( box.Mins.x ), box.Maxs.WithX( box.Maxs.x ) );
 			Gizmo.Draw.Color = Gizmo.Colors.Up;
-			if ( _box.Size.z > 0.01f )
-				Gizmo.Draw.ScreenText( $"H: {_box.Size.z:0.#}", Gizmo.Camera.ToScreen( _box.Maxs.WithZ( _box.Center.z ) ) + Vector2.Down * 32, size: textSize );
-			Gizmo.Draw.Line( _box.Maxs.WithZ( _box.Mins.z ), _box.Maxs.WithZ( _box.Maxs.z ) );
+			if ( box.Size.z > 0.01f )
+				Gizmo.Draw.ScreenText( $"H: {box.Size.z:0.#}", Gizmo.Camera.ToScreen( box.Maxs.WithZ( box.Center.z ) ) + Vector2.Down * 32, size: textSize );
+			Gizmo.Draw.Line( box.Maxs.WithZ( box.Mins.z ), box.Maxs.WithZ( box.Maxs.z ) );
 		}
 	}
 }

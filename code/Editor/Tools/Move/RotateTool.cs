@@ -5,13 +5,14 @@ namespace Editor.MeshEditor;
 /// <summary>
 /// Rotate selected Mesh Elements.<br/> <br/> 
 /// <b>Ctrl</b> - toggle snap to grid
+/// <b>Shift</b> - extrude selection
 /// </summary>
 [Title( "Rotate" )]
 [Icon( "360" )]
 [Alias( "mesh.rotate" )]
 [Group( "1" )]
 [Shortcut( "mesh.rotate", "e" )]
-public class RotateTool : BaseTransformTool
+public sealed class RotateTool : BaseMoveTool
 {
 	private Angles _moveDelta;
 	private Vector3 _origin;

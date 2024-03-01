@@ -22,7 +22,7 @@ public abstract class BaseMeshTool : EditorTool
 
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
-		yield return new MoveTool( this );
+		yield return new PositionTool( this );
 		yield return new RotateTool( this );
 		yield return new ScaleTool( this );
 	}
@@ -56,11 +56,9 @@ public abstract class BaseMeshTool : EditorTool
 	{
 		base.OnUpdate();
 
-		var selectionToRemove = GetInvalidSelection().ToArray();
-		foreach ( var s in selectionToRemove )
-		{
+		var removeList = GetInvalidSelection().ToList();
+		foreach ( var s in removeList )
 			MeshSelection.Remove( s );
-		}
 
 		UpdateNudge();
 
@@ -103,12 +101,12 @@ public abstract class BaseMeshTool : EditorTool
 		}
 		else
 		{
-			foreach ( var vertexElement in VertexSelection )
+			foreach ( var vertex in VertexSelection )
 			{
-				var transform = vertexElement.Transform;
-				var position = vertexElement.Component.GetVertexPosition( vertexElement.Index );
+				var transform = vertex.Transform;
+				var position = vertex.Component.GetVertexPosition( vertex.Index );
 				position = transform.PointToWorld( position ) + delta;
-				vertexElement.Component.SetVertexPosition( vertexElement.Index, transform.PointToLocal( position ) );
+				vertex.Component.SetVertexPosition( vertex.Index, transform.PointToLocal( position ) );
 			}
 		}
 
@@ -184,10 +182,10 @@ public abstract class BaseMeshTool : EditorTool
 
 		foreach ( var face in MeshSelection.OfType<MeshFace>() )
 		{
-			foreach ( var vertexElement in face.Component.GetFaceVertices( face.Index )
+			foreach ( var vertex in face.Component.GetFaceVertices( face.Index )
 				.Select( i => new MeshVertex( face.Component, i ) ) )
 			{
-				VertexSelection.Add( vertexElement );
+				VertexSelection.Add( vertex );
 			}
 		}
 
@@ -198,10 +196,10 @@ public abstract class BaseMeshTool : EditorTool
 
 		foreach ( var edge in MeshSelection.OfType<MeshEdge>() )
 		{
-			foreach ( var vertexElement in edge.Component.GetEdgeVertices( edge.Index )
+			foreach ( var vertex in edge.Component.GetEdgeVertices( edge.Index )
 				.Select( i => new MeshVertex( edge.Component, i ) ) )
 			{
-				VertexSelection.Add( vertexElement );
+				VertexSelection.Add( vertex );
 			}
 		}
 	}
@@ -209,49 +207,21 @@ public abstract class BaseMeshTool : EditorTool
 	private HashSet<GameObject> GetSelectedObjects()
 	{
 		var objects = new HashSet<GameObject>();
-
-		foreach ( var vertex in MeshSelection.OfType<MeshVertex>()
-			.Select( x => x.Component?.GameObject )
-			.Distinct() )
+		foreach ( var face in MeshSelection.OfType<IMeshElement>()
+			.Where( x => x.IsValid() ) )
 		{
-			objects.Add( vertex );
-		}
-
-		foreach ( var edge in MeshSelection.OfType<MeshEdge>()
-			.Select( x => x.Component?.GameObject )
-			.Distinct() )
-		{
-			objects.Add( edge );
-		}
-
-		foreach ( var face in MeshSelection.OfType<MeshFace>()
-			.Select( x => x.Component?.GameObject )
-			.Distinct() )
-		{
-			objects.Add( face );
+			objects.Add( face.GameObject );
 		}
 
 		return objects;
 	}
 
-	private IEnumerable<object> GetInvalidSelection()
+	private IEnumerable<IMeshElement> GetInvalidSelection()
 	{
-		foreach ( var vertex in MeshSelection.OfType<MeshVertex>()
+		foreach ( var selection in MeshSelection.OfType<IMeshElement>()
 			.Where( x => !x.IsValid() ) )
 		{
-			yield return vertex;
-		}
-
-		foreach ( var edge in MeshSelection.OfType<MeshEdge>()
-			.Where( x => !x.IsValid() ) )
-		{
-			yield return edge;
-		}
-
-		foreach ( var face in MeshSelection.OfType<MeshFace>()
-			.Where( x => !x.IsValid() ) )
-		{
-			yield return face;
+			yield return selection;
 		}
 	}
 

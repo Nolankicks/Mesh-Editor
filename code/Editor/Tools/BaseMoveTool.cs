@@ -5,14 +5,14 @@ using System.Linq;
 namespace Editor.MeshEditor;
 
 /// <summary>
-/// Base class for transforming mesh elements (move, rotate, scale)
+/// Base class for moving mesh elements (move, rotate, scale)
 /// </summary>
-public abstract class BaseTransformTool : EditorTool
+public abstract class BaseMoveTool : EditorTool
 {
 	protected BaseMeshTool MeshTool { get; private init; }
 	protected Dictionary<MeshVertex, Vector3> StartVertices { get; private init; } = new();
 
-	public BaseTransformTool( BaseMeshTool meshTool )
+	public BaseMoveTool( BaseMeshTool meshTool )
 	{
 		MeshTool = meshTool;
 	}

@@ -12,7 +12,7 @@ namespace Editor.MeshEditor;
 [Alias( "Vertex" )]
 [Group( "1" )]
 [Shortcut( "mesh.vertex", "1" )]
-public class VertexTool : BaseMeshTool
+public sealed partial class VertexTool : BaseMeshTool
 {
 	public override void OnUpdate()
 	{

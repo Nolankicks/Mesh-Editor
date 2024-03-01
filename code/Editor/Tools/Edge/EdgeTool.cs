@@ -13,7 +13,7 @@ namespace Editor.MeshEditor;
 [Alias( "Edge" )]
 [Group( "2" )]
 [Shortcut( "mesh.edge", "2" )]
-public class EdgeTool : BaseMeshTool
+public sealed partial class EdgeTool : BaseMeshTool
 {
 	public override void OnUpdate()
 	{
@@ -22,13 +22,15 @@ public class EdgeTool : BaseMeshTool
 		if ( !Gizmo.HasHovered )
 			SelectEdge();
 
+		var edges = MeshSelection.OfType<MeshEdge>().ToList();
+
 		using ( Gizmo.Scope( "Edge Selection" ) )
 		{
 			Gizmo.Draw.IgnoreDepth = true;
 			Gizmo.Draw.Color = Color.Yellow;
 			Gizmo.Draw.LineThickness = 4;
 
-			foreach ( var edge in MeshSelection.OfType<MeshEdge>() )
+			foreach ( var edge in edges )
 			{
 				var line = edge.Component.GetEdge( edge.Index );
 				var a = edge.Transform.PointToWorld( line.Start );
@@ -37,12 +39,15 @@ public class EdgeTool : BaseMeshTool
 			}
 		}
 
-		if ( MeshSelection.OfType<MeshEdge>().ToList().Count == 2)
-            AngleFromEdges( MeshSelection.OfType<MeshEdge>().ToList()[0], MeshSelection.OfType<MeshEdge>().ToList()[1] );
+		if ( edges.Count == 2 )
+			AngleFromEdges( edges[0], edges[1] );
 	}
 
-	private void AngleFromEdges( MeshEdge edge1, MeshEdge edge2 )
+	private static void AngleFromEdges( MeshEdge edge1, MeshEdge edge2 )
 	{
+		if ( !edge1.IsValid() || !edge2.IsValid() )
+			return;
+
 		var line1 = edge1.Component.GetEdge( edge1.Index );
 		var line2 = edge2.Component.GetEdge( edge2.Index );
 
@@ -83,7 +88,7 @@ public class EdgeTool : BaseMeshTool
 			Gizmo.Draw.Color = Color.White;
 			var textSize = 16 * Gizmo.Settings.GizmoScale * Application.DpiScale;
 			var cameraDistance = Gizmo.Camera.Position.Distance( midPoint );
-			Gizmo.Draw.ScreenText( $"{angle:0.##}°", Gizmo.Camera.ToScreen( midPoint + ((vec1 + vec2) / 2).Normal * 7 * (cameraDistance / 100).Clamp( 1, 2f ) ), size: textSize, flags:TextFlag.Center );
+			Gizmo.Draw.ScreenText( $"{angle:0.##}°", Gizmo.Camera.ToScreen( midPoint + ((vec1 + vec2) / 2).Normal * 7 * (cameraDistance / 100).Clamp( 1, 2f ) ), size: textSize, flags: TextFlag.Center );
 
 			//Draw line from the center of the arc
 			Gizmo.Draw.Line( midPoint + ((vec1 + vec2) / 2).Normal * 4 * (cameraDistance / 100).Clamp( 1, 2f ), midPoint + ((vec1 + vec2) / 2).Normal * 6 * (cameraDistance / 100).Clamp( 1, 2f ) );
@@ -94,10 +99,10 @@ public class EdgeTool : BaseMeshTool
 				Gizmo.Draw.Color = Color.White;
 				Gizmo.Draw.LineThickness = 2;
 
-				Gizmo.Transform = new Transform( midPoint, Rotation.LookAt( vec1 , -vec2 ) * Rotation.FromYaw( 270f ) * Rotation.FromRoll( newStart ) );
-				Gizmo.Draw.LineCircle(0, (Gizmo.Camera.Position.Distance(midPoint) / 20).Clamp(5, 10), 0, angle);
-				Gizmo.Draw.Color = Color.White.WithAlpha(0.2f);
-				Gizmo.Draw.SolidCircle(0, (Gizmo.Camera.Position.Distance(midPoint) / 20).Clamp(5, 10), 0, -angle);
+				Gizmo.Transform = new Transform( midPoint, Rotation.LookAt( vec1, -vec2 ) * Rotation.FromYaw( 270f ) * Rotation.FromRoll( newStart ) );
+				Gizmo.Draw.LineCircle( 0, (Gizmo.Camera.Position.Distance( midPoint ) / 20).Clamp( 5, 10 ), 0, angle );
+				Gizmo.Draw.Color = Color.White.WithAlpha( 0.2f );
+				Gizmo.Draw.SolidCircle( 0, (Gizmo.Camera.Position.Distance( midPoint ) / 20).Clamp( 5, 10 ), 0, -angle );
 			}
 		}
 	}

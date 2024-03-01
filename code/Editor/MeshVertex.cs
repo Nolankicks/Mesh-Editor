@@ -6,7 +6,7 @@ namespace Editor.MeshEditor;
 /// <summary>
 /// References a vertex handle and the mesh component it belongs to.
 /// </summary>
-public readonly struct MeshVertex : IValid
+public readonly struct MeshVertex : IMeshElement
 {
 	[Hide] public EditorMeshComponent Component { get; private init; }
 	[Hide] public int Index { get; private init; }

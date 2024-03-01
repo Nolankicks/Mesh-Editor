@@ -6,7 +6,7 @@ namespace Editor.MeshEditor;
 /// <summary>
 /// References a face handle and the mesh component it belongs to.
 /// </summary>
-public readonly struct MeshFace : IValid
+public readonly struct MeshFace : IMeshElement
 {
 	[Hide] public EditorMeshComponent Component { get; private init; }
 	[Hide] public int Index { get; private init; }
@@ -24,6 +24,7 @@ public readonly struct MeshFace : IValid
 
 	public readonly override int GetHashCode() => HashCode.Combine( Component, nameof( MeshFace ), Index );
 	public override readonly string ToString() => IsValid ? $"{Component.GameObject.Name} Face {Index}" : "Invalid Face";
+
 
 	[Range( -180.0f, 180.0f )]
 	public float TextureAngle

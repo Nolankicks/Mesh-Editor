@@ -9,16 +9,16 @@ namespace Editor.MeshEditor;
 /// </summary>
 [Title( "Move/Position" )]
 [Icon( "control_camera" )]
-[Alias( "mesh.move" )]
+[Alias( "mesh.position" )]
 [Group( "0" )]
-[Shortcut( "mesh.move", "w" )]
-public class MoveTool : BaseTransformTool
+[Shortcut( "mesh.position", "w" )]
+public sealed class PositionTool : BaseMoveTool
 {
 	private Vector3 _moveDelta;
 	private Vector3 _origin;
 	private Rotation _basis;
 
-	public MoveTool( BaseMeshTool meshTool ) : base( meshTool )
+	public PositionTool( BaseMeshTool meshTool ) : base( meshTool )
 	{
 	}
 

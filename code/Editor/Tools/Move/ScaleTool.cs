@@ -6,14 +6,14 @@ namespace Editor.MeshEditor;
 /// <summary>
 /// Scale selected Mesh Elements.<br/> <br/> 
 /// <b>Ctrl</b> - toggle snap to grid<br/>
-/// <b>Shift</b> - scale all 3 axis
+/// <b>Shift</b> - extrude selection
 /// </summary>
 [Title( "Scale" )]
 [Icon( "zoom_out_map" )]
 [Alias( "mesh.scale" )]
 [Group( "2" )]
 [Shortcut( "mesh.scale", "r" )]
-public class ScaleTool : BaseTransformTool
+public sealed class ScaleTool : BaseMoveTool
 {
 	private Vector3 _moveDelta;
 	private Vector3 _size;

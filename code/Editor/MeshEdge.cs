@@ -6,7 +6,7 @@ namespace Editor.MeshEditor;
 /// <summary>
 /// References a edge handle and the mesh component it belongs to.
 /// </summary>
-public readonly struct MeshEdge : IValid
+public readonly struct MeshEdge : IMeshElement
 {
 	[Hide] public EditorMeshComponent Component { get; private init; }
 	[Hide] public int Index { get; private init; }
