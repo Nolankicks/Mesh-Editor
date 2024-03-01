@@ -32,7 +32,7 @@ public sealed partial class EdgeTool : BaseMeshTool
 
 			foreach ( var edge in edges )
 			{
-				var line = edge.Component.GetEdge( edge.Index );
+				var line = edge.Component.PolygonMesh.GetEdge( edge.Index );
 				var a = edge.Transform.PointToWorld( line.Start );
 				var b = edge.Transform.PointToWorld( line.End );
 				Gizmo.Draw.Line( a, b );
@@ -48,8 +48,8 @@ public sealed partial class EdgeTool : BaseMeshTool
 		if ( !edge1.IsValid() || !edge2.IsValid() )
 			return;
 
-		var line1 = edge1.Component.GetEdge( edge1.Index );
-		var line2 = edge2.Component.GetEdge( edge2.Index );
+		var line1 = edge1.Component.PolygonMesh.GetEdge( edge1.Index );
+		var line2 = edge2.Component.PolygonMesh.GetEdge( edge2.Index );
 
 		// Convert start and end points to world space
 		var a1 = edge1.Transform.PointToWorld( line1.Start );
@@ -119,7 +119,7 @@ public sealed partial class EdgeTool : BaseMeshTool
 					Gizmo.Draw.IgnoreDepth = true;
 					Gizmo.Draw.Color = Color.Green;
 					Gizmo.Draw.LineThickness = 4;
-					var line = edge.Component.GetEdge( edge.Index );
+					var line = edge.Component.PolygonMesh.GetEdge( edge.Index );
 					Gizmo.Draw.Line( line );
 
 					var textSize = 22 * Gizmo.Settings.GizmoScale * Application.DpiScale;
@@ -146,7 +146,7 @@ public sealed partial class EdgeTool : BaseMeshTool
 		var edge = MeshSelection.OfType<MeshEdge>().FirstOrDefault();
 		if ( edge.Component.IsValid() )
 		{
-			var line = edge.Component.GetEdge( edge.Index );
+			var line = edge.Component.PolygonMesh.GetEdge( edge.Index );
 			var normal = (line.End - line.Start).Normal;
 			var vAxis = PolygonMesh.ComputeTextureVAxis( normal );
 			var basis = Rotation.LookAt( normal, vAxis * -1.0f );

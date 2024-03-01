@@ -104,9 +104,9 @@ public abstract class BaseMeshTool : EditorTool
 			foreach ( var vertex in VertexSelection )
 			{
 				var transform = vertex.Transform;
-				var position = vertex.Component.GetVertexPosition( vertex.Index );
+				var position = vertex.Component.PolygonMesh.GetVertexPosition( vertex.Index );
 				position = transform.PointToWorld( position ) + delta;
-				vertex.Component.SetVertexPosition( vertex.Index, transform.PointToLocal( position ) );
+				vertex.Component.PolygonMesh.SetVertexPosition( vertex.Index, transform.PointToLocal( position ) );
 			}
 		}
 
@@ -121,7 +121,7 @@ public abstract class BaseMeshTool : EditorTool
 			.GroupBy( x => x.Component ) )
 		{
 			var offset = group.Key.Transform.Rotation.Inverse * delta;
-			group.Key.ExtrudeFaces( group.Select( x => x.Index ), offset );
+			group.Key.PolygonMesh.ExtrudeFaces( group.Select( x => x.Index ), offset );
 		}
 
 		var edges = MeshSelection.OfType<MeshEdge>().ToArray();
@@ -131,7 +131,7 @@ public abstract class BaseMeshTool : EditorTool
 		foreach ( var edge in edges )
 		{
 			var offset = edge.Transform.Rotation.Inverse * delta;
-			var newEdge = new MeshEdge( edge.Component, edge.Component.ExtrudeEdge( edge.Index, offset ) );
+			var newEdge = new MeshEdge( edge.Component, edge.Component.PolygonMesh.ExtrudeEdge( edge.Index, offset ) );
 			if ( newEdge.IsValid() )
 				MeshSelection.Add( newEdge );
 		}
@@ -152,7 +152,7 @@ public abstract class BaseMeshTool : EditorTool
 	public BBox CalculateSelectionBounds()
 	{
 		return BBox.FromPoints( VertexSelection
-			.Select( x => x.Transform.PointToWorld( x.Component.GetVertexPosition( x.Index ) ) ) );
+			.Select( x => x.Transform.PointToWorld( x.Component.PolygonMesh.GetVertexPosition( x.Index ) ) ) );
 	}
 
 	public virtual Rotation CalculateSelectionBasis()
@@ -173,7 +173,7 @@ public abstract class BaseMeshTool : EditorTool
 			return Vector3.Zero;
 
 		var transform = faceElement.Transform;
-		return transform.PointToWorld( faceElement.Component.GetFaceCenter( faceElement.Index ) );
+		return transform.PointToWorld( faceElement.Component.PolygonMesh.GetFaceCenter( faceElement.Index ) );
 	}
 
 	public void CalculateSelectionVertices()
@@ -182,7 +182,7 @@ public abstract class BaseMeshTool : EditorTool
 
 		foreach ( var face in MeshSelection.OfType<MeshFace>() )
 		{
-			foreach ( var vertex in face.Component.GetFaceVertices( face.Index )
+			foreach ( var vertex in face.Component.PolygonMesh.GetFaceVertices( face.Index )
 				.Select( i => new MeshVertex( face.Component, i ) ) )
 			{
 				VertexSelection.Add( vertex );
@@ -196,7 +196,7 @@ public abstract class BaseMeshTool : EditorTool
 
 		foreach ( var edge in MeshSelection.OfType<MeshEdge>() )
 		{
-			foreach ( var vertex in edge.Component.GetEdgeVertices( edge.Index )
+			foreach ( var vertex in edge.Component.PolygonMesh.GetEdgeVertices( edge.Index )
 				.Select( i => new MeshVertex( edge.Component, i ) ) )
 			{
 				VertexSelection.Add( vertex );
@@ -333,7 +333,7 @@ public abstract class BaseMeshTool : EditorTool
 			return default;
 
 		distance = result.Distance;
-		var face = component.TriangleToFace( result.Triangle );
+		var face = component.PolygonMesh.TriangleToFace( result.Triangle );
 		return new MeshFace( component, face );
 	}
 
@@ -343,7 +343,7 @@ public abstract class BaseMeshTool : EditorTool
 		if ( !result.Hit || result.Component is not EditorMeshComponent component )
 			return default;
 
-		var face = component.TriangleToFace( result.Triangle );
+		var face = component.PolygonMesh.TriangleToFace( result.Triangle );
 		return new MeshFace( component, face );
 	}
 
@@ -375,7 +375,7 @@ public abstract class BaseMeshTool : EditorTool
 			if ( result.Component is not EditorMeshComponent component )
 				continue;
 
-			var face = component.TriangleToFace( result.Triangle );
+			var face = component.PolygonMesh.TriangleToFace( result.Triangle );
 			var faceElement = new MeshFace( component, face );
 			if ( faceHash.Add( faceElement ) )
 				faces.Add( new MeshFaceTraceResult { MeshFace = faceElement, Distance = result.Distance } );

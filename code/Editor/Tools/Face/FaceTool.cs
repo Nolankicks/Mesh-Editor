@@ -105,7 +105,7 @@ public sealed partial class FaceTool : BaseMeshTool
 
 		foreach ( var group in groups )
 		{
-			group.Key.RemoveFaces( group.Select( x => x.Index ) );
+			group.Key.PolygonMesh.RemoveFaces( group.Select( x => x.Index ) );
 		}
 
 		MeshSelection.Clear();
@@ -120,7 +120,7 @@ public sealed partial class FaceTool : BaseMeshTool
 		var edge = MeshSelection.OfType<MeshFace>().FirstOrDefault();
 		if ( edge.Component.IsValid() )
 		{
-			var normal = edge.Component.GetAverageFaceNormal( edge.Index );
+			var normal = edge.Component.PolygonMesh.GetAverageFaceNormal( edge.Index );
 			var vAxis = PolygonMesh.ComputeTextureVAxis( normal );
 			var basis = Rotation.LookAt( normal, vAxis * -1.0f );
 			return edge.Transform.RotationToWorld( basis );

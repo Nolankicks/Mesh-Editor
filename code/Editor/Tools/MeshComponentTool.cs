@@ -42,7 +42,7 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 		if ( !_dragging )
 		{
 			_box = BBox.FromPoints( _component.Vertices
-				.Select( x => _component.GetVertexPosition( x ) ) );
+				.Select( x => _component.PolygonMesh.GetVertexPosition( x ) ) );
 
 			_startTransform = _component.Transform.World;
 			_startTextureOrigin = _component.TextureOrigin;
@@ -87,7 +87,7 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 
 					foreach ( var i in _component.Vertices )
 					{
-						_vertices[i] = _component.GetVertexPosition( i ) - _startBox.Center;
+						_vertices[i] = _component.PolygonMesh.GetVertexPosition( i ) - _startBox.Center;
 					}
 				}
 
@@ -105,7 +105,7 @@ public class MeshComponentTool : EditorTool<EditorMeshComponent>
 
 				foreach ( var i in _vertices )
 				{
-					_component.SetVertexPosition( i.Key, (_startBox.Center + i.Value) * scale );
+					_component.PolygonMesh.SetVertexPosition( i.Key, (_startBox.Center + i.Value) * scale );
 				}
 
 				var offset = _box.Center - (_startBox.Center * scale);

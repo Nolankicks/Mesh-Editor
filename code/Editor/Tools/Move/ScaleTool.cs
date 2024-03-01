@@ -73,7 +73,7 @@ public sealed class ScaleTool : BaseMoveTool
 					position += _origin;
 
 					var transform = entry.Key.Transform;
-					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
+					entry.Key.Component.PolygonMesh.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
 				}
 
 				EditLog( "Scale Mesh Element", null );

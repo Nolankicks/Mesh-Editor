@@ -32,7 +32,7 @@ public partial class FaceTool
 	{
 		foreach ( var face in MeshSelection.OfType<MeshFace>() )
 		{
-			face.Component.TextureAlignToGrid( face.Index );
+			face.Component.PolygonMesh.TextureAlignToGrid( face.Transform, face.Index );
 		}
 	}
 
@@ -41,7 +41,7 @@ public partial class FaceTool
 		foreach ( var group in MeshSelection.OfType<MeshFace>()
 			.GroupBy( x => x.Component ) )
 		{
-			group.Key.DetachFaces( group.Select( x => x.Index ) );
+			group.Key.PolygonMesh.DetachFaces( group.Select( x => x.Index ) );
 		}
 
 		CalculateSelectionVertices();

@@ -57,7 +57,7 @@ public sealed class RotateTool : BaseMoveTool
 					position += _origin;
 
 					var transform = entry.Key.Transform;
-					entry.Key.Component.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
+					entry.Key.Component.PolygonMesh.SetVertexPosition( entry.Key.Index, transform.PointToLocal( position ) );
 				}
 
 				EditLog( "Rotate Mesh Element", null );

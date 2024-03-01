@@ -31,7 +31,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 
 	private Color _color = Color.White;
 	private SceneObject _sceneObject;
-	private bool _dirty;
 
 	public IEnumerable<int> Vertices => Mesh != null ? Enumerable.Range( 0, Mesh.Vertices.Count )
 		.Where( x => !Mesh.Vertices[x].IsUnused ) : Enumerable.Empty<int>();
@@ -157,7 +156,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 	{
 		base.OnUpdate();
 
-		if ( _dirty )
+		if ( PolygonMesh.Dirty )
 		{
 			RebuildMesh();
 		}
@@ -222,184 +221,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		}
 	}
 
-	public Line GetEdge( int edge )
-	{
-		if ( Mesh.Halfedges[edge].IsUnused )
-			return default;
-
-		var edgeVertices = Mesh.Halfedges.GetVertices( edge );
-		var a = Mesh.Vertices[edgeVertices[0]].Position;
-		var b = Mesh.Vertices[edgeVertices[1]].Position;
-
-		return new Line( a, b );
-	}
-
-	public int[] GetEdgeVertices( int edge )
-	{
-		if ( Mesh.Halfedges[edge].IsUnused )
-			return default;
-
-		return Mesh.Halfedges.GetVertices( edge );
-	}
-
-	public void SetVertexPosition( int v, Vector3 position )
-	{
-		Mesh.Vertices[v].Position = position;
-		_dirty = true;
-	}
-
-	public Vector3 GetAverageFaceNormal( int f )
-	{
-		return Mesh.Faces.GetAverageFaceNormal( f ).Normal;
-	}
-
-	public Vector3 GetFaceCenter( int f )
-	{
-		return Mesh.Faces.GetFaceCenter( f );
-	}
-
-	public Vector3 GetVertexPosition( int f )
-	{
-		return Mesh.Vertices[f].Position;
-	}
-
-	public int[] GetFaceVertices( int f )
-	{
-		if ( f < 0 || Mesh.Faces[f].IsUnused )
-			return null;
-
-		return Mesh.Faces.GetFaceVertices( f );
-	}
-
-	public int[] GetFaceEdges( int f )
-	{
-		if ( f < 0 || Mesh.Faces[f].IsUnused )
-			return null;
-
-		return Mesh.Faces.GetHalfedges( f );
-	}
-
-	public float GetTextureAngle( int f )
-	{
-		if ( f < 0 || Mesh.Faces[f].IsUnused )
-			return default;
-
-		return Mesh.Faces[f].Traits.TextureAngle;
-	}
-
-	public void SetTextureAngle( int f, float angle )
-	{
-		if ( f < 0 || Mesh.Faces[f].IsUnused )
-			return;
-
-		var traits = Mesh.Faces[f].Traits;
-		traits.TextureAngle = angle;
-		Mesh.Faces[f].Traits = traits;
-
-		_dirty = true;
-	}
-
-	public Vector2 GetTextureOffset( int f )
-	{
-		if ( f < 0 || Mesh.Faces[f].IsUnused )
-			return default;
-
-		return Mesh.Faces[f].Traits.TextureOffset;
-	}
-
-	public void SetTextureOffset( int f, Vector2 offset )
-	{
-		if ( f < 0 || Mesh.Faces[f].IsUnused )
-			return;
-
-		var traits = Mesh.Faces[f].Traits;
-		traits.TextureOffset = offset;
-		Mesh.Faces[f].Traits = traits;
-
-		_dirty = true;
-	}
-
-	public Vector2 GetTextureScale( int f )
-	{
-		if ( f < 0 || Mesh.Faces[f].IsUnused )
-			return default;
-
-		return Mesh.Faces[f].Traits.TextureScale;
-	}
-
-	public void SetTextureScale( int f, Vector2 scale )
-	{
-		if ( f < 0 || Mesh.Faces[f].IsUnused )
-			return;
-
-		var traits = Mesh.Faces[f].Traits;
-		traits.TextureScale = scale;
-		Mesh.Faces[f].Traits = traits;
-
-		_dirty = true;
-	}
-
-	public void TextureAlignToGrid( int f )
-	{
-		if ( f < 0 || Mesh.Faces[f].IsUnused )
-			return;
-
-		var traits = Mesh.Faces[f].Traits;
-		traits.TextureAngle = 0;
-		traits.TextureOffset = 0;
-		traits.TextureScale = 0.25f;
-
-		var rotation = Transform.Rotation.Inverse;
-		traits.TextureOrigin = (Transform.Position * rotation) - PolygonMesh.TextureOrigin;
-
-		var normal = GetAverageFaceNormal( f );
-		if ( !normal.IsNearZeroLength )
-		{
-			PolygonMesh.ComputeTextureAxes( normal, out var uAxis, out var vAxis );
-			traits.TextureUAxis = (uAxis * rotation).Normal;
-			traits.TextureVAxis = (vAxis * rotation).Normal;
-		}
-
-		Mesh.Faces[f].Traits = traits;
-
-		_dirty = true;
-	}
-
-	public void SetFaceMaterial( int f, Material material )
-	{
-		if ( material is null )
-			return;
-
-		if ( f < 0 || Mesh.Faces[f].IsUnused )
-			return;
-
-		var traits = Mesh.Faces[f].Traits;
-		traits.TextureName = material.Name;
-		Mesh.Faces[f].Traits = traits;
-
-		_dirty = true;
-	}
-
-	public Material GetFaceMaterial( int f )
-	{
-		if ( f < 0 || Mesh.Faces[f].IsUnused )
-			return default;
-
-		return Material.Load( Mesh.Faces[f].Traits.TextureName );
-	}
-
-	public void RemoveFaces( IEnumerable<int> faces )
-	{
-		foreach ( var i in faces )
-		{
-			Mesh.Faces.RemoveFace( i );
-		}
-
-		Mesh.Compact();
-
-		_dirty = true;
-	}
-
 	public void RebuildMesh()
 	{
 		PolygonMesh.UseCollision = true;
@@ -421,164 +242,6 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		_sceneObject.ColorTint = Color.WithAlpha( 1.0f );
 
 		Rebuild();
-
-		_dirty = false;
-	}
-
-	public int TriangleToFace( int triangle )
-	{
-		return PolygonMesh.TriangleToFace( triangle );
-	}
-
-	public void ExtrudeFace( int faceIndex, Vector3 offset = default )
-	{
-		var faceIndices = Mesh.Faces.GetFaceVertices( faceIndex );
-		var faceVertices = faceIndices.Select( v => Mesh.Vertices[v] );
-
-		FaceData faceData = Mesh.Faces[faceIndex];
-		var sideFaceData = faceData;
-		sideFaceData.TextureUAxis = 0;
-		sideFaceData.TextureVAxis = 0;
-
-		var newFaceIndices = Mesh.Vertices.AddVertices( faceVertices.Select( v => v.Position + offset ) );
-		Mesh.Faces.ReplaceFace( faceIndex, newFaceIndices, faceData );
-
-		int numVertices = newFaceIndices.Length;
-
-		for ( int i = 0; i < numVertices; ++i )
-		{
-			var v1 = newFaceIndices[i];
-			var v2 = faceIndices[i];
-			var v3 = faceIndices[(i + 1) % numVertices];
-			var v4 = newFaceIndices[(i + 1) % numVertices];
-
-			Mesh.Faces.AddFace( v1, v2, v3, v4, sideFaceData );
-		}
-
-		_dirty = true;
-	}
-
-	public void ExtrudeFaces( IEnumerable<int> faces, Vector3 offset = default )
-	{
-		var vertices = new Dictionary<int, int>();
-		foreach ( var faceIndex in faces )
-		{
-			var faceVertices = Mesh.Faces.GetFaceVertices( faceIndex );
-			var newVertices = new int[faceVertices.Length];
-			for ( int i = 0; i < newVertices.Length; ++i )
-			{
-				if ( vertices.TryGetValue( faceVertices[i], out var newVertex ) )
-				{
-					newVertices[i] = newVertex;
-				}
-				else
-				{
-					var faceVertex = faceVertices[i];
-					newVertex = Mesh.Vertices.Add( Mesh.Vertices[faceVertex].Position + offset );
-					newVertices[i] = newVertex;
-					vertices[faceVertex] = newVertex;
-				}
-			}
-
-			var faceEdges = Mesh.Faces.GetHalfedges( faceIndex );
-			var numEdges = faceEdges.Length;
-			var edgeSet = new HashSet<int>();
-			var edgeTraits = new FaceData[numEdges];
-			var traits = Mesh.Faces[faceIndex].Traits;
-
-			for ( int i = 0; i < numEdges; ++i )
-			{
-				var pairEdge = Mesh.Halfedges.GetPairHalfedge( faceEdges[i] );
-				var edge = Mesh.Halfedges[pairEdge];
-
-				if ( !faces.Contains( edge.AdjacentFace ) )
-				{
-					edgeSet.Add( i );
-					edgeTraits[i] = edge.AdjacentFace < 0 ? traits : Mesh.Faces[edge.AdjacentFace].Traits;
-				}
-			}
-
-			Mesh.Faces.ReplaceFace( faceIndex, newVertices, traits );
-
-			faceEdges = Mesh.Faces.GetHalfedges( faceIndex );
-			foreach ( var i in edgeSet )
-			{
-				traits = edgeTraits[i];
-				traits.TextureUAxis = 0;
-				traits.TextureVAxis = 0;
-
-				var v1 = newVertices[i];
-				var v2 = faceVertices[i];
-				var v3 = faceVertices[(i + 1) % numEdges];
-				var v4 = newVertices[(i + 1) % numEdges];
-
-				Mesh.Faces.AddFace( v1, v2, v3, v4, traits );
-			}
-		}
-
-		_dirty = true;
-	}
-
-	public void DetachFaces( IEnumerable<int> faces, Vector3 offset = default )
-	{
-		var vertices = new Dictionary<int, int>();
-		foreach ( var faceIndex in faces )
-		{
-			var faceVertices = Mesh.Faces.GetFaceVertices( faceIndex );
-			var newVertices = new int[faceVertices.Length];
-			for ( int i = 0; i < newVertices.Length; ++i )
-			{
-				if ( vertices.TryGetValue( faceVertices[i], out var newVertex ) )
-				{
-					newVertices[i] = newVertex;
-				}
-				else
-				{
-					var faceVertex = faceVertices[i];
-					newVertex = Mesh.Vertices.Add( Mesh.Vertices[faceVertex].Position + offset );
-					newVertices[i] = newVertex;
-					vertices[faceVertex] = newVertex;
-				}
-			}
-
-			var traits = Mesh.Faces[faceIndex].Traits;
-			Mesh.Faces.ReplaceFace( faceIndex, newVertices, traits );
-		}
-
-		_dirty = true;
-	}
-
-	public int ExtrudeEdge( int edgeIndex, Vector3 offset = default )
-	{
-		var pairEdge = Mesh.Halfedges.GetPairHalfedge( edgeIndex );
-		if ( Mesh.Halfedges[pairEdge].AdjacentFace >= 0 )
-			return -1;
-
-		var faceData = Mesh.Faces[Mesh.Halfedges[edgeIndex].AdjacentFace].Traits;
-		faceData.TextureUAxis = 0;
-		faceData.TextureVAxis = 0;
-
-		var edgeVertices = Mesh.Halfedges.GetVertices( edgeIndex );
-		var a = Mesh.Vertices[edgeVertices[0]].Position + offset;
-		var b = Mesh.Vertices[edgeVertices[1]].Position + offset;
-
-		var v1 = Mesh.Vertices.Add( a );
-		var v2 = Mesh.Vertices.Add( b );
-
-		var face = Mesh.Faces.AddFace( v1, v2, edgeVertices[1], edgeVertices[0], faceData );
-		if ( face < 0 )
-			return -1;
-
-		_dirty = true;
-
-		return Mesh.Faces.GetHalfedges( face ).FirstOrDefault();
-	}
-
-	public void ApplyPlanarMapping()
-	{
-		PolygonMesh.ApplyPlanarMapping();
-
-		_dirty = true;
 	}
 
 	public void SetMaterial( Material material, int triangle )
@@ -586,7 +249,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		if ( Mesh is null )
 			return;
 
-		var face = TriangleToFace( triangle );
+		var face = PolygonMesh.TriangleToFace( triangle );
 		if ( face < 0 )
 			return;
 
@@ -610,7 +273,7 @@ public sealed class EditorMeshComponent : Collider, ExecuteInEditor, ITintable, 
 		if ( Mesh is null )
 			return default;
 
-		var face = TriangleToFace( triangle );
+		var face = PolygonMesh.TriangleToFace( triangle );
 		if ( face < 0 )
 			return default;
 
