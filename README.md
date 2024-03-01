@@ -1,4 +1,4 @@
-![image](https://github.com/sboxgame/Mesh-Editor/assets/1667289/cdce7f5f-c185-4155-9511-8f966848acb3)
+![image](https://github.com/sboxgame/Mesh-Editor/assets/1667289/676055e0-55fc-4212-9e52-caa0770df157)
 
 # Mesh Editor
 
