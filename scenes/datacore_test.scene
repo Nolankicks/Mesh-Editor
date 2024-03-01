@@ -24,6 +24,9 @@
           "Viewport": "0,0,1,1",
           "ZFar": 10000,
           "ZNear": 10
+        },
+        {
+          "__type": "CameraInput"
         }
       ]
     },
@@ -587,6 +590,6 @@
   },
   "Title": "datacore_test",
   "Description": "",
-  "LastSaved": "2024-02-28T16:41:22.3846825\u002B00:00",
+  "LastSaved": "2024-03-01T09:21:24.0634016-05:00",
   "__references": []
 }
